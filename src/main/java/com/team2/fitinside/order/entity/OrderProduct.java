@@ -34,7 +34,7 @@ public class OrderProduct {
     @Column(name = "count", nullable = false)
     private int count;
 
-    public void setOrder(Order order){
+    public void setOrder(Order order) {
         this.order = order;
     }
 
