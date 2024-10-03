@@ -38,9 +38,6 @@ public class Product {
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 
-    @Column(name = "is_recommend", nullable = false)
-    private boolean isRecommend;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
