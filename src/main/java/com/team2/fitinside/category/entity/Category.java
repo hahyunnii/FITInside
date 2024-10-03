@@ -20,8 +20,9 @@ public class Category {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = true, length = 1000)
-    private String description;
+    // 설명이 필요할까?
+//    @Column(nullable = true, length = 1000)
+//    private String description;
 
     private Long displayOrder;
 
@@ -36,10 +37,11 @@ public class Category {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> children = new ArrayList<>();
 
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryImage categoryImage;
+
     // 삭제 시 isDeleted를 true로 설정하는 메서드
     public void delete() {
         this.isDeleted = true;
     }
-
-
 }
