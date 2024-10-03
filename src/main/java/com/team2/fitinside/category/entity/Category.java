@@ -20,7 +20,7 @@ public class Category {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = true, length = 1000)
     private String description;
 
     private Long displayOrder;
