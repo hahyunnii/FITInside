@@ -26,13 +26,15 @@ public class ProductService {
     // 상품 목록 조회
     public List<ProductResponseDto> findAllProducts() {
         return productRepository.findByIsDeletedFalse().stream()
-                .map(ProductMapper.INSTANCE::toDto)
+                .map(ProductMapper.INSTANCE::toDto) // 단순히 Product -> ProductResponseDto 변환
                 .collect(Collectors.toList());
     }
 
     // 상품 상세 조회
     public ProductResponseDto findProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+
         return ProductMapper.INSTANCE.toDto(product);
     }
 
@@ -41,8 +43,8 @@ public class ProductService {
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto) {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
 
-        // 카테고리 조회 및 설정
-        Category category = categoryRepository.findById( productCreateDto.getCategoryId())
+        // 카테고리 ID로 카테고리 설정
+        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("카테고리가 존재하지 않습니다."));
         product.setCategory(category);
 
@@ -56,9 +58,10 @@ public class ProductService {
         Product product = productRepository.findById(productUpdateDto.getId())
                 .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
 
-        ProductMapper.INSTANCE.toEntity(productUpdateDto); // DTO -> 엔티티 매핑
+        // DTO -> 엔티티 매핑 (기존 필드 업데이트)
+        ProductMapper.INSTANCE.toEntity(productUpdateDto);
 
-        // 카테고리 조회 및 설정
+        // 카테고리 ID로 카테고리 설정
         Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("카테고리가 존재하지 않습니다."));
         product.setCategory(category);
@@ -70,7 +73,8 @@ public class ProductService {
     // 상품 삭제 (soft delete)
     @Transactional
     public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
         product.setIsDeleted(true);
         productRepository.save(product);
     }
