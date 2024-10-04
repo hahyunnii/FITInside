@@ -2,7 +2,7 @@ package com.team2.fitinside.category.dto;
 import lombok.*;
 
 @Getter
-@Setter
+//@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
