@@ -46,10 +46,5 @@ public class Category {
         this.displayOrder = displayOrder;
         this.parent = parent;
     }
-
-    // 필요한 필드로 Category 생성하는 정적 메서드
-//    public static Category create(String name, Long displayOrder, Category parent) {
-//        return new Category(null, name, displayOrder, false, parent, new ArrayList<>(), null);
-//    }
 }
 
