@@ -1,71 +1,77 @@
 package com.team2.fitinside.product.service;
 
+import com.team2.fitinside.product.dto.ProductCreateDto;
+import com.team2.fitinside.product.dto.ProductResponseDto;
+import com.team2.fitinside.product.dto.ProductUpdateDto;
 import com.team2.fitinside.product.entity.Product;
+import com.team2.fitinside.product.mapper.ProductMapper;
 import com.team2.fitinside.product.repository.ProductRepository;
+import com.team2.fitinside.category.repository.CategoryRepository;
+import com.team2.fitinside.category.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    // 상품 목록 조회
+    public List<ProductResponseDto> findAllProducts() {
+        return productRepository.findByIsDeletedFalse().stream()
+                .map(ProductMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
     }
 
-    // 모든 상품 조회
-//    public List<Product> getAllProducts() {
-//        return productRepository.findAll();
-//    }
-
-    // 모든 상품 목록 조회
-    public List<Product> getAllProducts(Integer categoryId) {
-        if (categoryId != null) {
-            return productRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
-        } else {
-            return productRepository.findByIsDeletedFalse();
-        }
+    // 상품 상세 조회
+    public ProductResponseDto findProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+        return ProductMapper.INSTANCE.toDto(product);
     }
 
-    // 특정 상품 상세 조회
-    public Optional<Product> getProductById(Long productId) {
-        return productRepository.findById(productId);
+    // 상품 등록
+    @Transactional
+    public ProductResponseDto createProduct(ProductCreateDto productCreateDto) {
+        Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
+
+        // 카테고리 조회 및 설정
+        Category category = categoryRepository.findById( productCreateDto.getCategoryId())
+                .orElseThrow(() -> new NoSuchElementException("카테고리가 존재하지 않습니다."));
+        product.setCategory(category);
+
+        Product savedProduct = productRepository.save(product);
+        return ProductMapper.INSTANCE.toDto(savedProduct);
     }
 
-    // 상품 등록 (관리자 전용)
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
-    }
+    // 상품 수정
+    @Transactional
+    public ProductResponseDto updateProduct(ProductUpdateDto productUpdateDto) {
+        Product product = productRepository.findById(productUpdateDto.getId())
+                .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
 
-    // 상품 수정 (관리자 전용)
-    public Optional<Product> updateProduct(Long productId, Product productDetails) {
-        return productRepository.findById(productId).map(product -> {
-            product.setProductName(productDetails.getProductName());
-            product.setProductType(productDetails.getProductType());
-            product.setPrice(productDetails.getPrice());
-            product.setInfo(productDetails.getInfo());
-            product.setManufacturer(productDetails.getManufacturer());
-            product.setCategoryId(productDetails.getCategoryId());
-            product.setThumbnails(productDetails.getThumbnails());
-            return productRepository.save(product);
-        });
-    }
+        ProductMapper.INSTANCE.toEntity(productUpdateDto); // DTO -> 엔티티 매핑
 
-    // 상품 삭제 (관리자 전용)
-//    public void deleteProduct(Long productId) {
-//        productRepository.deleteById(productId);
-//    }
+        // 카테고리 조회 및 설정
+        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+                .orElseThrow(() -> new NoSuchElementException("카테고리가 존재하지 않습니다."));
+        product.setCategory(category);
+
+        Product updatedProduct = productRepository.save(product);
+        return ProductMapper.INSTANCE.toDto(updatedProduct);
+    }
 
     // 상품 삭제 (soft delete)
-    public Optional<Product> deleteProduct(Long id) {
-        return productRepository.findById(id).map(product -> {
-            product.setDeletedAt(LocalDateTime.now());
-            return productRepository.save(product);
-        });
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+        product.setIsDeleted(true);
+        productRepository.save(product);
     }
 }

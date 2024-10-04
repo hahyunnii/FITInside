@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
+    List<Product> findByCategoryId(int categoryId);
 
     List<Product> findByIsDeletedFalse();
 }
