@@ -22,7 +22,6 @@ public class CategoryService {
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         Category category = Category.builder()
                 .name(categoryDTO.getName())
-//                .description(categoryDTO.getDescription()) // 설명은 필요없을 것 같음
                 .displayOrder(categoryDTO.getDisplayOrder())
                 .parent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null)
                 .build();
@@ -40,7 +39,6 @@ public class CategoryService {
 
         Category category = categoryOpt.get();
         category.setName(categoryDTO.getName());
-//        category.setDescription(categoryDTO.getDescription());
         category.setDisplayOrder(categoryDTO.getDisplayOrder());
         category.setParent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null);
 
