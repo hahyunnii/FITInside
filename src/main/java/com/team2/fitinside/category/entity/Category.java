@@ -20,10 +20,6 @@ public class Category {
     @Column(nullable = false, length = 30)
     private String name;
 
-    // 설명이 필요할까?
-//    @Column(nullable = true, length = 1000)
-//    private String description;
-
     private Long displayOrder;
 
     // Soft delete를 위한 필드
