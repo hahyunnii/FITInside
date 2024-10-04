@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+//TODO : SETTER 제거
 @Builder
 @Table(name = "product")
 @EntityListeners(AuditingEntityListener.class)
@@ -20,7 +21,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "product_id")
     private Long id;
 
     @Column(name = "product_type", nullable = false)
