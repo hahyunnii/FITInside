@@ -24,8 +24,8 @@ public class InquiryReply {
     @JoinColumn(name = "inquiry_id", nullable = false)
     private Inquiry inquiry;
 
-    @Column(name = "reply_content", nullable = false, length = 500)
-    private String replyContent;
+    @Column(name = "reply_content", length = 500, nullable = false)
+    private String content;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -45,5 +45,13 @@ public class InquiryReply {
     public void prePersist() {
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+        if (this.deletedAt != null) {
+            this.isDeleted = true;
+        }
     }
 }
