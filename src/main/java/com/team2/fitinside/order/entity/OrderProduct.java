@@ -34,6 +34,14 @@ public class OrderProduct {
     @Column(name = "count", nullable = false)
     private int count;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
+    // 주문 상품 삭제
+    public void deleteOrderProduct(){
+        this.isDeleted = true;
+    }
+
     public void setOrder(Order order) {
         this.order = order;
     }
