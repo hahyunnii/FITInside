@@ -1,5 +1,6 @@
 package com.team2.fitinside.product.entity;
 
+import com.team2.fitinside.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,8 +13,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-//TODO : SETTER 제거
+@Getter
 @Builder
 @Table(name = "product")
 @EntityListeners(AuditingEntityListener.class)
@@ -53,8 +53,11 @@ public class Product {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    @Column(name = "category_id", nullable = false)
-    private int categoryId;
+    // 카테고리와 다대일 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductThumbnail> thumbnails;
@@ -70,6 +73,21 @@ public class Product {
         this.updatedAt = LocalDateTime.now();
         if (this.deletedAt != null) {
             this.isDeleted = true;
+        }
+    }
+
+    // Category 설정 메서드
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    // 삭제 상태 설정 메서드
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+        if (isDeleted) {
+            this.deletedAt = LocalDateTime.now();
+        } else {
+            this.deletedAt = null;
         }
     }
 }
