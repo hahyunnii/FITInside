@@ -28,7 +28,7 @@ public class Inquiry {
     private Product product;
 
     @Column(name = "inquiry_content", nullable = false, length = 500)
-    private String inquiryContent;
+    private String content;
 
     @Column(name = "is_responded", nullable = false)
     private boolean isResponded;
@@ -52,6 +52,14 @@ public class Inquiry {
         this.isDeleted = false;
         this.isResponded = false;
         this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+        if (this.deletedAt != null) {
+            this.isDeleted = true;
+        }
     }
 }
 
