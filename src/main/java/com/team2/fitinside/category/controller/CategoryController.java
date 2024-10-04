@@ -23,11 +23,11 @@ public class CategoryController {
     }
 
     // 모든 카테고리 조회
-//    @GetMapping
-//    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-//        List<CategoryDTO> categories = categoryService.getAllCategories();
-//        return ResponseEntity.ok(categories);
-//    }
+    @GetMapping
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+        List<CategoryDTO> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories);
+    }
 
     // 카테고리 업데이트
     @PutMapping("/{id}")
