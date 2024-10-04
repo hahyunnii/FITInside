@@ -1,7 +1,6 @@
 package com.team2.fitinside.order.entity;
 
 import com.team2.fitinside.order.common.OrderStatus;
-import com.team2.fitinside.order.dto.OrderProductDto;
 import com.team2.fitinside.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -64,28 +63,27 @@ public class Order {
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     // 주문 상태 변경
-    public void updateOrderStatus(OrderStatus status){
+    public void updateOrderStatus(OrderStatus status) {
         this.orderStatus = status;
     }
 
     // 주문 취소
-    public void cancelOrder(){
-        if(this.orderStatus == OrderStatus.COMPLETED){
+    public void cancelOrder() {
+        if (this.orderStatus == OrderStatus.COMPLETED) {
             throw new IllegalStateException("이미 배송이 시작된 주문은 취소할 수 없습니다.");
         }
         this.orderStatus = OrderStatus.CANCELLED;
     }
 
     // 주문 삭제
-    public void deleteOrder(){
+    public void deleteOrder() {
         this.isDeleted = true;
     }
 
-    public void addOrderProduct(OrderProduct orderProduct){
+    public void addOrderProduct(OrderProduct orderProduct) {
         this.orderProducts.add(orderProduct);
         orderProduct.setOrder(this); // OrderProduct에도 해당 Order 설정 (양방향 관계)
     }
-
 
 
 }
