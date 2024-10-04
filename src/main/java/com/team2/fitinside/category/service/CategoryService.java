@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,19 +28,12 @@ public class CategoryService {
                 .name(categoryDTO.getName())
                 .displayOrder(categoryDTO.getDisplayOrder())
                 .parent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null)
+                .isDeleted(false)
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
         return toDTO(savedCategory);
     }
-//    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-//        Category parentCategory = categoryDTO.getParentId() != null ?
-//                categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null;
-//        Category category = Category.create(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory);
-//
-//        Category savedCategory = categoryRepository.save(category);
-//        return CategoryMapper.toDTO(savedCategory);
-//    }
 
     //======================================================================
     // 카테고리 조회
@@ -51,32 +45,15 @@ public class CategoryService {
     }
 
     //=======================================================================
-    // 카테고리 업데이트
-//    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
-//        Optional<Category> categoryOpt = categoryRepository.findById(id);
-//        if (categoryOpt.isEmpty()) {
-//            throw new RuntimeException("Category not found");
-//        }
-//
-//        Category category = categoryOpt.get();
-//        category.setName(categoryDTO.getName());
-//        category.setDisplayOrder(categoryDTO.getDisplayOrder());
-//        category.setParent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null);
-//
-//        return toDTO(categoryRepository.save(category));
-//    }
-
     public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        // 정적 메서드를 사용하여 속성을 업데이트
-        category = Category.create(
-                categoryDTO.getName(),
-                categoryDTO.getDisplayOrder(),
-                categoryDTO.getParentId() != null ?
-                        categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null
-        );
+        Category parentCategory = categoryDTO.getParentId() != null ?
+                categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null;
+
+        // 명시적 메서드로 필드 업데이트
+        category.updateCategory(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory);
 
         return CategoryMapper.toDTO(categoryRepository.save(category));
     }
@@ -85,7 +62,7 @@ public class CategoryService {
     // 카테고리 삭제 (soft delete)
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NoSuchElementException("Category not found"));
         category.delete(); // Soft delete
         categoryRepository.save(category);
     }
