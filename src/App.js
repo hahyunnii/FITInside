@@ -9,7 +9,7 @@ const App = () => {
             <Header />
             <main className="flex-grow-1"> {/* 메인 콘텐츠를 포함하는 div */}
                 {/* 여기에 메인 콘텐츠를 추가 */}
-                <GuestCart></GuestCart>
+
             </main>
             <Footer />
         </div>
