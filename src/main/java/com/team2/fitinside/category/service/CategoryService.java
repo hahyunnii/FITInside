@@ -27,6 +27,7 @@ public class CategoryService {
                 .name(categoryDTO.getName())
                 .displayOrder(categoryDTO.getDisplayOrder())
                 .parent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null)
+                .isDeleted(false)
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
