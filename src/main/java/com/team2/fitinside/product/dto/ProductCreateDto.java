@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CreateProductDto {
-    private String productType;
+
+public class ProductCreateDto {
     private String productName;
     private int price;
-    private String info;
     private String manufacturer;
-    private int categoryId;
+    private Long categoryId;
 }
+
