@@ -56,6 +56,21 @@ public class CategoryService {
         return CategoryMapper.toDTO(categoryRepository.save(category));
     }
 
+//    // 카테고리 업데이트
+//    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+//        Optional<Category> categoryOpt = categoryRepository.findById(id);
+//        if (categoryOpt.isEmpty()) {
+//            throw new RuntimeException("Category not found");
+//        }
+//
+//        Category category = categoryOpt.get();
+//        category.setName(categoryDTO.getName());
+//        category.setDisplayOrder(categoryDTO.getDisplayOrder());
+//        category.setParent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null);
+//
+//        return toDTO(categoryRepository.save(category));
+//    }
+
 
     //===========================================================================
     // 카테고리 삭제 (soft delete)
