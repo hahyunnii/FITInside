@@ -16,7 +16,6 @@ public class CategoryMapper{
                 .displayOrder(category.getDisplayOrder())
                 .isDeleted(category.getIsDeleted())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
-//                .categoryImageUrl(category.getCategoryImage() != null ? category.getCategoryImage().getImageUrl() : null) // 카테고리 이미지 URL 추가
                 .build();
     }
 }
