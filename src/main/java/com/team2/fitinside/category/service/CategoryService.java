@@ -32,7 +32,16 @@ public class CategoryService {
         Category savedCategory = categoryRepository.save(category);
         return toDTO(savedCategory);
     }
+//    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+//        Category parentCategory = categoryDTO.getParentId() != null ?
+//                categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null;
+//        Category category = Category.create(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory);
+//
+//        Category savedCategory = categoryRepository.save(category);
+//        return CategoryMapper.toDTO(savedCategory);
+//    }
 
+    //======================================================================
     // 카테고리 조회
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAllByIsDeletedFalse()
@@ -41,21 +50,38 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    //=======================================================================
     // 카테고리 업데이트
+//    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+//        Optional<Category> categoryOpt = categoryRepository.findById(id);
+//        if (categoryOpt.isEmpty()) {
+//            throw new RuntimeException("Category not found");
+//        }
+//
+//        Category category = categoryOpt.get();
+//        category.setName(categoryDTO.getName());
+//        category.setDisplayOrder(categoryDTO.getDisplayOrder());
+//        category.setParent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null);
+//
+//        return toDTO(categoryRepository.save(category));
+//    }
+
     public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
-        Optional<Category> categoryOpt = categoryRepository.findById(id);
-        if (categoryOpt.isEmpty()) {
-            throw new RuntimeException("Category not found");
-        }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Category category = categoryOpt.get();
-        category.setName(categoryDTO.getName());
-        category.setDisplayOrder(categoryDTO.getDisplayOrder());
-        category.setParent(categoryDTO.getParentId() != null ? categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null);
+        // 정적 메서드를 사용하여 속성을 업데이트
+        category = Category.create(
+                categoryDTO.getName(),
+                categoryDTO.getDisplayOrder(),
+                categoryDTO.getParentId() != null ?
+                        categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null
+        );
 
-        return toDTO(categoryRepository.save(category));
+        return CategoryMapper.toDTO(categoryRepository.save(category));
     }
 
+    //===========================================================================
     // 카테고리 삭제 (soft delete)
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
@@ -65,3 +91,8 @@ public class CategoryService {
     }
 
 }
+
+
+
+
+
