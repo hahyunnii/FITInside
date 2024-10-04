@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+//@Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,9 +20,6 @@ public class Category {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = true, length = 1000)
-    private String description;
-
     private Long displayOrder;
 
     // Soft delete를 위한 필드
@@ -36,10 +33,17 @@ public class Category {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> children = new ArrayList<>();
 
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryImage categoryImage;
+
     // 삭제 시 isDeleted를 true로 설정하는 메서드
     public void delete() {
         this.isDeleted = true;
     }
 
-
+    // 필요한 필드로 Category 생성하는 정적 메서드
+    public static Category create(String name, Long displayOrder, Category parent) {
+        return new Category(null, name, displayOrder, false, parent, new ArrayList<>(), null);
+    }
 }
+

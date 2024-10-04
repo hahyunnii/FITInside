@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
-@Setter
+//@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -34,4 +34,11 @@ public class CategoryImage {
     public void delete() {
         this.isDeleted = true;
     }
+
+    // 필요한 필드로 CategoryImage 생성하는 정적 메서드
+    public static CategoryImage create(String imageUrl, Long displayOrder, Category category) {
+        return new CategoryImage(null, imageUrl, category, displayOrder, false);
+    }
 }
+
+
