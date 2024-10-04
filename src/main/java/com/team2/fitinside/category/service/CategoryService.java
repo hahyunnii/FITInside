@@ -1,5 +1,6 @@
 package com.team2.fitinside.category.service;
 
+import com.team2.fitinside.category.mapper.CategoryMapper;
 import com.team2.fitinside.category.dto.CategoryDTO;
 import com.team2.fitinside.category.entity.Category;
 import com.team2.fitinside.category.repository.CategoryRepository;
@@ -7,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.team2.fitinside.category.mapper.CategoryMapper.toDTO;
 
@@ -28,6 +31,14 @@ public class CategoryService {
 
         Category savedCategory = categoryRepository.save(category);
         return toDTO(savedCategory);
+    }
+
+    // 카테고리 조회
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAllByIsDeletedFalse()
+                .stream()
+                .map(CategoryMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     // 카테고리 업데이트
