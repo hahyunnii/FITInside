@@ -62,7 +62,7 @@ public class Order {
     private boolean isDeleted = false;
 
     // 하나의 주문에 여러 상품이 있을 수 있음
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Builder.Default // 빌더 패턴에서 기본값 유지
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
