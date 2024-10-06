@@ -97,7 +97,7 @@ public class OrderController {
 
         try {
             orderService.cancelOrder(userId, orderId);
-            return new ResponseEntity<>("주문 취소 완료", HttpStatus.OK);
+            return new ResponseEntity<>("주문 취소 완료. orderId: " + orderId, HttpStatus.OK);
         } catch (OrderNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND); // 404
         } catch (OrderModificationNotAllowedException e) {
