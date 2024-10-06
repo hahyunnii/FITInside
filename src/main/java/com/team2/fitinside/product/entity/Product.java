@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
+@ToString
 @Table(name = "product")
 @EntityListeners(AuditingEntityListener.class)
 public class Product {

@@ -4,6 +4,10 @@ import com.team2.fitinside.product.dto.ProductCreateDto;
 import com.team2.fitinside.product.dto.ProductResponseDto;
 import com.team2.fitinside.product.dto.ProductUpdateDto;
 import com.team2.fitinside.product.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,10 @@ public class ProductController {
 
     // 상품 등록 (관리자 전용)
     @PostMapping("/admin")
+    @Operation(summary = "게시글 추가", description = "새로운 상품을 등록합니다.")
+    @ApiResponse(responseCode = "200", description = "상품 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductCreateDto.class)))
+    @ApiResponse(responseCode = "401", description = "카테고리가 존재하지 않습니다.", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "500", description = "DB 연결 에러", content = @Content(mediaType = "application/json"))
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateDto productCreateDto) {
         ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
         return ResponseEntity.ok(createdProduct);
@@ -41,15 +49,14 @@ public class ProductController {
     // 상품 수정 (관리자 전용)
     @PutMapping("/admin/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto productUpdateDto) {
-        productUpdateDto.setId(id); // PathVariable을 DTO에 반영
-        ProductResponseDto updatedProduct = productService.updateProduct(productUpdateDto);
+        ProductResponseDto updatedProduct = productService.updateProduct(id, productUpdateDto);
         return ResponseEntity.ok(updatedProduct);
     }
 
     // 상품 삭제 (관리자 전용, soft delete)
     @DeleteMapping("/admin/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.ok("상품이 삭제되었습니다.");
+    public ResponseEntity<ProductResponseDto> deleteProduct(@PathVariable Long id) {
+        ProductResponseDto deletedProduct = productService.deleteProduct(id);
+        return ResponseEntity.ok(deletedProduct);
     }
 }
