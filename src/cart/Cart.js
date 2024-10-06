@@ -1,12 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom'; // Link import
-import {getCart, addToCart, removeFromCart, clearCart, fetchProduct, useCartCount} from './cartStorage';
+import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCartQuantity} from './cartStorage';
 import './cart.css';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
-    const [productId, setProductId] = useState('');
-    const [quantity, setQuantity] = useState(1);
     const [productDetails, setProductDetails] = useState({});
     const [selectedItems, setSelectedItems] = useState(new Set()); // 선택된 아이템 관리
 
@@ -18,9 +16,9 @@ const Cart = () => {
         const fetchAllProducts = async () => {
             const details = {};
             for (const item of cart) {
-                const productData = await fetchProduct(item.productId);
+                const productData = await fetchProduct(item.id);
                 if (productData) {
-                    details[item.productId] = productData;
+                    details[item.id] = productData;
                 }
             }
             setProductDetails(details);
@@ -30,15 +28,6 @@ const Cart = () => {
             fetchAllProducts();
         }
     }, [cart]);
-
-    const handleAddToCart = () => {
-        if (productId.trim() === '' || quantity < 1 || quantity > 20) return;
-        const newCart = {id: Date.now(), productId: productId, quantity: quantity};
-        addToCart(newCart);
-        setCart(getCart());
-        setProductId('');
-        setQuantity(1);
-    };
 
     const handleRemoveFromCart = (id) => {
         removeFromCart(id);
@@ -72,18 +61,17 @@ const Cart = () => {
     };
 
     const handleQuantityChange = (id, newQuantity) => {
-        const updatedCart = cart.map(item =>
-            item.id === id ? {...item, quantity: newQuantity} : item
-        );
-        setCart(updatedCart);
-        // 여기에 로컬 스토리지 업데이트 로직을 추가할 수 있습니다.
+        // cartStorage.js의 updateCartQuantity 함수 호출
+        updateCartQuantity(id, newQuantity);
+        // 로컬 스토리지에서 장바구니 업데이트 후 상태를 다시 가져옵니다.
+        setCart(getCart());
     };
 
     const cartCount = useCartCount(); // cart 상태를 인수로 전달
 
     const getTotalPrice = () => {
         return cart.reduce((total, item) => {
-            const price = productDetails[item.productId]?.price || 0;
+            const price = productDetails[item.id]?.price || 0;
             return total + price * item.quantity;
         }, 0);
     };
@@ -143,13 +131,13 @@ const Cart = () => {
                                         />
                                     </td>
                                     <td>
-                                        {productDetails[item.productId] ? (
+                                        {productDetails[item.id] ? (
                                             <div>
                                                 {/*<p style={{margin: `0`}}>{productDetails[item.productId].manufacturer}</p>*/}
                                                 <p style={{fontWeight: 'bold'}}>
-                                                    <Link to={`/product/${item.productId}`}
+                                                    <Link to={`/product/${item.id}`}
                                                           style={{textDecoration: 'none', color: 'inherit'}}>
-                                                        {productDetails[item.productId].productName}
+                                                        {productDetails[item.id].productName}
                                                     </Link>
                                                 </p>                                                <label
                                                 className="d-flex align-items-center"> {/* d-flex로 가로 정렬, align-items-center로 수직 중앙 정렬 */}
@@ -175,9 +163,9 @@ const Cart = () => {
                                         )}
                                     </td>
                                     <td>
-                                        {productDetails[item.productId] ? (
+                                        {productDetails[item.id] ? (
                                             <p>
-                                                {(productDetails[item.productId].price * item.quantity).toLocaleString()} 원
+                                                {(productDetails[item.id].price * item.quantity).toLocaleString()} 원
                                             </p>
                                         ) : (
                                             <p>상품 정보를 불러올 수 없습니다...</p>
