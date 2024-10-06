@@ -10,4 +10,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     List<Cart> findAllByUser_Email(String email);
 
     boolean existsCartByUser_IdAndProduct_Id(Long userId, Long productId);
+
+    Cart findByUser_IdAndProduct_Id(Long userId, Long productId);
 }
