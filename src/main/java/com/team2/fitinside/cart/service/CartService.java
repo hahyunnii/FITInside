@@ -5,7 +5,6 @@ import com.team2.fitinside.cart.dto.CartResponseDto;
 import com.team2.fitinside.cart.dto.CartResponseWrapperDto;
 import com.team2.fitinside.cart.dto.CartUpdateRequestDto;
 import com.team2.fitinside.cart.entity.Cart;
-import com.team2.fitinside.cart.exception.CartDuplicatedException;
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.cart.mapper.CartMapper;
 import com.team2.fitinside.cart.repository.CartRepository;
@@ -32,7 +31,7 @@ public class CartService {
     private final ProductRepository productRepository;
 
     // 장바구니 조회 메서드
-    public CartResponseWrapperDto findAllCarts() throws AccessDeniedException {
+    public CartResponseWrapperDto findAllCarts() {
 
         // user의 email 가져옴 + 권한검사
         String email = getAuthenticatedUserEmail();
@@ -45,8 +44,6 @@ public class CartService {
         // cart -> List<CartResponseDto>
         for (Cart cart : cartList) {
             CartResponseDto cartResponseDto = CartMapper.INSTANCE.toCartResponseDto(cart);
-            cartResponseDto.setProductName(cart.getProduct().getProductName());
-            cartResponseDto.setProductPrice(cart.getProduct().getPrice());
             dtos.add(cartResponseDto);
         }
 
@@ -56,12 +53,10 @@ public class CartService {
 
     // 장바구니 생성 메서드
     @Transactional
-    public void createCart(CartCreateRequestDto dto) throws AccessDeniedException {
+    public void createCart(CartCreateRequestDto dto) {
 
         // 수량 범위 체크 메서드 호출
         checkQuantity(dto.getQuantity());
-
-        Cart cart = CartMapper.INSTANCE.toEntity(dto);
 
         // user의 email 가져옴 + 권한검사
         String email = getAuthenticatedUserEmail();
@@ -69,13 +64,16 @@ public class CartService {
         // user 찾음
         User findUser = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
 
+        // 이미 같은 장바구니가 있다면 수정
+        if(cartRepository.existsCartByUser_IdAndProduct_Id(findUser.getId(), dto.getProductId())) {
+            cartRepository.findByUser_IdAndProduct_Id(findUser.getId(), dto.getProductId()).updateQuantity(dto.getQuantity());
+            return;
+        }
+
+        Cart cart = CartMapper.INSTANCE.toEntity(dto);
+
         // product 찾음
         Product findProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다!"));
-
-        // 이미 같은 장바구니가 있다면 예외 발생
-        if(cartRepository.existsCartByUser_IdAndProduct_Id(findUser.getId(), findProduct.getId())) {
-            throw new CartDuplicatedException("이미 존재하는 장바구니입니다!");
-        }
 
         // cart에 연관관계 설정
         cart.setUserAndProduct(findUser, findProduct);
@@ -126,7 +124,7 @@ public class CartService {
 
     // 장바구니 단일 삭제 메서드
     @Transactional
-    public void clearCart() throws AccessDeniedException {
+    public void clearCart() {
 
         // user의 email 가져옴 + 권한검사
         String email = getAuthenticatedUserEmail();
