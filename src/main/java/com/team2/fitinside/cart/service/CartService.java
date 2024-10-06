@@ -21,6 +21,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -54,17 +55,18 @@ public class CartService {
 
         checkQuantity(dto.getQuantity());
         String email = getAuthenticatedUserEmail();
-        User findUser = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
 
         // 이미 같은 장바구니가 있다면 수정
-        if(cartRepository.existsCartByUser_IdAndProduct_Id(findUser.getId(), dto.getProductId())) {
-            cartRepository.findByUser_IdAndProduct_Id(findUser.getId(), dto.getProductId()).updateQuantity(dto.getQuantity());
+        if(cartRepository.existsCartByUser_EmailAndProduct_Id(email, dto.getProductId())) {
+            Cart foundCart = cartRepository.findByUser_EmailAndProduct_Id(email, dto.getProductId()).orElse(null);
+            Objects.requireNonNull(foundCart).updateQuantity(dto.getQuantity());
             return;
         }
 
         Cart cart = CartMapper.INSTANCE.toEntity(dto);
-        Product findProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다!"));
-        cart.setUserAndProduct(findUser, findProduct);
+        Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다!"));
+        User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
+        cart.setUserAndProduct(foundUser, foundProduct);
 
         cartRepository.save(cart);
     }
@@ -75,7 +77,8 @@ public class CartService {
 
         String email = getAuthenticatedUserEmail();
         checkQuantity(dto.getQuantity());
-        Cart cart = cartRepository.findById(dto.getId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
+
+        Cart cart = cartRepository.findByUser_EmailAndProduct_Id(email, dto.getProductId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
 
         if(!email.equals(cart.getUser().getEmail())) {
             throw new AccessDeniedException("권한이 없습니다!");
@@ -88,10 +91,12 @@ public class CartService {
 
     // 장바구니 단일 삭제 메서드
     @Transactional
-    public void deleteCart(Long cartId) throws AccessDeniedException {
+    public void deleteCart(Long productId) throws AccessDeniedException {
 
         String email = getAuthenticatedUserEmail();
-        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
+
+        Cart cart = cartRepository.findByUser_EmailAndProduct_Id(email, productId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
+
         if(!email.equals(cart.getUser().getEmail())) {
             throw new AccessDeniedException("권한이 없습니다!");
         }
