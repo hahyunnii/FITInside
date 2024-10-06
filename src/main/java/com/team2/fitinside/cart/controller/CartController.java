@@ -48,11 +48,11 @@ public class CartController {
         }, "장바구니 수정 중 서버 에러 발생!");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCart(@PathVariable("id") Long id) {
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteCart(@PathVariable("productId") Long productId) {
 
         return callMethodAndHandleException(() -> {
-            cartService.deleteCart(id);
+            cartService.deleteCart(productId);
             return ResponseEntity.status(HttpStatus.OK).body("장바구니가 삭제되었습니다!");
         }, "장바구니 삭제 중 서버 에러 발생!");
     }
