@@ -2,6 +2,7 @@ package com.team2.fitinside.order.service;
 
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
+import com.team2.fitinside.cart.service.CartService;
 import com.team2.fitinside.order.common.OrderStatus;
 import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
@@ -28,8 +29,10 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
+    // 다른 모듈의 service를 이용하는 게 관심사 분리를 적합하게 한 것 (추후 수정)
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
 
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long userId, Long orderId) throws Exception {
@@ -95,12 +98,14 @@ public class OrderService {
 
             OrderProduct orderProduct = OrderProduct.builder()
                     .product(product)
+                    .orderProductName(product.getProductName())
                     .orderProductPrice(product.getPrice())
                     .count(cart.getQuantity())
                     .build();
 
             // 주문에 상품 추가 (총가격도 업데이트)
             order.addOrderProduct(orderProduct);
+            cartService.deleteCart(cart.getId());
         }
 
         // 주문 저장
