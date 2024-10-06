@@ -28,18 +28,19 @@ const ProductSection = () => {
         fetchProduct();
     }, [productId]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (product) {
             const cartItem = {
-                id: Date.now(), // 고유 ID 생성
-                productId: product.id, // 상품 ID
+                id: product.id, // 고유 ID : 상품 id
                 quantity: quantity, // 선택한 수량
             };
 
             // addToCart 호출 결과 체크
-            if (addToCart(cartItem)) {
+            const result = await addToCart(cartItem); // await를 사용하여 비동기 처리
+            if (result) {
                 alert(`${product.productName}이(가) 장바구니에 추가되었습니다.`);
             }
+
         }
 
         const moveToCart = window.confirm(`장바구니로 이동하시겠습니까?`);
