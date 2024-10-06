@@ -105,7 +105,7 @@ public class OrderService {
 
             // 주문에 상품 추가 (총가격도 업데이트)
             order.addOrderProduct(orderProduct);
-            cartService.deleteCart(cart.getId());
+            cartService.deleteCart(cart.getId()); // 로컬 스토리지도 삭제해야 함 나중에 확인!
         }
 
         // 주문 저장
