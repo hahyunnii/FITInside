@@ -57,7 +57,7 @@ public class CartController {
         }, "장바구니 삭제 중 서버 에러 발생!");
     }
 
-    @DeleteMapping("/clear")
+    @DeleteMapping
     public ResponseEntity<String> clearCart() {
 
         return callMethodAndHandleException(() -> {
