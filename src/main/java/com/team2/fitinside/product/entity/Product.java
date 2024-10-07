@@ -34,12 +34,17 @@ public class Product {
     @Column(name = "info", length = 500)
     private String info;
 
+    //재고수량
     @Column(name = "product_stock", nullable = false)
     private int stock;
 
-    // 판매자 아이디
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+//    // 판매자 아이디
+//    @Column(name = "user_id", nullable = false)
+//    private Long userId;
+
+    // 제조사
+    @Column(name = "manufacturer", length = 100)
+    private String manufacturer;
 
     // 카테고리와의 다대일 관계 (ManyToOne)
     @ManyToOne(fetch = FetchType.LAZY)
