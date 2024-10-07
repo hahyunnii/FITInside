@@ -1,7 +1,10 @@
 package com.team2.fitinside.category.service;
 
+import com.team2.fitinside.category.dto.CategoryCreateRequestDTO;
+import com.team2.fitinside.category.dto.CategoryResponseDTO;
+import com.team2.fitinside.category.dto.CategoryUpdateRequestDTO;
 import com.team2.fitinside.category.mapper.CategoryMapper;
-import com.team2.fitinside.category.dto.CategoryDTO;
+//import com.team2.fitinside.category.dto.CategoryDTO;
 import com.team2.fitinside.category.entity.Category;
 import com.team2.fitinside.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.team2.fitinside.category.mapper.CategoryMapper.toDTO;
+import static com.team2.fitinside.category.mapper.CategoryMapper.toCreateDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     // 카테고리 생성
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+    public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO) {
         Category category = Category.builder()
                 .name(categoryDTO.getName())
                 .displayOrder(categoryDTO.getDisplayOrder())
@@ -32,20 +34,20 @@ public class CategoryService {
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
-        return toDTO(savedCategory);
+        return toCreateDTO(savedCategory);
     }
 
     //======================================================================
     // 카테고리 조회
-    public List<CategoryDTO> getAllCategories() {
+    public List<CategoryResponseDTO> getAllCategories() {
         return categoryRepository.findAllByIsDeletedFalse()
                 .stream()
-                .map(CategoryMapper::toDTO)
+                .map(CategoryMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     //=======================================================================
-    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+    public CategoryUpdateRequestDTO updateCategory(Long id, CategoryUpdateRequestDTO categoryDTO) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Category not found"));
 
@@ -55,7 +57,7 @@ public class CategoryService {
         // 명시적 메서드로 필드 업데이트
         category.updateCategory(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory);
 
-        return CategoryMapper.toDTO(categoryRepository.save(category));
+        return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
 
     //===========================================================================

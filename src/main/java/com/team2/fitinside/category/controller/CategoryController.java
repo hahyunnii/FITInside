@@ -1,6 +1,9 @@
 package com.team2.fitinside.category.controller;
 
-import com.team2.fitinside.category.dto.CategoryDTO;
+import com.team2.fitinside.category.dto.CategoryCreateRequestDTO;
+//import com.team2.fitinside.category.dto.CategoryDTO;
+import com.team2.fitinside.category.dto.CategoryResponseDTO;
+import com.team2.fitinside.category.dto.CategoryUpdateRequestDTO;
 import com.team2.fitinside.category.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +23,17 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
-        CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
+    public ResponseEntity<CategoryCreateRequestDTO> createCategory(@RequestBody CategoryCreateRequestDTO categoryDTO) {
+        CategoryCreateRequestDTO createdCategory = categoryService.createCategory(categoryDTO);
         return ResponseEntity.ok(createdCategory);
     }
 
 
     // 모든 카테고리 조회
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         try {
-            List<CategoryDTO> categories = categoryService.getAllCategories();
+            List<CategoryResponseDTO> categories = categoryService.getAllCategories();
             return ResponseEntity.ok(categories);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 서버 오류 발생 시 500 응답
@@ -40,9 +43,9 @@ public class CategoryController {
 
     // 카테고리 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryUpdateRequestDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateRequestDTO categoryDTO) {
         try {
-            CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
+            CategoryUpdateRequestDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
             return ResponseEntity.ok(updatedCategory);
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 카테고리 미존재 시 404 응답
