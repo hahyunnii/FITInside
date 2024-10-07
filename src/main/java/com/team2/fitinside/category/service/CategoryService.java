@@ -47,7 +47,7 @@ public class CategoryService {
     //=======================================================================
     public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NoSuchElementException("Category not found"));
 
         Category parentCategory = categoryDTO.getParentId() != null ?
                 categoryRepository.findById(categoryDTO.getParentId()).orElse(null) : null;
