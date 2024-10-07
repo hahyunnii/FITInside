@@ -9,56 +9,47 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/{user_id}/orders/{order_id}")
-    public ResponseEntity<?> findOrder(
-            @PathVariable("user_id") Long userId,
-            @PathVariable("order_id") Long orderId) throws Exception {
-
-        OrderDetailResponseDto response = orderService.findOrder(userId, orderId);
+    @GetMapping("/{order_id}")
+    public ResponseEntity<?> findOrder(@PathVariable("order_id") Long orderId) throws AccessDeniedException {
+        OrderDetailResponseDto response = orderService.findOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/{user_id}/orders")
-    public ResponseEntity<?> findAllOrders(@PathVariable("user_id") Long userId) throws Exception {
-        List<OrderUserResponseDto> response = orderService.findAllOrders(userId);
+    @GetMapping
+    public ResponseEntity<?> findAllOrders() {
+        List<OrderUserResponseDto> response = orderService.findAllOrders();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{user_id}/orders")
-    public ResponseEntity<?> createOrder(
-            @PathVariable("user_id") Long userId,
-            @RequestBody OrderRequestDto request) throws Exception {
-
-        OrderDetailResponseDto response = orderService.createOrder(userId, request);
+    @PostMapping
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDto request) {
+        OrderDetailResponseDto response = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/{user_id}/orders/{order_id}")
+    @PatchMapping("/{order_id}")
     public ResponseEntity<?> updateOrder(
-            @PathVariable("user_id") Long userId,
             @PathVariable("order_id") Long orderId,
-            @RequestBody OrderRequestDto request) throws Exception {
+            @RequestBody OrderRequestDto request) throws AccessDeniedException {
 
-        OrderDetailResponseDto response = orderService.updateOrder(userId, orderId, request);
+        OrderDetailResponseDto response = orderService.updateOrder(orderId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/{user_id}/orders/{order_id}")
-    public ResponseEntity<?> cancelOrder(
-            @PathVariable("user_id") Long userId,
-            @PathVariable("order_id") Long orderId) throws Exception {
-
-        orderService.cancelOrder(userId, orderId);
-        return new ResponseEntity<>("주문 취소 완료. orderId: " + orderId, HttpStatus.OK);
+    @DeleteMapping("/{order_id}")
+    public ResponseEntity<?> cancelOrder(@PathVariable("order_id") Long orderId) throws AccessDeniedException {
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body("주문 취소 완료. orderId: " + orderId);
     }
 
 }
