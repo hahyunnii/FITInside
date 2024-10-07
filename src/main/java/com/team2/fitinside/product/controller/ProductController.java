@@ -41,10 +41,18 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "상품 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductCreateDto.class)))
     @ApiResponse(responseCode = "401", description = "카테고리가 존재하지 않습니다.", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "500", description = "DB 연결 에러", content = @Content(mediaType = "application/json"))
+
+//    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateDto productCreateDto) {
+//        ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
+//        return ResponseEntity.ok(createdProduct);
+//    }
+
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateDto productCreateDto) {
         ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
-        return ResponseEntity.ok(createdProduct);
+        // 리소스가 생성되었음을 알리는 201 Created 사용
+        return ResponseEntity.status(201).body(createdProduct);
     }
+
 
     // 상품 수정 (관리자 전용)
     @PutMapping("/admin/{id}")

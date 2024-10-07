@@ -63,8 +63,14 @@ public class Product {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductImg> productImgs;
+//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<ProductImg> productImgs;
+
+    // 이미지 ID 목록을 저장하는 필드
+    @ElementCollection
+    @CollectionTable(name = "product_img_ids", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "product_img_id")
+    private List<Long> productImgIds;
 
     @PrePersist
     public void prePersist() {
