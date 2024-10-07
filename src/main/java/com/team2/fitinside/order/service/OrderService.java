@@ -76,7 +76,7 @@ public class OrderService {
         Member findMember = memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 회원 장바구니 정보 가져오기
-        List<Cart> carts = cartRepository.findAllByMember_Email(findMember.getEmail());
+        List<Cart> carts = cartRepository.findAllByMember_Id(userId);
         if (carts.isEmpty()) {
             throw new CartEmptyException("장바구니가 비어 있습니다.");
         }
