@@ -28,6 +28,9 @@ public class OrderProduct {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(name = "order_product_name", nullable = false)
+    private String orderProductName;
+
     @Column(name = "order_product_price", nullable = false)
     private int orderProductPrice;
 

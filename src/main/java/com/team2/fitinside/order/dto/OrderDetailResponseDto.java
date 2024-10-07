@@ -17,7 +17,7 @@ public class OrderDetailResponseDto { // 주문 상세 확인 DTO
     private String deliveryAddress;
     private String deliveryReceiver;
     private String deliveryPhone;
-    private List<OrderProductResponseDto> orderProducts;
+    private List<Long> orderProductIds;
     private LocalDateTime createdAt;
 
 }
