@@ -21,7 +21,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler({OutOfStockException.class, OrderModificationNotAllowedException.class})
+    // 장바구니 범위 관련 커스텀 예외 추가
+    @ExceptionHandler({OutOfStockException.class, OrderModificationNotAllowedException.class,
+            CartOutOfRangeException.class, NoSuchElementException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
@@ -29,17 +31,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
-
-    // 장바구니 범위 관련 커스텀 예외
-    @ExceptionHandler(CartOutOfRangeException.class)
-    public ResponseEntity<String> handleCartOutOfRangeException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElementException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
