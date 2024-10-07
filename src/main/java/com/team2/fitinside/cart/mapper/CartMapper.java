@@ -13,7 +13,7 @@ public interface CartMapper {
 
     CartMapper INSTANCE = Mappers.getMapper(CartMapper.class);
 
-    @Mapping(target = "user", ignore = true) // user 필드 매핑 제외
+    @Mapping(target = "member", ignore = true) // user 필드 매핑 제외
     @Mapping(target = "product", ignore = true) // product 필드 매핑 제외
     Cart toEntity(CartCreateRequestDto cartCreateRequestDto);
 

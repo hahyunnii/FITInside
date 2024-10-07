@@ -1,7 +1,7 @@
 package com.team2.fitinside.cart.entity;
 
+import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.product.entity.Product;
-import com.team2.fitinside.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,8 +19,8 @@ public class Cart {
 
     // (단방향) 다대일 관계
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     // (단방향) 다대일 관계
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,8 +31,8 @@ public class Cart {
     @Column(nullable = false)
     private int quantity;
 
-    public void setUserAndProduct(User user, Product product) {
-        this.user = user;
+    public void setUserAndProduct(Member member, Product product) {
+        this.member = member;
         this.product = product;
     }
 
