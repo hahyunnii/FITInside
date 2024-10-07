@@ -100,11 +100,17 @@ export const clearCart = async () => {
 // 상품 데이터를 가져오는 함수
 export const fetchProduct = async (id) => {
     try {
-        const response = await fetch(`http://localhost:8080/api/products/${id}`);
+        const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+            method: `GET`,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         if (!response.ok) {
             throw new Error('네트워크 응답이 좋지 않습니다.');
         }
         const productData = await response.json();
+        console.log(productData);
         return productData;
     } catch (error) {
         console.error('상품 가져오기 오류:', error);
@@ -150,7 +156,6 @@ export const fetchAndMergeCartData = async (token) => {
 
 export const mergeCartData = async (fetchedCartData) => {
     const existingCartData = getCart(); // 로컬 스토리지에서 기존 장바구니 데이터 가져오기
-    console.log('existing : ', existingCartData);
 
     // fetchedCartData를 기준으로 병합
     const mergedData = fetchedCartData.map(fetchedItem => {
@@ -196,6 +201,7 @@ const updateDBWithDifferences = async (localCart) => {
             await fetch('http://localhost:8080/api/cart', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
@@ -231,6 +237,7 @@ const updateCartItem = async (item) => {
     await fetch('http://localhost:8080/api/cart', {
         method: 'PUT',
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
@@ -246,6 +253,7 @@ const deleteCartItem = async (item) => {
     await fetch(`http://localhost:8080/api/cart/${item.id}`, {
         method: 'DELETE',
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json',
         },
     });
