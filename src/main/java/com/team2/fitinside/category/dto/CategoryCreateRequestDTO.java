@@ -1,4 +1,5 @@
 package com.team2.fitinside.category.dto;
+
 import lombok.*;
 
 @Getter
@@ -6,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryDTO {
+public class CategoryCreateRequestDTO {
     private Long id;
     private String name;
     private Long displayOrder;
