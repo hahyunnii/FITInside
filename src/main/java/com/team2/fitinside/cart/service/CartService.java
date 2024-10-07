@@ -8,6 +8,7 @@ import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.cart.mapper.CartMapper;
 import com.team2.fitinside.cart.repository.CartRepository;
+import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
 import com.team2.fitinside.product.entity.Product;
@@ -32,12 +33,12 @@ public class CartService {
     private final ProductRepository productRepository;
 
     // 장바구니 조회 메서드
-    public CartResponseWrapperDto findAllCarts() {
+    public CartResponseWrapperDto findAllCarts() throws AccessDeniedException {
 
-        // member의 email 가져옴 + 권한검사
-        String email = getAuthenticatedMemberEmail();
+        // member의 id 가져옴 + 권한검사
+        Long loginMemberID = getAuthenticatedMemberId();
         List<CartResponseDto> dtos = new ArrayList<>();
-        List<Cart> cartList = cartRepository.findAllByMember_Email(email);
+        List<Cart> cartList = cartRepository.findAllByMember_Id(loginMemberID);
 
         // cart -> List<CartResponseDto>
         for (Cart cart : cartList) {
@@ -51,21 +52,22 @@ public class CartService {
 
     // 장바구니 생성 메서드
     @Transactional
-    public void createCart(CartCreateRequestDto dto) {
+    public void createCart(CartCreateRequestDto dto) throws AccessDeniedException {
 
         checkQuantity(dto.getQuantity());
-        String email = getAuthenticatedMemberEmail();
+
+        Long loginMemberID = getAuthenticatedMemberId();
 
         // 이미 같은 장바구니가 있다면 수정
-        if(cartRepository.existsCartByMember_EmailAndProduct_Id(email, dto.getProductId())) {
-            Cart foundCart = cartRepository.findByMember_EmailAndProduct_Id(email, dto.getProductId()).orElse(null);
+        if(cartRepository.existsCartByMember_IdAndProduct_Id(loginMemberID, dto.getProductId())) {
+            Cart foundCart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElse(null);
             Objects.requireNonNull(foundCart).updateQuantity(dto.getQuantity());
             return;
         }
 
         Cart cart = CartMapper.INSTANCE.toEntity(dto);
         Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다!"));
-        Member foundMember = memberRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
+        Member foundMember = memberRepository.findById(loginMemberID).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
         cart.setUserAndProduct(foundMember, foundProduct);
 
         cartRepository.save(cart);
@@ -75,12 +77,13 @@ public class CartService {
     @Transactional
     public void updateCart(CartUpdateRequestDto dto) throws AccessDeniedException{
 
-        String email = getAuthenticatedMemberEmail();
+        Long loginMemberID = getAuthenticatedMemberId();
+
         checkQuantity(dto.getQuantity());
 
-        Cart cart = cartRepository.findByMember_EmailAndProduct_Id(email, dto.getProductId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
+        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
 
-        if(!email.equals(cart.getMember().getEmail())) {
+        if(!loginMemberID.equals(cart.getMember().getId())) {
             throw new AccessDeniedException("권한이 없습니다!");
         }
 
@@ -93,11 +96,11 @@ public class CartService {
     @Transactional
     public void deleteCart(Long productId) throws AccessDeniedException {
 
-        String email = getAuthenticatedMemberEmail();
+        Long loginMemberID = getAuthenticatedMemberId();
 
-        Cart cart = cartRepository.findByMember_EmailAndProduct_Id(email, productId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
+        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
 
-        if(!email.equals(cart.getMember().getEmail())) {
+        if(!loginMemberID.equals(cart.getMember().getId())) {
             throw new AccessDeniedException("권한이 없습니다!");
         }
 
@@ -106,10 +109,11 @@ public class CartService {
 
     // 장바구니 단일 삭제 메서드
     @Transactional
-    public void clearCart() {
+    public void clearCart() throws AccessDeniedException {
 
-        String email = getAuthenticatedMemberEmail();
-        List<Cart> cartList = cartRepository.findAllByMember_Email(email);
+        Long loginMemberID = getAuthenticatedMemberId();
+
+        List<Cart> cartList = cartRepository.findAllByMember_Id(loginMemberID);
         cartRepository.deleteAll(cartList);
     }
 
@@ -121,7 +125,16 @@ public class CartService {
         }
     }
 
-    // TODO: CustomUserDetails 확인해야함!
+    // 사용자의 권환 확인 + memberId 가져오는 메서드
+    // 따로 분리한 이유 : RuntimeException이 아닌 AccessDeniedException 예외 처리 위해서
+    private Long getAuthenticatedMemberId() throws AccessDeniedException {
+        try {
+            return SecurityUtil.getCurrentMemberId();
+        } catch (RuntimeException e) {
+            throw new AccessDeniedException("권한이 없습니다!");
+        }
+    }
+
     // 사용자의 권환 확인 + 정보 가져오는 메서드
 //    private String getAuthenticatedUserEmail() throws AccessDeniedException {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -132,9 +145,4 @@ public class CartService {
 //        return userDetails.getUsername(); // getUsername()을 호출
 ////        return (CustomUserDetails) authentication.getPrincipal().getUserName();
 //    }
-
-    private String getAuthenticatedMemberEmail(){
-        return "person1@example.com";
-    }
-
 }
