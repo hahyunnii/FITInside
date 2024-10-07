@@ -1,6 +1,8 @@
 package com.team2.fitinside.global.exception;
 
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
+import com.team2.fitinside.category.exception.CategoryNotFoundException;
+import com.team2.fitinside.category.exception.InvalidCategoryException;
 import com.team2.fitinside.order.exception.CartEmptyException;
 import com.team2.fitinside.order.exception.OrderModificationNotAllowedException;
 import com.team2.fitinside.order.exception.OrderNotFoundException;
@@ -21,7 +23,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler({OutOfStockException.class, OrderModificationNotAllowedException.class})
+    // 장바구니 범위 관련 커스텀 예외 추가
+    @ExceptionHandler({OutOfStockException.class, OrderModificationNotAllowedException.class,
+            CartOutOfRangeException.class, NoSuchElementException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
@@ -31,20 +35,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    // 장바구니 범위 관련 커스텀 예외
-    @ExceptionHandler(CartOutOfRangeException.class)
-    public ResponseEntity<String> handleCartOutOfRangeException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElementException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidCategoryException.class)
+    public ResponseEntity<String> handleInvalidCategoryException(InvalidCategoryException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }
