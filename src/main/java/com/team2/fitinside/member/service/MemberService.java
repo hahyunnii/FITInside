@@ -3,6 +3,7 @@ package com.team2.fitinside.member.service;
 import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.entity.Member;
+import com.team2.fitinside.member.mapper.MemberMapper;
 import com.team2.fitinside.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,18 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberMapper memberMapper;
 
     public MemberResponseDto getMyInfoBySecurity() {
-        return memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberResponseDto::of)
+        Member me = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+        return memberMapper.memberToResponse(me);
     }
 
     @Transactional
     public MemberResponseDto changeMemberUserName(String email, String userName) {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
         member.setUserName(userName);
-        return MemberResponseDto.of(memberRepository.save(member));
+        return memberMapper.memberToResponse(memberRepository.save(member));
     }
 
     @Transactional
@@ -36,6 +38,6 @@ public class MemberService {
             throw new RuntimeException("비밀번호가 맞지 않습니다");
         }
         member.setPassword(passwordEncoder.encode((newPassword)));
-        return MemberResponseDto.of(memberRepository.save(member));
+        return memberMapper.memberToResponse(memberRepository.save(member));
     }
 }
