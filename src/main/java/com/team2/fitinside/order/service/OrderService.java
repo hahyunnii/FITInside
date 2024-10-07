@@ -3,8 +3,12 @@ package com.team2.fitinside.order.service;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
 import com.team2.fitinside.cart.service.CartService;
+import com.team2.fitinside.member.entity.Member;
+import com.team2.fitinside.member.repository.MemberRepository;
 import com.team2.fitinside.order.common.OrderStatus;
-import com.team2.fitinside.order.dto.*;
+import com.team2.fitinside.order.dto.OrderDetailResponseDto;
+import com.team2.fitinside.order.dto.OrderRequestDto;
+import com.team2.fitinside.order.dto.OrderUserResponseDto;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
 import com.team2.fitinside.order.exception.CartEmptyException;
@@ -14,8 +18,6 @@ import com.team2.fitinside.order.exception.OutOfStockException;
 import com.team2.fitinside.order.mapper.OrderMapper;
 import com.team2.fitinside.order.repository.OrderRepository;
 import com.team2.fitinside.product.entity.Product;
-import com.team2.fitinside.user.entity.User;
-import com.team2.fitinside.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
     // 다른 모듈의 service를 이용하는 게 관심사 분리를 적합하게 한 것 (추후 수정)
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final CartService cartService;
 
@@ -38,13 +40,13 @@ public class OrderService {
     public OrderDetailResponseDto findOrder(Long userId, Long orderId) throws Exception {
 
         // 회원 조회
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+        Member findMember = memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 주문 조회
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
 
         // 권한 확인 -> 추후 수정
-        if (!findOrder.getUser().getId().equals(userId)) {
+        if (!findOrder.getMember().getId().equals(userId)) {
             throw new Exception("해당 주문에 대한 권한이 없습니다.");
         }
 
@@ -55,10 +57,10 @@ public class OrderService {
     public List<OrderUserResponseDto> findAllOrders(Long userId) throws Exception {
 
         // 회원 조회
-        userRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+        memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 전체 주문 조회 (isDeleted=false)
-        List<Order> orders = orderRepository.findByUserId(userId).stream()
+        List<Order> orders = orderRepository.findByMemberId(userId).stream()
                 .filter(order -> !order.isDeleted())
                 .collect(Collectors.toList());
 
@@ -71,17 +73,17 @@ public class OrderService {
     public OrderDetailResponseDto createOrder(Long userId, OrderRequestDto request) throws Exception {
 
         // 회원 조회
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+        Member findMember = memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 회원 장바구니 정보 가져오기
-        List<Cart> carts = cartRepository.findAllByUser_Email(findUser.getEmail());
+        List<Cart> carts = cartRepository.findAllByMember_Email(findMember.getEmail());
         if (carts.isEmpty()) {
             throw new CartEmptyException("장바구니가 비어 있습니다.");
         }
 
         // 주문 생성
         Order order = Order.builder()
-                .user(findUser)
+                .member(findMember)
                 .deliveryFee(2500)  // 하드코딩.. 나중에 배송비 관련 로직 수정
                 .deliveryAddress(request.getDeliveryAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
@@ -92,7 +94,7 @@ public class OrderService {
         for (Cart cart : carts) {
             // 재고 확인
             Product product = cart.getProduct(); // 상품 정보
-            if(product.getStock() < cart.getQuantity()){
+            if (product.getStock() < cart.getQuantity()) {
                 throw new OutOfStockException("품절된 상품입니다. productId: " + product.getId());
             }
 
@@ -118,13 +120,13 @@ public class OrderService {
     public OrderDetailResponseDto updateOrder(Long userId, Long orderId, OrderRequestDto request) throws Exception {
 
         // 회원 조회
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+        Member findMember = memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 주문 조회
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
 
         // 권한 확인 -> 추후 수정
-        if (!findOrder.getUser().getId().equals(userId)) {
+        if (!findOrder.getMember().getId().equals(userId)) {
             throw new Exception("해당 주문에 대한 권한이 없습니다.");
         }
 
@@ -145,13 +147,13 @@ public class OrderService {
     public void cancelOrder(Long userId, Long orderId) throws Exception {
 
         // 회원 조회
-        User findUser = userRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+        Member findUser = memberRepository.findById(userId).orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
 
         // 주문 조회
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
 
         // 권한 확인 -> 추후 수정
-        if (!findOrder.getUser().getId().equals(userId)) {
+        if (!findOrder.getMember().getId().equals(userId)) {
             throw new Exception("해당 주문에 대한 권한이 없습니다.");
         }
 
