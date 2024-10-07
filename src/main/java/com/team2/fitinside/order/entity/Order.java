@@ -1,8 +1,8 @@
 package com.team2.fitinside.order.entity;
 
+import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.order.common.OrderStatus;
 import com.team2.fitinside.order.dto.OrderRequestDto;
-import com.team2.fitinside.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +30,8 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
@@ -62,7 +62,7 @@ public class Order {
     private boolean isDeleted = false;
 
     // 하나의 주문에 여러 상품이 있을 수 있음
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Builder.Default // 빌더 패턴에서 기본값 유지
     private List<OrderProduct> orderProducts = new ArrayList<>();
 

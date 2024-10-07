@@ -54,28 +54,28 @@ public class ProductService {
 
     // 상품 수정
     @Transactional
-    public ProductResponseDto updateProduct(ProductUpdateDto productUpdateDto) {
-        Product product = productRepository.findById(productUpdateDto.getId())
-                .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
+    public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto) {
+        productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
 
         // DTO -> 엔티티 매핑 (기존 필드 업데이트)
-        ProductMapper.INSTANCE.toEntity(productUpdateDto);
+        Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
 
         // 카테고리 ID로 카테고리 설정
         Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
                 .orElseThrow(() -> new NoSuchElementException("카테고리가 존재하지 않습니다."));
-        product.setCategory(category);
+        updatedProduct.setCategory(category);
 
-        Product updatedProduct = productRepository.save(product);
+        productRepository.save(updatedProduct);
         return ProductMapper.INSTANCE.toDto(updatedProduct);
     }
 
     // 상품 삭제 (soft delete)
     @Transactional
-    public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
+    public ProductResponseDto deleteProduct(Long id) {
+        Product deletedProduct = productRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다."));
-        product.setIsDeleted(true);
-        productRepository.save(product);
+        deletedProduct.setIsDeleted(true);
+        productRepository.save(deletedProduct);
+        return ProductMapper.INSTANCE.toDto(deletedProduct);
     }
 }
