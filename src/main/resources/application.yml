@@ -23,3 +23,6 @@ spring:
       hibernate:
         format_sql: true  # 쿼리 로그 포맷 (저렬)
         show_sql: true    # 쿼리 로그 출력
+
+jwt:
+  secret: 'KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0'
