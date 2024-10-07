@@ -133,7 +133,7 @@ const Cart = () => {
                                     <td>
                                         {productDetails[item.id] ? (
                                             <div>
-                                                {/*<p style={{margin: `0`}}>{productDetails[item.productId].manufacturer}</p>*/}
+                                                <p style={{margin: `0`}}>{productDetails[item.id].manufacturer}</p>
                                                 <p style={{fontWeight: 'bold'}}>
                                                     <Link to={`/product/${item.id}`}
                                                           style={{textDecoration: 'none', color: 'inherit'}}>
