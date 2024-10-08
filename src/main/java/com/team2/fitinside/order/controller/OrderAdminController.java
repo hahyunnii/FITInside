@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -19,7 +18,7 @@ public class OrderAdminController {
     private final OrderAdminService orderAdminService;
 
     @GetMapping
-    public ResponseEntity<?> findAllOrdersByAdmin() throws AccessDeniedException {
+    public ResponseEntity<?> findAllOrdersByAdmin() {
         List<OrderResponseDto> response = orderAdminService.findAllOrdersByAdmin();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -28,14 +27,14 @@ public class OrderAdminController {
     @PatchMapping("/{order_id}/status")
     public ResponseEntity<?> updateStatusOrder(
             @PathVariable("order_id") Long orderId,
-            @RequestBody OrderStatusUpdateRequestDto request) throws AccessDeniedException {
+            @RequestBody OrderStatusUpdateRequestDto request) {
 
         OrderResponseDto response = orderAdminService.updateOrderStatus(orderId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{order_id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable("order_id") Long orderId) throws AccessDeniedException {
+    public ResponseEntity<?> deleteOrder(@PathVariable("order_id") Long orderId) {
         orderAdminService.deleteOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body("주문 삭제 완료. orderId: " + orderId);
     }
