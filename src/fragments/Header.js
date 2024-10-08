@@ -44,8 +44,14 @@ const Header = () => {
                         </li>
                     </ul>
                     <div className="d-flex">
-                        <a className="btn btn-outline-dark" href="/cart"><i className="bi-cart-fill me-1"></i>                            Cart
-                            <span className="badge bg-dark text-white ms-1 rounded-pill">{cartCount}</span> {/* 장바구니 품목 개수 표시 */}
+                        <a className="btn btn-outline-dark" href="/cart"><i className="bi-cart-fill me-1"></i> Cart
+                            <span
+                                className="badge bg-dark text-white ms-1 rounded-pill">{cartCount}</span> {/* 장바구니 품목 개수 표시 */}
+                        </a>
+                    </div>
+                    <div className="d-flex m-3">
+                        <a className="btn btn-outline-dark" href="/login"><i className="bi-cart-fill me-1"></i>
+                            로그인
                         </a>
                     </div>
                 </div>

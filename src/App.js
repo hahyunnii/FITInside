@@ -5,6 +5,7 @@ import Home from "./Home";
 import Cart from "./cart/Cart";
 import Footer from "./fragments/Footer";
 import ProductSection from "./ProductSection";
+import Login from "./auth/Login";
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                 <main className="flex-grow-1">
                     <Routes>
                         <Route path="/" element={<Home />} /> {/* 홈 화면 */}
+                        <Route path="/login" element={<Login />} /> {/* login 화면 */}
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
                     </Routes>
