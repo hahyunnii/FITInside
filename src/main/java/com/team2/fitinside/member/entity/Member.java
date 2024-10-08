@@ -37,6 +37,10 @@ public class Member {
 
     public void setPassword(String password) { this.password = password; }
 
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public void setAuthority(Authority authority) { this.authority = authority; }
+
     @Builder
     public Member(Long id, String email, String password, String userName, String phone, Authority authority) {
         this.id = id;
