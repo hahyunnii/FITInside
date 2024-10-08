@@ -40,4 +40,11 @@ public class MemberService {
         member.setPassword(passwordEncoder.encode((newPassword)));
         return memberMapper.memberToResponse(memberRepository.save(member));
     }
+
+    @Transactional
+    public MemberResponseDto changeMemberPhone(String phone) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+        member.setPhone(phone);
+        return memberMapper.memberToResponse(memberRepository.save(member));
+    }
 }
