@@ -14,7 +14,7 @@ public class CategoryMapper {
         }
 
         return CategoryCreateRequestDTO.builder()
-                .id(category.getId())  // ID를 포함하지 않는 경우, 제거 가능
+                //.id(category.getId())
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
                 .isDeleted(category.getIsDeleted())

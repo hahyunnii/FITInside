@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CategoryCreateRequestDTO {
-    private Long id;
+    //private Long id;
     private String name;
     private Long displayOrder;
     private Boolean isDeleted;
