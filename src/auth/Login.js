@@ -1,11 +1,15 @@
 // src/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import {fetchAndMergeCartData} from "../cart/cartStorage";
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate(); // useNavigate 훅 사용
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,9 +23,13 @@ const Login = () => {
             if (response.status === 200) {
                 // 로그인 성공 시 처리 (예: 토큰 저장, 리다이렉트)
                 localStorage.setItem('token', response.data.accessToken);
+
+                // 로그인 성공 시 로컬 스토리지와 db 의 장바구니 병합
+                await fetchAndMergeCartData(localStorage.getItem('token'));
+
                 alert('로그인 성공!');
                 // 예: 대시보드 페이지로 이동
-                window.location.href = '/';
+                navigate('/');
             }
         } catch (error) {
             setError('로그인 실패: 이메일 또는 비밀번호를 확인해주세요.');
