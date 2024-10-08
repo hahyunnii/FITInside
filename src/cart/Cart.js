@@ -193,24 +193,29 @@ const Cart = () => {
                         </div>
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <p>배송비</p>
-                            {getTotalPrice() < 20000 ? (
+                            {cartCount === 0 ? (
+                                <p>0 원</p> // cartCount가 0일 때
+                            ) : getTotalPrice() < 20000 ? (
                                 <p>2,500 원</p>
                             ) : (
                                 <span>
-                                    <p style={{textDecoration: 'line-through'}}>2,500 원</p>
-                                    <p style={{marginLeft: '8px'}}>무료</p>
-                                </span>
+            <p style={{textDecoration: 'line-through'}}>2,500 원</p>
+            <p style={{marginLeft: '8px'}}>무료</p>
+        </span>
                             )}
 
                         </div>
                         <hr/>
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <strong>결제예정금액</strong>
-                            {getTotalPrice() < 20000 ? (
-                                <strong style={{color: '#B22222'}}>{(getTotalPrice()+2500).toLocaleString()} 원</strong>
+                            {cartCount === 0 ? (
+                                <strong style={{ color: '#B22222' }}>{getTotalPrice().toLocaleString()} 원</strong> // cartCount가 0일 때
+                            ) : getTotalPrice() < 20000 ? (
+                                <strong style={{ color: '#B22222' }}>{(getTotalPrice() + 2500).toLocaleString()} 원</strong>
                             ) : (
-                                <strong style={{color: '#B22222'}}>{getTotalPrice().toLocaleString()} 원</strong>
+                                <strong style={{ color: '#B22222' }}>{getTotalPrice().toLocaleString()} 원</strong>
                             )}
+
                         </div>
                         <div style={{display: 'flex', justifyContent: 'center'}}>
                             <div className="discount-container">
@@ -224,8 +229,19 @@ const Cart = () => {
                     <div style={{display: 'flex', justifyContent: 'center', margin: `10px 0`}}>
                         <a className="btn btn-light text-dark me-2 p-3" style={{border: '1px solid #ced4da'}} href="/">계속
                             쇼핑하기</a>
-                        <a className="btn btn-custom p-3" href="/">전체 주문하기</a>
+                        <a
+                            className="btn btn-custom p-3"
+                            href={cartCount > 0 ? "/" : "#"} // cartCount가 0일 때 링크를 비활성화
+                            onClick={cartCount === 0 ? (e) => e.preventDefault() : null} // cartCount가 0일 때 클릭 방지
+                            style={{
+                                pointerEvents: cartCount === 0 ? 'none' : 'auto',
+                                opacity: cartCount === 0 ? 0.5 : 1
+                            }} // 비활성화 스타일
+                        >
+                            전체 주문하기
+                        </a>
                     </div>
+
                 </div>
             </div>
         </div>
