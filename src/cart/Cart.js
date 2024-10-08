@@ -193,12 +193,24 @@ const Cart = () => {
                         </div>
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <p>배송비</p>
-                            <p>무료</p>
+                            {getTotalPrice() < 20000 ? (
+                                <p>2,500 원</p>
+                            ) : (
+                                <span>
+                                    <p style={{textDecoration: 'line-through'}}>2,500 원</p>
+                                    <p style={{marginLeft: '8px'}}>무료</p>
+                                </span>
+                            )}
+
                         </div>
                         <hr/>
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <strong>결제예정금액</strong>
-                            <strong style={{color: '#B22222'}}>{getTotalPrice().toLocaleString()} 원</strong>
+                            {getTotalPrice() < 20000 ? (
+                                <strong style={{color: '#B22222'}}>{(getTotalPrice()+2500).toLocaleString()} 원</strong>
+                            ) : (
+                                <strong style={{color: '#B22222'}}>{getTotalPrice().toLocaleString()} 원</strong>
+                            )}
                         </div>
                         <div style={{display: 'flex', justifyContent: 'center'}}>
                             <div className="discount-container">
