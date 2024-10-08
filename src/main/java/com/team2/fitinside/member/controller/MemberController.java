@@ -15,6 +15,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    // 유저 개인 정보 가져오기
     @GetMapping("/me")
     public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
         MemberResponseDto myInfoBySecurity = memberService.getMyInfoBySecurity();
@@ -23,14 +24,22 @@ public class MemberController {
         // return ResponseEntity.ok(memberService.getMyInfoBySecurity());
     }
 
-    @PostMapping("/username")
+    // 유저 이름 변경
+    @PutMapping("/username")
     public ResponseEntity<MemberResponseDto> setMemberUserName(@RequestBody MemberRequestDto request) {
-        return ResponseEntity.ok(memberService.changeMemberUserName(request.getEmail(), request.getUserName()));
+        return ResponseEntity.ok(memberService.changeMemberUserName(request.getUserName()));
     }
 
-    @PostMapping("/password")
+    // 유저 비밀번호 변경
+    @PutMapping("/password")
     public ResponseEntity<MemberResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
+    }
+
+    // 유저 전화번호 변경
+    @PutMapping("/phone")
+    public ResponseEntity<MemberResponseDto> setMemberPhone(@RequestBody MemberRequestDto request) {
+        return ResponseEntity.ok(memberService.changeMemberPhone(request.getPhone()));
     }
 
 }
