@@ -18,7 +18,7 @@ const Login = () => {
 
             if (response.status === 200) {
                 // 로그인 성공 시 처리 (예: 토큰 저장, 리다이렉트)
-                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('token', response.data.accessToken);
                 alert('로그인 성공!');
                 // 예: 대시보드 페이지로 이동
                 window.location.href = '/';
