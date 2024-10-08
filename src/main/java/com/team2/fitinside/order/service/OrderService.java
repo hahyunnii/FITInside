@@ -76,7 +76,6 @@ public class OrderService {
         // 주문 생성
         Order order = Order.builder()
                 .member(findMember)
-                .deliveryFee(2500)  // 하드코딩.. 나중에 배송비 관련 로직 수정
                 .deliveryAddress(request.getDeliveryAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
                 .deliveryPhone(request.getDeliveryPhone())
@@ -102,6 +101,7 @@ public class OrderService {
         }
 
         // 주문(+주문상품) 저장
+        order.calculateDeliveryFee();
         Order createdOrder = orderRepository.save(order);
         return orderMapper.toOrderDetailResponseDto(createdOrder);
     }

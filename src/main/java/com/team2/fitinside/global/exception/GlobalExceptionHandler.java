@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({IllegalStateException.class, Exception.class})
     public ResponseEntity<String> handleGeneralException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
     }
