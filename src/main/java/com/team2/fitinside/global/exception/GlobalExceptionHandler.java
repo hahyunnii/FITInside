@@ -9,6 +9,7 @@ import com.team2.fitinside.order.exception.OrderNotFoundException;
 import com.team2.fitinside.order.exception.OutOfStockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -49,5 +50,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidCategoryException(InvalidCategoryException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationCredentialsNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다: " + e.getMessage());
+    }
+
 
 }
