@@ -6,6 +6,7 @@ import Cart from "./cart/Cart";
 import Footer from "./fragments/Footer";
 import ProductSection from "./ProductSection";
 import Login from "./auth/Login";
+import Signup from "./auth/Signup";
 
 const App = () => {
     return (
@@ -16,6 +17,7 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<Home />} /> {/* 홈 화면 */}
                         <Route path="/login" element={<Login />} /> {/* login 화면 */}
+                        <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
                     </Routes>
