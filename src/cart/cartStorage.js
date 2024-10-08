@@ -120,7 +120,7 @@ export const fetchProduct = async (id) => {
 
 export const fetchAndMergeCartData = async (token) => {
     try {
-        const response = await fetch('http://localhost:8080/api/cart', {
+        const response = await fetch('http://localhost:8080/api/carts', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
@@ -144,13 +144,13 @@ export const fetchAndMergeCartData = async (token) => {
                 const mergedCartData = mergeCartData(fetchedCartData);
                 console.log('장바구니 데이터:', mergedCartData);
             } else {
-                console.error('장바구니 데이터 형식이 잘못되었습니다:', fetchedCartData);
+                throw new Error('장바구니 데이터 형식 오류');
             }
         } else {
-            console.error('장바구니 데이터 가져오기 실패:', response.status);
+            throw new Error(`API 응답 오류: ${response.status}`);
         }
     } catch (error) {
-        console.error('장바구니 요청 에러:', error);
+        throw error; // 호출한 쪽으로 에러를 던짐
     }
 };
 
@@ -198,7 +198,7 @@ const updateDBWithDifferences = async (localCart) => {
                 quantity: item.quantity,
             };
 
-            await fetch('http://localhost:8080/api/cart', {
+            await fetch('http://localhost:8080/api/carts', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -234,7 +234,7 @@ const updateCartItem = async (item) => {
         quantity: item.quantity,
     };
 
-    await fetch('http://localhost:8080/api/cart', {
+    await fetch('http://localhost:8080/api/carts', {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -250,7 +250,7 @@ const deleteCartItem = async (item) => {
 
     if(localStorage.getItem('token') === null) return;
 
-    await fetch(`http://localhost:8080/api/cart/${item.id}`, {
+    await fetch(`http://localhost:8080/api/carts/${item.id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -263,7 +263,7 @@ const deleteCartItem = async (item) => {
 
 export const clearCartItem = async (token) => {
     // 1. 장바구니 초기화 요청 (DELETE)
-    const deleteResponse = await fetch('http://localhost:8080/api/cart', {
+    const deleteResponse = await fetch('http://localhost:8080/api/carts', {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
