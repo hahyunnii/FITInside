@@ -1,10 +1,30 @@
 // Header.js
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './header.css';
 import { useCartCount } from '../cart/cartStorage';
+import {useNavigate} from "react-router-dom";
 
 const Header = () => {
     const cartCount = useCartCount();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate(); // useNavigate 훅 사용
+
+    // 로그인 상태 확인
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, [navigate]);
+
+    // 로그아웃 함수
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        navigate('/'); // 로그인 페이지로 리다이렉트
+    };
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -43,6 +63,13 @@ const Header = () => {
                             </ul>
                         </li>
                     </ul>
+                    <div className="d-flex m-3">
+                        {isLoggedIn ? (
+                            <a className="btn btn-outline-dark" href="/me">
+                                MY
+                            </a>
+                        ) : (<div></div>)}
+                    </div>
                     <div className="d-flex">
                         <a className="btn btn-outline-dark" href="/cart"><i className="bi-cart-fill me-1"></i> Cart
                             <span
@@ -50,9 +77,15 @@ const Header = () => {
                         </a>
                     </div>
                     <div className="d-flex m-3">
-                        <a className="btn btn-outline-dark" href="/login"><i className="bi-cart-fill me-1"></i>
-                            로그인
-                        </a>
+                        {isLoggedIn ? (
+                            <button className="btn btn-outline-dark" onClick={handleLogout}>
+                                <i className="bi-cart-fill me-1"></i> 로그아웃
+                            </button>
+                        ) : (
+                            <a className="btn btn-outline-dark" href="/login">
+                                <i className="bi-cart-fill me-1"></i> 로그인
+                            </a>
+                        )}
                     </div>
                 </div>
             </div>

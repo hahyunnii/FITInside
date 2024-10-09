@@ -40,58 +40,93 @@ const Signup = () => {
     };
 
     return (
-        <div>
-            <h2>회원가입</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>이메일:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>비밀번호:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>비밀번호 확인:</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>이름:</label>
-                    <input
-                        type="text"
-                        value={userName}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>전화번호:</label>
-                    <input
-                        type="phone"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                    />
-                </div>
-                {error && <p style={{color: 'red'}}>{error}</p>}
-                {success && <p style={{color: 'green'}}>{success}</p>}
-                <button type="submit">회원가입</button>
-            </form>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <div className="card p-4" style={{width: '35rem'}}>
+                <h2 className="text-center mb-4">회원가입</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">
+                            이메일
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            className="form-control"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">
+                            비밀번호
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            className="form-control"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="confirmPassword" className="form-label">
+                            비밀번호 확인
+                        </label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            className="form-control"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="name" className="form-label">
+                            이름
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            className="form-control"
+                            value={userName}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="phone" className="form-label">
+                            전화번호
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            className="form-control"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {error && <p className="text-danger">{error}</p>}
+                    {success && <p className="text-success">{success}</p>}
+                    <div className="d-flex justify-content-center">
+                        <button
+                            type="submit"
+                            className="btn"
+                            style={{backgroundColor: '#333', color: '#fff'}}
+                        >
+                            회원가입
+                        </button>
+                    </div>
+                    <div className="text-center mt-3">
+                        <a href="/login" className="text-decoration-none">
+                            이미 계정이 있으신가요? 로그인
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
