@@ -4,8 +4,8 @@ import com.team2.fitinside.product.dto.ProductCreateDto;
 import com.team2.fitinside.product.dto.ProductResponseDto;
 import com.team2.fitinside.product.dto.ProductUpdateDto;
 import com.team2.fitinside.product.entity.Product;
-import com.team2.fitinside.product.exception.CustomException;
-import com.team2.fitinside.product.exception.ErrorCode;
+import com.team2.fitinside.global.exception.exception.CustomException;
+import com.team2.fitinside.global.exception.exception.ErrorCode;
 import com.team2.fitinside.product.mapper.ProductMapper;
 import com.team2.fitinside.product.repository.ProductRepository;
 import com.team2.fitinside.category.repository.CategoryRepository;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service

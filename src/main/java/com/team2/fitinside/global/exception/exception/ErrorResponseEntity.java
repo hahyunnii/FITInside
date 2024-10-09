@@ -1,4 +1,4 @@
-package com.team2.fitinside.product.exception;
+package com.team2.fitinside.global.exception.exception;
 
 import lombok.Builder;
 import lombok.Data;
