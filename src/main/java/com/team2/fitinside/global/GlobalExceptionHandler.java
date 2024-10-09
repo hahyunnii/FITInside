@@ -41,15 +41,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
     }
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(InvalidCategoryException.class)
-    public ResponseEntity<String> handleInvalidCategoryException(InvalidCategoryException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(CategoryNotFoundException.class)
+//    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+//    }
+//
+//    @ExceptionHandler(InvalidCategoryException.class)
+//    public ResponseEntity<String> handleInvalidCategoryException(InvalidCategoryException ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+//    }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     public ResponseEntity<String> handleAuthenticationException(AuthenticationCredentialsNotFoundException e) {
