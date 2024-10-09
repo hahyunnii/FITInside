@@ -1,7 +1,7 @@
 package com.team2.fitinside.member.service;
 
-import com.team2.fitinside.global.exception.exception.CustomException;
-import com.team2.fitinside.global.exception.exception.ErrorCode;
+import com.team2.fitinside.global.exception.CustomException;
+import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.dto.TokenDto;
