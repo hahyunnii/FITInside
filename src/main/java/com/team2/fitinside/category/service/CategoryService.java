@@ -4,7 +4,6 @@ import com.team2.fitinside.category.dto.CategoryCreateRequestDTO;
 import com.team2.fitinside.category.dto.CategoryResponseDTO;
 import com.team2.fitinside.category.dto.CategoryUpdateRequestDTO;
 import com.team2.fitinside.category.mapper.CategoryMapper;
-//import com.team2.fitinside.category.dto.CategoryDTO;
 import com.team2.fitinside.category.entity.Category;
 import com.team2.fitinside.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
