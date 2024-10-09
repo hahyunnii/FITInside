@@ -1,5 +1,7 @@
 package com.team2.fitinside.member.service;
 
+import com.team2.fitinside.global.exception.exception.CustomException;
+import com.team2.fitinside.global.exception.exception.ErrorCode;
 import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.dto.TokenDto;
@@ -26,7 +28,7 @@ public class AuthService {
 
     public MemberResponseDto signup(MemberRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
         Member member = memberMapper.requestToMember(requestDto);
