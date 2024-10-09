@@ -1,8 +1,6 @@
 package com.team2.fitinside.global;
 
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
-import com.team2.fitinside.category.exception.CategoryNotFoundException;
-import com.team2.fitinside.category.exception.InvalidCategoryException;
 import com.team2.fitinside.order.exception.CartEmptyException;
 import com.team2.fitinside.order.exception.OrderModificationNotAllowedException;
 import com.team2.fitinside.order.exception.OrderNotFoundException;
@@ -36,7 +34,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    @ExceptionHandler({IllegalStateException.class, Exception.class})
+    @ExceptionHandler({IllegalStateException.class})
     public ResponseEntity<String> handleGeneralException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
     }
