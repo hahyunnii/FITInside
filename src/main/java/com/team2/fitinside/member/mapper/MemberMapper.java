@@ -2,7 +2,6 @@ package com.team2.fitinside.member.mapper;
 
 import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
-import com.team2.fitinside.member.entity.Authority;
 import com.team2.fitinside.member.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
