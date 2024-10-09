@@ -37,30 +37,47 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>로그인</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>이메일:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>비밀번호:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">로그인</button>
-            </form>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <div className="card p-4" style={{width: '25rem'}}>
+                <h2 className="text-center mb-4">로그인</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">
+                            이메일
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            className="form-control"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">
+                            비밀번호
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            className="form-control"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {error && <p className="text-danger">{error}</p>}
+                    <button type="submit" className="btn w-100" style={{backgroundColor: '#333', color: '#fff'}}>
+                        로그인
+                    </button>
+                    <div className="d-flex justify-content-center mt-3">
+                        <a href="/signup" className="text-decoration-none">
+                            처음 오셨나요?
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
