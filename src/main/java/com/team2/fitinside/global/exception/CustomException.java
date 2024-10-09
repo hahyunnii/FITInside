@@ -1,4 +1,4 @@
-package com.team2.fitinside.global.exception.exception;
+package com.team2.fitinside.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

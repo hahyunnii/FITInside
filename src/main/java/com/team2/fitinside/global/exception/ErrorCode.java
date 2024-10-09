@@ -1,4 +1,4 @@
-package com.team2.fitinside.global.exception.exception;
+package com.team2.fitinside.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,9 +41,9 @@ public enum ErrorCode {
     PLACE_DELETED(HttpStatus.GONE, "삭제된 장소입니다"),
 
     /* 500 INTERNAL_SERVER_ERROR : 서버 내부 에러 */
-//    IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 중 입출력 오류가 발생했습니다."),
-//    PUT_OBJECT_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3에 객체를 업로드하는 중 예외가 발생했습니다."),
-//    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제 중 입출력 오류가 발생했습니다."),
+    IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 중 입출력 오류가 발생했습니다."),
+    PUT_OBJECT_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3에 객체를 업로드하는 중 예외가 발생했습니다."),
+    IO_EXCEPTION_ON_IMAGE_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 삭제 중 입출력 오류가 발생했습니다."),
     PRODUCT_LIST_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 목록 조회 중 서버 에러 발생!"),
     PRODUCT_DETAIL_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 상세 조회 중 서버 에러 발생!"),
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
