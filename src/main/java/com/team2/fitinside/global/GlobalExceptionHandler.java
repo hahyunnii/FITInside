@@ -1,4 +1,4 @@
-package com.team2.fitinside.global.exception;
+package com.team2.fitinside.global;
 
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.category.exception.CategoryNotFoundException;

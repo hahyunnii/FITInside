@@ -1,6 +1,10 @@
 spring:
   application:
     name: fitinside
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
 
   # H2 DB 설정
   datasource:
@@ -26,3 +30,15 @@ spring:
 
 jwt:
   secret: 'KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0'
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAZI2LDLMW2DIHF6RH
+      secretKey: 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
+    s3:
+      bucketName: fitinside
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
