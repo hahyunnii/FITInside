@@ -48,7 +48,12 @@ public enum ErrorCode {
     PRODUCT_DETAIL_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 상세 조회 중 서버 에러 발생!"),
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
     PRODUCT_UPDATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 수정 중 서버 에러 발생!"),
-    PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!")
+    PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!"),
+
+    /* 400 BAD_REQUEST : 잘못된 요청 */
+    INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
+    /* 410 GONE : 리소스가 삭제된 상태 */
+    CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;
 
     private final HttpStatus httpStatus;
