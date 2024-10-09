@@ -5,6 +5,7 @@ import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,12 @@ public class MemberController {
     @PutMapping("/phone")
     public ResponseEntity<MemberResponseDto> setMemberPhone(@RequestBody MemberRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberPhone(request.getPhone()));
+    }
+
+    // 유저 탈퇴
+    @DeleteMapping("/delete")
+    public ResponseEntity<MemberResponseDto> deleteMember() {
+        return ResponseEntity.ok(memberService.deleteMember());
     }
 
 }
