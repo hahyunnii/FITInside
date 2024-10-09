@@ -16,6 +16,8 @@ public enum ErrorCode {
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "허용되지 않는 파일 확장자입니다."),
     AUTH_CODE_EXTENSION(HttpStatus.BAD_REQUEST, "로그인을 실패하였습니다(임시)"),
     INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
+    INVALID_COUPON_DATA(HttpStatus.BAD_REQUEST, "쿠폰 정보가 유효하지 않습니다."),
+    INVALID_COUPON_CREATE_DATA(HttpStatus.BAD_REQUEST, "쿠폰 생성 정보가 유효하지 않습니다."),
 
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
@@ -31,10 +33,13 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다."),
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
+    DUPLICATE_COUPON(HttpStatus.CONFLICT, "쿠폰 등록 이력이 존재합니다."),
+
 
     /* 410 : GONE : 리소스가 더 이상 유효하지 않음 */
     USER_ALREADY_DELETED(HttpStatus.GONE, "탈퇴된 사용자입니다."),
