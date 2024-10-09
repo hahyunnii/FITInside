@@ -15,15 +15,8 @@ public interface OrderMapper {
 
     // Order -> OrderDetailResponseDto 변환 (주문 생성 후 반환 시 사용)
     @Mapping(source = "id", target = "orderId")
-    @Mapping(source = "orderProducts", target="orderProductIds", qualifiedByName = "orderProductIds") // 복합 객체나 리스트는 매핑 시 명시적 선언 필요
+    @Mapping(source = "orderProducts", target="orderProducts") // 복합 객체나 리스트는 매핑 시 명시적 선언(자동 변환)
     OrderDetailResponseDto toOrderDetailResponseDto(Order order);
-
-    @Named("orderProductIds")
-    default List<Long> mapOrderProductIds(List<OrderProduct> orderProducts){
-        return orderProducts.stream()
-                .map(OrderProduct::getId)
-                .collect(Collectors.toList());
-    }
 
     // Order -> OrderResponseDto 변환 (주문 상태 변경 시 사용)
     @Mapping(source = "id", target = "orderId")
