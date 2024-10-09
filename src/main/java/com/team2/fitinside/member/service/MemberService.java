@@ -48,10 +48,17 @@ public class MemberService {
         return memberMapper.memberToResponse(memberRepository.save(member));
     }
 
+//    @Transactional
+//    public MemberResponseDto deleteMember(){
+//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
+//        member.setIsDeleted(true);
+//        return memberMapper.memberToResponse(memberRepository.save(member));
+//    }
+
     @Transactional
     public MemberResponseDto deleteMember(){
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
-        member.setIsDeleted(true);
-        return memberMapper.memberToResponse(memberRepository.save(member));
+        memberRepository.delete(member);
+        return memberMapper.memberToResponse(member);
     }
 }
