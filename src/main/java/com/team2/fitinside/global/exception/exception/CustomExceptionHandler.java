@@ -1,4 +1,4 @@
-package com.team2.fitinside.product.exception;
+package com.team2.fitinside.global.exception.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

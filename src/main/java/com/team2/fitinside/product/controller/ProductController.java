@@ -35,7 +35,7 @@ public class ProductController {
     @Operation(summary = "상품 상세 조회", description = "상품의 상세 정보를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "상품 상세 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
     @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable("id") Long id) {
         ProductResponseDto product = productService.findProductById(id);
         return ResponseEntity.ok(product);
     }
