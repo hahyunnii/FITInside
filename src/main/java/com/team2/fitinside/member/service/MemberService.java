@@ -1,8 +1,8 @@
 package com.team2.fitinside.member.service;
 
 import com.team2.fitinside.config.SecurityUtil;
-import com.team2.fitinside.global.exception.exception.CustomException;
-import com.team2.fitinside.global.exception.exception.ErrorCode;
+import com.team2.fitinside.global.exception.CustomException;
+import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.mapper.MemberMapper;
