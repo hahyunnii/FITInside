@@ -37,6 +37,12 @@ public class AuthService {
     }
 
     public TokenDto login(MemberRequestDto requestDto) {
+
+        // 비밀번호 미 입력 시
+        if(requestDto.getPassword() == null || requestDto.getPassword().isEmpty()) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
