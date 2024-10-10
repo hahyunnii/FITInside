@@ -1,7 +1,5 @@
 package com.team2.fitinside.coupon.service;
 
-import com.team2.fitinside.cart.dto.CartResponseDto;
-import com.team2.fitinside.cart.mapper.CartMapper;
 import com.team2.fitinside.category.entity.Category;
 import com.team2.fitinside.category.repository.CategoryRepository;
 import com.team2.fitinside.config.SecurityUtil;
@@ -27,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -73,8 +71,11 @@ public class CouponAdminService {
             dtos.add(couponResponseDto);
         }
 
+        // 총 페이지 수
+        int totalPages = (coupons.getTotalPages()==0 ? 1 : coupons.getTotalPages());
+
         // 성공메시지 + List<CouponResponseDto> -> CouponResponseWrapperDto 반환
-        return new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos);
+        return new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos, totalPages);
     }
 
     // 쿠폰 보유한 회원 목록 조회
@@ -86,13 +87,16 @@ public class CouponAdminService {
 
         Page<CouponMember> couponMembers = couponMemberRepository.findByCoupon_Id(pageRequest, couponId);
 
-        List<CouponMemberResponseDto> dtos = new ArrayList<>();
-        for (CouponMember couponMember : couponMembers) {
-            dtos.add(CouponMapper.INSTANCE.toCouponMemberResponseDto(couponMember.getMember()));
-        }
+        // CouponMember를 CouponMemberResponseDto로 변환
+        List<CouponMemberResponseDto> dtos = couponMembers.stream()
+                .map(couponMember -> CouponMapper.INSTANCE.toCouponMemberResponseDto(couponMember.getMember()))
+                .collect(Collectors.toList());
+
+        // 총 페이지 수
+        int totalPages = (couponMembers.getTotalPages()==0 ? 1 : couponMembers.getTotalPages());
 
         // 성공메시지 + List<CouponMemberResponseDto> -> CouponMemberResponseWrapperDto 반환
-        return new CouponMemberResponseWrapperDto("쿠폰 보유 회원 조회 완료했습니다!", dtos);
+        return new CouponMemberResponseWrapperDto("쿠폰 보유 회원 조회 완료했습니다!", dtos, totalPages);
     }
 
     @Transactional
