@@ -129,7 +129,6 @@ public class CouponAdminService {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
 
-        System.out.println("memberRepository = " + memberRepository.findById(currentMemberId).get().getAuthority());
         Member member = memberRepository.findById(currentMemberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(member.getAuthority()!= Authority.ROLE_ADMIN) {
