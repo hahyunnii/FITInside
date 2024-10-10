@@ -1,5 +1,7 @@
 package com.team2.fitinside.member.service;
 
+import com.team2.fitinside.global.exception.CustomException;
+import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws CustomException {
         return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException(username + " 을 DB에서 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     private UserDetails createUserDetails(Member member) {

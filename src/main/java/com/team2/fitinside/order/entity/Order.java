@@ -100,5 +100,9 @@ public class Order {
         this.deliveryPhone = request.getDeliveryPhone();
     }
 
+    public void calculateDeliveryFee() {
+        this.deliveryFee = (this.totalPrice >= 20000) ? 0 : 2500;
+    }
+
 
 }

@@ -1,6 +1,5 @@
 package com.team2.fitinside.order.dto;
 
-import com.team2.fitinside.order.common.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 

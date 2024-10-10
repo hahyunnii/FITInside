@@ -24,6 +24,8 @@ public class ProductResponseDto {
 
     private Long categoryId;         // 카테고리 ID
 
+    private String manufacturer;
+
     private boolean isDeleted;       // 삭제 상태
 
     private LocalDateTime createdAt; // 생성 시간

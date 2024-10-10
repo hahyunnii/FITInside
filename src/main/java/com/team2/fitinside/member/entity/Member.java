@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
+@Where(clause = "is_deleted = false")
 public class Member {
 
     @Id
@@ -31,6 +35,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    private boolean isDeleted;
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -41,13 +47,17 @@ public class Member {
 
     public void setAuthority(Authority authority) { this.authority = authority; }
 
+    public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
+
+
     @Builder
-    public Member(Long id, String email, String password, String userName, String phone, Authority authority) {
+    public Member(Long id, String email, String password, String userName, String phone, Authority authority, boolean isDeleted) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.userName = userName;
         this.phone = phone;
         this.authority = authority;
+        this.isDeleted = isDeleted;
     }
 }
