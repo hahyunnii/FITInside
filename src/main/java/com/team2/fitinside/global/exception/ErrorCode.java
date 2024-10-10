@@ -18,6 +18,8 @@ public enum ErrorCode {
     INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
     INVALID_COUPON_DATA(HttpStatus.BAD_REQUEST, "쿠폰 정보가 유효하지 않습니다."),
     INVALID_COUPON_CREATE_DATA(HttpStatus.BAD_REQUEST, "쿠폰 생성 정보가 유효하지 않습니다."),
+    OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "현재 주문 가능한 상품의 개수를 초과했습니다."),
+    ORDER_MODIFICATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "배송이 시작된 주문은 수정할 수 없습니다."),
 
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
@@ -34,6 +36,8 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다."),
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    CART_EMPTY(HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
