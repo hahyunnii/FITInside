@@ -23,13 +23,11 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String userName;
 
-    @Column(nullable = false)
     private String phone;
 
     @Enumerated(EnumType.STRING)

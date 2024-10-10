@@ -26,10 +26,9 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
     private final Key key;
-
-
 
 
     // 주의점: 여기서 @Value는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
@@ -40,32 +39,38 @@ public class TokenProvider {
     }
 
 
-    // 토큰 생성
+    // 토큰DTO 생성
     public TokenDto generateTokenDto(Authentication authentication) {
-
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        long now = (new Date()).getTime();
-
-
-        Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-
-        System.out.println(tokenExpiresIn);
-
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .setExpiration(tokenExpiresIn)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
-
+        String accessToken = generateAccessToken(authentication);
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
-                .tokenExpiresIn(tokenExpiresIn.getTime())
                 .build();
+    }
+
+    public String generateAccessToken(Authentication authentication) {
+        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+    }
+
+    // 1. refresh token 발급
+    public String generateRefreshToken(Authentication authentication, String accessToken) {
+        return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
+    }
+
+    private String generateToken(Authentication authentication, long expireTime) {
+        Date now = new Date();
+        Date expiredDate = new Date(now.getTime() + expireTime);
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining());
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .setExpiration(expiredDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     public Authentication getAuthentication(String accessToken) {
