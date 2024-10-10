@@ -231,7 +231,7 @@ const Cart = () => {
                             쇼핑하기</a>
                         <a
                             className="btn btn-custom p-3"
-                            href={cartCount > 0 ? "/" : "#"} // cartCount가 0일 때 링크를 비활성화
+                            href={cartCount > 0 ? "/order" : "#"} // cartCount가 0일 때 링크를 비활성화
                             onClick={cartCount === 0 ? (e) => e.preventDefault() : null} // cartCount가 0일 때 클릭 방지
                             style={{
                                 pointerEvents: cartCount === 0 ? 'none' : 'auto',
