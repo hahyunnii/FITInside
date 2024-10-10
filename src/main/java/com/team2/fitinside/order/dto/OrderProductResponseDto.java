@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderProductResponseDto {
+    private Long productId;
     private String orderProductName;
     private int orderProductPrice;
     private int count;
