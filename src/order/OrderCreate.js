@@ -76,6 +76,10 @@ const OrderCreate = () => {
         return <p>{error}</p>;
     }
 
+    const totalOrderPrice = cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
+    const deliveryFee = totalOrderPrice >= 20000 ? 0 : 2500;
+    const totalPayment = totalOrderPrice + deliveryFee;
+
     return (
         <div>
             <h1>Order Page</h1>
@@ -86,6 +90,9 @@ const OrderCreate = () => {
                     </li>
                 ))}
             </ul>
+            <h2>총 주문 금액: {totalOrderPrice} 원</h2>
+            <h2>배송비: {deliveryFee === 0 ? '0원' : `${deliveryFee} 원`}</h2>
+            <h2>총 결제 금액: {totalPayment} 원</h2>
             <DeliveryForm onSubmit={handleOrderSubmit} />
         </div>
     );
