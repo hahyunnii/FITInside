@@ -224,7 +224,7 @@ const CouponAdmin = () => {
                 isOpen={modalIsOpen}
                 onRequestClose={handleModalClose}
                 onCreate={() => {
-                    fetchCoupons(currentPage); // 쿠폰 생성 후 현재 페이지에서 쿠폰 목록 새로고침
+                    fetchCoupons(currentPage, includeInactiveCoupons); // 쿠폰 생성 후 현재 페이지에서 쿠폰 목록 새로고침
                 }}
                 categories={categories}
             />
