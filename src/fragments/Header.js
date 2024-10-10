@@ -22,6 +22,8 @@ const Header = () => {
     // 로그아웃 함수
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('dbCart');
+        localStorage.removeItem('localCart');
         setIsLoggedIn(false);
         navigate('/'); // 로그인 페이지로 리다이렉트
     };
