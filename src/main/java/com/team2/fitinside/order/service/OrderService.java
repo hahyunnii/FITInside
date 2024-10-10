@@ -3,6 +3,7 @@ package com.team2.fitinside.order.service;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
 import com.team2.fitinside.config.SecurityUtil;
+import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
 import com.team2.fitinside.order.common.OrderStatus;
@@ -11,10 +12,6 @@ import com.team2.fitinside.order.dto.OrderRequestDto;
 import com.team2.fitinside.order.dto.OrderUserResponseDto;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
-import com.team2.fitinside.order.exception.CartEmptyException;
-import com.team2.fitinside.order.exception.OrderModificationNotAllowedException;
-import com.team2.fitinside.order.exception.OrderNotFoundException;
-import com.team2.fitinside.order.exception.OutOfStockException;
 import com.team2.fitinside.order.mapper.OrderMapper;
 import com.team2.fitinside.order.repository.OrderRepository;
 import com.team2.fitinside.product.entity.Product;
@@ -22,9 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.team2.fitinside.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +34,13 @@ public class OrderService {
     private final CartRepository cartRepository;
 
     // 주문 조회 (회원)
-    public OrderDetailResponseDto findOrder(Long orderId) throws AccessDeniedException {
+    public OrderDetailResponseDto findOrder(Long orderId) {
 
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
-        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!findOrder.getMember().getId().equals(loginMemberId)) {
-            throw new AccessDeniedException("해당 주문에 대한 권한이 없습니다.");
+            throw new CustomException(USER_NOT_AUTHORIZED);
         }
 
         return orderMapper.toOrderDetailResponseDto(findOrder);
@@ -66,11 +64,12 @@ public class OrderService {
     public OrderDetailResponseDto createOrder(OrderRequestDto request) {
 
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
-        Member findMember = memberRepository.findById(loginMemberId).orElseThrow(() -> new IllegalStateException("인증된 사용자 정보가 유효하지 않습니다."));
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new CustomException(USER_NOT_AUTHORIZED));
 
         List<Cart> carts = cartRepository.findAllByMember_Id(loginMemberId);
         if (carts.isEmpty()) {
-            throw new CartEmptyException("장바구니가 비어 있습니다.");
+            throw new CustomException(CART_EMPTY);
         }
 
         // 주문 생성
@@ -85,7 +84,7 @@ public class OrderService {
         for (Cart cart : carts) {
             Product product = cart.getProduct();
             if (product.getStock() < cart.getQuantity()) {
-                throw new OutOfStockException("품절된 상품입니다. productId: " + product.getId());
+                throw new CustomException(OUT_OF_STOCK);
             }
 
             OrderProduct orderProduct = OrderProduct.builder()
@@ -108,17 +107,17 @@ public class OrderService {
 
     // 주문 수정
     @Transactional
-    public OrderDetailResponseDto updateOrder(Long orderId, OrderRequestDto request) throws AccessDeniedException {
+    public OrderDetailResponseDto updateOrder(Long orderId, OrderRequestDto request) {
 
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!order.getMember().getId().equals(loginMemberId)) {
-            throw new AccessDeniedException("해당 주문에 대한 권한이 없습니다.");
+            throw new CustomException(USER_NOT_AUTHORIZED);
         }
 
         if (order.getOrderStatus() != OrderStatus.ORDERED) {
-            throw new OrderModificationNotAllowedException("배송이 시작된 주문은 수정할 수 없습니다.");
+            throw new CustomException(ORDER_MODIFICATION_NOT_ALLOWED);
         }
 
         order.updateDeliveryInfo(request);
@@ -128,17 +127,17 @@ public class OrderService {
 
     // 주문 취소
     @Transactional
-    public void cancelOrder(Long orderId) throws AccessDeniedException {
+    public void cancelOrder(Long orderId) {
 
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
-        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!findOrder.getMember().getId().equals(loginMemberId)) {
-            throw new AccessDeniedException("해당 주문에 대한 권한이 없습니다.");
+            throw new CustomException(USER_NOT_AUTHORIZED);
         }
 
         if (findOrder.getOrderStatus() != OrderStatus.ORDERED) {
-            throw new OrderModificationNotAllowedException("배송이 시작된 주문은 취소할 수 없습니다.");
+            throw new CustomException(ORDER_MODIFICATION_NOT_ALLOWED);
         }
 
         findOrder.cancelOrder();
