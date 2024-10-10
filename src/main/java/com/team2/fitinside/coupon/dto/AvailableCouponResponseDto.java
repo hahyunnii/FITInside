@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class AvailableCouponResponseDto {
 
+    private String name;
     private Long couponMemberId;
     private CouponType type;
     private int value;
