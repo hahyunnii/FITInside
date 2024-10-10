@@ -38,7 +38,7 @@ public class CouponService {
     private final ProductRepository productRepository;
 
     // 보유 쿠폰 모두 조회
-    public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) throws AccessDeniedException {
+    public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
 
         // 페이지 당 쿠폰 10개, 만료 일 기준 오름차순 정렬
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("Coupon_expiredAt").ascending());
@@ -67,7 +67,7 @@ public class CouponService {
     }
 
     // 특정 상품에 적용 가능한 쿠폰 목록 조회
-    public AvailableCouponResponseWrapperDto findAllAvailableCoupons(Long productId) throws AccessDeniedException {
+    public AvailableCouponResponseWrapperDto findAllAvailableCoupons(Long productId) {
 
         Long loginMemberId = getAuthenticatedMemberId();
 
@@ -88,7 +88,7 @@ public class CouponService {
     }
 
     @Transactional
-    public void enterCouponCode(String code) throws AccessDeniedException {
+    public void enterCouponCode(String code) {
 
         Long loginMemberId = getAuthenticatedMemberId();
 
@@ -125,11 +125,11 @@ public class CouponService {
         couponMember.useCoupon();
     }
 
-    private Long getAuthenticatedMemberId() throws AccessDeniedException {
+    private Long getAuthenticatedMemberId()  {
         try {
             return SecurityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
-            throw new AccessDeniedException("권한이 없습니다!");
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }
 }
