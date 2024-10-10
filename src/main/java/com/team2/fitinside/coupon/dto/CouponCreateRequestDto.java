@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 public class CouponCreateRequestDto {
 
+    private String name;
     private CouponType type;
     private int value;
     private int percentage;
