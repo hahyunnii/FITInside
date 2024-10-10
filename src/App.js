@@ -8,6 +8,7 @@ import ProductSection from "./ProductSection";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import MyPage from "./member/MyPage";
+import OrderCreate from "./order/OrderCreate";
 
 const App = () => {
     return (
@@ -22,6 +23,7 @@ const App = () => {
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
+                        <Route path="/order" element={<OrderCreate />} /> {/* 주문서 작성 화면 */}
                     </Routes>
                 </main>
                 <Footer />
