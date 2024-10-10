@@ -12,6 +12,7 @@ import OrderCreate from "./order/OrderCreate";
 import OrderDetail from './order/OrderDetail';
 import OrderList from "./order/OrderList";
 import OrderAdminList from "./order/OrderAdminList";
+import CouponAdmin from "./coupon/admin/CouponAdmin";
 
 const App = () => {
     return (
@@ -30,6 +31,8 @@ const App = () => {
                         <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
                         <Route path="/orders" element={<OrderList />} /> {/* 주문 목록 화면 */}
                         <Route path="/admin/orders" element={<OrderAdminList />}/> {/*관리자 주문 목록 화면*/}
+
+                        <Route path="/admin/coupons" element={<CouponAdmin />} /> {/*쿠폰 관리자 화면*/}
                     </Routes>
                 </main>
                 <Footer />
