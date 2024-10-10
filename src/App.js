@@ -11,6 +11,7 @@ import MyPage from "./member/MyPage";
 import OrderCreate from "./order/OrderCreate";
 import OrderDetail from './order/OrderDetail';
 import OrderList from "./order/OrderList";
+import OrderAdminList from "./order/OrderAdminList";
 
 const App = () => {
     return (
@@ -28,6 +29,7 @@ const App = () => {
                         <Route path="/order" element={<OrderCreate />} /> {/* 주문서 작성 화면 */}
                         <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
                         <Route path="/orders" element={<OrderList />} /> {/* 주문 목록 화면 */}
+                        <Route path="/admin/orders" element={<OrderAdminList />}/> {/*관리자 주문 목록 화면*/}
                     </Routes>
                 </main>
                 <Footer />
