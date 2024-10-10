@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 const AdBanner = () => {
     const [currentAdIndex, setCurrentAdIndex] = useState(0);
     const ads = [
-        require('../assets/images/광고1.png'),
+        // require('../assets/images/광고1.png'),
         require('../assets/images/광고2.png'),
         require('../assets/images/광고3.png'),
         require('../assets/images/광고4.png'),
