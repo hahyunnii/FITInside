@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './AdBanner.css';
 
 const AdBanner = () => {
     const [currentAdIndex, setCurrentAdIndex] = useState(0);
@@ -25,3 +26,4 @@ const AdBanner = () => {
 };
 
 export default AdBanner;
+
