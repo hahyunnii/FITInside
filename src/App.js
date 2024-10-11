@@ -4,7 +4,7 @@ import Header from "./fragments/Header";
 import Home from "./Home";
 import Cart from "./cart/Cart";
 import Footer from "./fragments/Footer";
-import ProductSection from "./ProductSection";
+import ProductSection from "./product/ProductSection";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import MyPage from "./member/MyPage";
