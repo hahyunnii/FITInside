@@ -48,6 +48,9 @@ const App = () => {
                         <Route path="/admin/categories" element={<CategoryAdminMain />} />
                         <Route path="/category-create" element={<CategoryCreate />} />
                         <Route path="/category-update/:categoryId" element={<CategoryUpdate />} />
+
+                        <Route path="/product/:id" element={<ProductSection />} />
+                        <Route path="/products/category/:categoryId" element={<ProductList />} />
                     </Routes>
                 </main>
                 <Footer />
