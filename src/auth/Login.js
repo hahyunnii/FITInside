@@ -36,6 +36,11 @@ const Login = () => {
         }
     };
 
+    // 구글 로그인 버튼 클릭 시 리다이렉트
+    const handleGoogleLogin = () => {
+        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    };
+
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className="card p-4" style={{width: '25rem'}}>
@@ -77,6 +82,16 @@ const Login = () => {
                         </a>
                     </div>
                 </form>
+                {/* 구글 로그인 버튼 */}
+                <div className="text-center mt-4">
+                    <button
+                        type="button"
+                        className="btn btn-outline-danger w-100"
+                        onClick={handleGoogleLogin}
+                    >
+                        <i className="bi bi-google me-2"></i> Google로 로그인
+                    </button>
+                </div>
             </div>
         </div>
     );
