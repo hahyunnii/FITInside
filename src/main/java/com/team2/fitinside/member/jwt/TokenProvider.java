@@ -26,8 +26,11 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+
+//    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
+    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000;
+    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+
     private final Key key;
 
 
@@ -53,7 +56,7 @@ public class TokenProvider {
     }
 
     // 1. refresh token 발급
-    public String generateRefreshToken(Authentication authentication, String accessToken) {
+    public String generateRefreshToken(Authentication authentication) {
         return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
     }
 
