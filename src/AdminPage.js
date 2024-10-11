@@ -9,9 +9,9 @@ const AdminPage = () => {
     };
 
     return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div style={{ padding: '20px'}}>
             <h2 className="mb-4">관리자 페이지</h2>
-            <div className="d-flex flex-column justify-content-center align-items-center">
+            <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
                 <button onClick={() => handleNavigation('/admin/coupons')} className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da', width: '30%'}}>
                     관리자 쿠폰 페이지
                 </button>
