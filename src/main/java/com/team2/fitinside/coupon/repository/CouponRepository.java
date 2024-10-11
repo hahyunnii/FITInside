@@ -18,4 +18,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findByExpiredAtLessThanEqual(LocalDate now);
 
     Optional<Coupon> findByCode(String code);
+
+    List<Coupon> findByNameContains(String name);
 }
