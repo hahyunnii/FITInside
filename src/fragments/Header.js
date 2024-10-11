@@ -67,9 +67,12 @@ const Header = () => {
                     </ul>
                     <div className="d-flex m-3">
                         {isLoggedIn ? (
-                            <a className="btn btn-outline-dark" href="/me">
-                                MY
-                            </a>
+                            <div>
+                                <a className="btn btn-outline-dark me-3" href="/admin">ADMIN</a>
+                                <a className="btn btn-outline-dark" href="/me">
+                                    MY
+                                </a>
+                            </div>
                         ) : (<div></div>)}
                     </div>
                     <div className="d-flex">
