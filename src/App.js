@@ -31,7 +31,6 @@ const App = () => {
                         <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
                         <Route path="/orders" element={<OrderList />} /> {/* 주문 목록 화면 */}
                         <Route path="/admin/orders" element={<OrderAdminList />}/> {/*관리자 주문 목록 화면*/}
-                        <Route path="/admin/categories" element={<CategoryCreate />} /> {/* 카테고리 생성 화면 */}
                     </Routes>
                 </main>
                 <Footer />
