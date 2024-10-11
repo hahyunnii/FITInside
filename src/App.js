@@ -16,6 +16,9 @@ import CouponAdmin from "./coupon/admin/CouponAdmin";
 import CouponList from "./coupon/CouponList";
 import WelcomeCouponList from "./coupon/WelcomeCouponList";
 import AdminPage from "./AdminPage";
+import CategoryAdminMain from "./category/CategoryAdminMain";
+import CategoryCreate from "./category/CategoryCreate";
+import CategoryUpdate from "./category/CategoryUpdate";
 
 const App = () => {
     return (
@@ -41,6 +44,10 @@ const App = () => {
                         <Route path="/admin/coupons" element={<CouponAdmin />} /> {/*쿠폰 관리자 화면*/}
                         <Route path="/coupons" element={<CouponList />} /> {/*쿠폰 회원 화면*/}
                         <Route path="/coupons/welcome" element={<WelcomeCouponList />} /> {/*웰컴 쿠폰 화면*/}
+
+                        <Route path="/admin/categories" element={<CategoryAdminMain />} />
+                        <Route path="/category-create" element={<CategoryCreate />} />
+                        <Route path="/category-update/:categoryId" element={<CategoryUpdate />} />
                     </Routes>
                 </main>
                 <Footer />
