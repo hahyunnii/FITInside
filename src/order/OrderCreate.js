@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import DeliveryForm from "./DeliveryForm";
+import '../cart/cart.css';
+import './orderCreate.css';
 
 const OrderCreate = () => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const deliveryFormRef = useRef(null); // DeliveryForm을 참조
 
     // 장바구니 데이터와 상품 정보를 가져오기
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
                 const token = localStorage.getItem('token');
-                // 장바구니 항목 가져오기
                 const cartResponse = await axios.get('http://localhost:8080/api/carts', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                const cartData = cartResponse.data.carts || []; // carts 리스트 가져오기
+                const cartData = cartResponse.data.carts || []; // 장바구니 리스트
 
-                const updatedCartItems = await Promise.all(
+                const updatedCartItems = await Promise.all( // 상품 정보
                     cartData.map(async (item) => {
-                        // 각 상품의 상세 정보를 가져오기
                         const productResponse = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`,
@@ -50,7 +51,16 @@ const OrderCreate = () => {
         fetchCartItems();
     }, []);
 
-    const handleOrderSubmit = async (deliveryData) => {
+    const handleOrderSubmit = async () => {
+        const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
+        if (!deliveryData || Object.keys(deliveryData).length === 0) {
+            alert('배송 정보를 입력해주세요.');
+            return;
+        }
+        submitOrder(deliveryData);
+    };
+
+    const submitOrder = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post('http://localhost:8080/api/orders', deliveryData, {
@@ -68,25 +78,71 @@ const OrderCreate = () => {
         }
     };
 
-    if (loading) {
-        return <div className="spinner">Loading...</div>;
-    }
+    // if (loading) {
+    //     return <div className="spinner">Loading...</div>;
+    // }
+    //
+    // if (error) {
+    //     return <p>{error}</p>;
+    // }
 
-    if (error) {
-        return <p>{error}</p>;
-    }
+    const totalOrderPrice = cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
+    const deliveryFee = totalOrderPrice >= 20000 ? 0 : 2500;
+    const totalPayment = totalOrderPrice + deliveryFee;
 
     return (
-        <div>
-            <h1>Order Page</h1>
-            <ul>
-                {cartItems.map((item) => (
-                    <li key={item.productId}>
-                        {item.name} - {item.quantity} 개 * {item.price} 원 = {item.quantity * item.price} 원
-                    </li>
-                ))}
-            </ul>
-            <DeliveryForm onSubmit={handleOrderSubmit} />
+        <div className="container order-create-container my-5">
+            <h2>주문서</h2>
+            <br />
+            <div className="both-container">
+                <div className="left-container">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>상품정보</th>
+                            <th>상품금액</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {cartItems.map((item) => (
+                            <tr key={item.productId}>
+                                <td className="product-info">
+                                    <div>
+                                        <p className="product-name">{item.name}</p>
+                                        <p className="product-quantity">수량: {item.quantity}</p>
+                                    </div>
+                                </td>
+                                <td className="product-price">
+                                    {(item.price * item.quantity).toLocaleString()} 원
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                    <DeliveryForm ref={deliveryFormRef} />
+                </div>
+
+                <div className="right-container">
+                    <div className="order-summary-box">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p>총 상품 금액 ({cartItems.length})</p>
+                            <p>{totalOrderPrice.toLocaleString()} 원</p>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p>배송비</p>
+                            <p>{deliveryFee === 0 ? '무료' : `${deliveryFee.toLocaleString()} 원`}</p>
+                        </div>
+                        <hr />
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <strong>총 결제 금액</strong>
+                            <strong style={{ color: '#B22222' }}>{totalPayment.toLocaleString()} 원</strong>
+                        </div>
+                    </div>
+                    <button className="btn-custom place-order-button" onClick={handleOrderSubmit}>
+                        결제하기
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
