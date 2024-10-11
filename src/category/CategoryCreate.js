@@ -158,6 +158,64 @@
 // export default CategoryCreate;
 
 
+// import React, { useState } from 'react';
+// import axios from 'axios';
+// import { useNavigate } from 'react-router-dom';
+// import './categoryCreate.css';
+//
+// const CategoryCreate = () => {
+//     const [name, setName] = useState('');
+//     const [displayOrder, setDisplayOrder] = useState('');
+//     const [parentId, setParentId] = useState(null);
+//
+//     const navigate = useNavigate();
+//
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//
+//         const categoryData = {
+//             name,
+//             displayOrder: displayOrder ? Number(displayOrder) : null,
+//             parentId
+//         };
+//
+//         axios.post('http://localhost:8080/api/admin/categories', categoryData)
+//             .then(response => {
+//                 console.log('Category created:', response.data);
+//                 navigate('/'); // 성공적으로 생성된 후 메인 화면으로 이동
+//             })
+//             .catch(error => console.error('Error creating category:', error));
+//     };
+//
+//     return (
+//         <div className="category-create-container">
+//             <h2>카테고리 생성</h2>
+//             <form onSubmit={handleSubmit}>
+//                 <div className="form-group">
+//                     <label>이름:</label>
+//                     <input
+//                         type="text"
+//                         value={name}
+//                         onChange={(e) => setName(e.target.value)}
+//                         required
+//                     />
+//                 </div>
+//                 <div className="form-group">
+//                     <label>표시 순서:</label>
+//                     <input
+//                         type="number"
+//                         value={displayOrder}
+//                         onChange={(e) => setDisplayOrder(e.target.value)}
+//                     />
+//                 </div>
+//                 <button type="submit" className="submit-button">카테고리 생성</button>
+//             </form>
+//         </div>
+//     );
+// };
+//
+// export default CategoryCreate;
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -179,12 +237,21 @@ const CategoryCreate = () => {
             parentId
         };
 
-        axios.post('http://localhost:8080/api/admin/categories', categoryData)
+        axios.post('http://localhost:8080/api/admin/categories', categoryData, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
             .then(response => {
                 console.log('Category created:', response.data);
-                navigate('/'); // 성공적으로 생성된 후 메인 화면으로 이동
+                navigate('/category-admin'); // 성공적으로 생성된 후 메인 화면으로 이동
             })
-            .catch(error => console.error('Error creating category:', error));
+            .catch(error => {
+                console.error('Error creating category:', error);
+                if (error.response && error.response.status === 401) {
+                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                }
+            });
     };
 
     return (
@@ -215,3 +282,4 @@ const CategoryCreate = () => {
 };
 
 export default CategoryCreate;
+
