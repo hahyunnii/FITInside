@@ -21,6 +21,13 @@ public class CategoryController {
         List<CategoryResponseDTO> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
+
+    // 특정 ID의 카테고리 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        CategoryResponseDTO category = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(category);
+    }
 }
 
 
