@@ -19,6 +19,7 @@ import AdminPage from "./AdminPage";
 import CategoryAdminMain from "./category/CategoryAdminMain";
 import CategoryCreate from "./category/CategoryCreate";
 import CategoryUpdate from "./category/CategoryUpdate";
+import ProductList from "./product/ProductList";
 
 const App = () => {
     return (
@@ -48,6 +49,9 @@ const App = () => {
                         <Route path="/admin/categories" element={<CategoryAdminMain />} />
                         <Route path="/category-create" element={<CategoryCreate />} />
                         <Route path="/category-update/:categoryId" element={<CategoryUpdate />} />
+
+                        <Route path="/product/:id" element={<ProductSection />} />
+                        <Route path="/products/category/:categoryId" element={<ProductList />} />
                     </Routes>
                 </main>
                 <Footer />
