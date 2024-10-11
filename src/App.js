@@ -20,6 +20,11 @@ import CategoryAdminMain from "./category/CategoryAdminMain";
 import CategoryCreate from "./category/CategoryCreate";
 import CategoryUpdate from "./category/CategoryUpdate";
 import ProductList from "./product/ProductList";
+import ProductAdmin from "./product/admin/ProductAdmin";
+import ProductCreate from './product/admin/ProductCreate';
+import ProductUpdate from './product/admin/ProductUpdate';
+import ProductDelete from './product/admin/ProductDelete';
+
 
 const App = () => {
     return (
@@ -52,6 +57,10 @@ const App = () => {
 
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/products/category/:categoryId" element={<ProductList />} />
+                        <Route path="/admin/products" element={<ProductAdmin />} /> {/* 관리자 상품 관리 화면 */}
+                        <Route path="/admin/products/create" element={<ProductCreate />} />
+                        <Route path="/admin/products/update" element={<ProductUpdate />} />
+                        <Route path="/admin/products/delete" element={<ProductDelete />} />
                     </Routes>
                 </main>
                 <Footer />
