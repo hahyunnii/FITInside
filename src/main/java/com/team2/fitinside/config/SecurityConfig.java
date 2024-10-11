@@ -4,6 +4,8 @@ import com.team2.fitinside.member.jwt.JwtAccessDeniedHandler;
 import com.team2.fitinside.member.jwt.JwtAuthenticationEntryPoint;
 import com.team2.fitinside.member.jwt.JwtFilter;
 import com.team2.fitinside.member.jwt.TokenProvider;
+import com.team2.fitinside.member.oath.OAuth2SuccessHandler;
+import com.team2.fitinside.member.oath.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,8 @@ public class SecurityConfig{
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,8 +62,16 @@ public class SecurityConfig{
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/oath2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
+        );
+        // oauth2 설정
+        http.oauth2Login(oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점
+                // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정을 담당
+                oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
+                        // 로그인 성공 시 핸들러
+                        .successHandler(oAuth2SuccessHandler)
         );
 
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));

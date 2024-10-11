@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -23,9 +25,11 @@ public class ProductUpdateDto {
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stock;
 
+    private String manufacturer;
+
     @NotNull(message = "카테고리 ID는 필수 입력 값입니다.")
     private Long categoryId;
 
-    @NotNull(message = "판매자 ID는 필수 입력 값입니다.")
-    private Long userId;
+    // 이미지 URL 목록 필드 (Optional로 처리할 수 있음)
+    private List<String> productImgUrls;
 }

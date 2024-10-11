@@ -10,5 +10,7 @@ import java.util.List;
 public class CouponMemberResponseWrapperDto {
 
     private String message;
-    private List<CouponMemberResponseDto> coupons;
+    private List<CouponMemberResponseDto> members;
+
+    private int totalPages;
 }

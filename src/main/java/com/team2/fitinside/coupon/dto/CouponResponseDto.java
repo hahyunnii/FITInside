@@ -12,6 +12,9 @@ import java.time.LocalDate;
 @Builder
 public class CouponResponseDto {
 
+    private Long id;
+    private String name;
+    private String code;
     private CouponType type;
     private int value;
     private int percentage;

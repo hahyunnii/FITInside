@@ -12,4 +12,6 @@ public class CouponResponseWrapperDto {
 
     private String message;
     private List<CouponResponseDto> coupons;
+
+    private int totalPages;
 }

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,11 @@ public class Product {
     @Column(name = "product_id")
     private Long id;
 
+    // 카테고리와의 다대일 관계 (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Column(name = "product_name", length = 100, nullable = false)
     private String productName;
 
@@ -39,18 +45,29 @@ public class Product {
     @Column(name = "product_stock", nullable = false)
     private int stock;
 
-//    // 판매자 아이디
-//    @Column(name = "user_id", nullable = false)
-//    private Long userId;
-
     // 제조사
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 
-    // 카테고리와의 다대일 관계 (ManyToOne)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+//    // 판매자 아이디
+//    @Column(name = "user_id", nullable = false)
+//    private Long userId;
+
+
+    // 이미지 ID 목록을 저장하는 필드
+    @ElementCollection
+    @CollectionTable(name = "product_img_urls", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "product_img_url")
+    private List<String> productImgUrls = new ArrayList<>();
+
+
+//    @ElementCollection
+//    @CollectionTable(name = "product_imgUrls", joinColumns = @JoinColumn(name = "product_id")) // 컬렉션 저장 테이블
+//    @Column(name = "product_imgUrl") // 컬렉션의 요소 저장 테이블
+//    private List<String> productImgUrls = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<ProductImg> productImgs;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -63,14 +80,6 @@ public class Product {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<ProductImg> productImgs;
-
-    // 이미지 ID 목록을 저장하는 필드
-    @ElementCollection
-    @CollectionTable(name = "product_img_ids", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "product_img_id")
-    private List<Long> productImgIds;
 
     @PrePersist
     public void prePersist() {
