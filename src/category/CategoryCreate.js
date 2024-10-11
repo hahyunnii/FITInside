@@ -244,7 +244,7 @@ const CategoryCreate = () => {
         })
             .then(response => {
                 console.log('Category created:', response.data);
-                navigate('/category-admin'); // 성공적으로 생성된 후 메인 화면으로 이동
+                navigate('/admin/categories'); // 성공적으로 생성된 후 메인 화면으로 이동
             })
             .catch(error => {
                 console.error('Error creating category:', error);
