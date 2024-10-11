@@ -13,6 +13,7 @@ import OrderDetail from './order/OrderDetail';
 import OrderList from "./order/OrderList";
 import OrderAdminList from "./order/OrderAdminList";
 import CouponAdmin from "./coupon/admin/CouponAdmin";
+import ProductList from "./product/ProductList";
 
 const App = () => {
     return (
@@ -26,6 +27,7 @@ const App = () => {
                         <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
                         <Route path="/product/:id" element={<ProductSection />} />
+                        <Route path="/products/category/:categoryId" element={<ProductList />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
                         <Route path="/order" element={<OrderCreate />} /> {/* 주문서 작성 화면 */}
                         <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
