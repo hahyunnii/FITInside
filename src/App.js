@@ -4,7 +4,7 @@ import Header from "./fragments/Header";
 import Home from "./Home";
 import Cart from "./cart/Cart";
 import Footer from "./fragments/Footer";
-import ProductSection from "./ProductSection";
+import ProductSection from "./product/ProductSection";
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import MyPage from "./member/MyPage";
@@ -13,6 +13,9 @@ import OrderDetail from './order/OrderDetail';
 import OrderList from "./order/OrderList";
 import OrderAdminList from "./order/OrderAdminList";
 import CouponAdmin from "./coupon/admin/CouponAdmin";
+import CouponList from "./coupon/CouponList";
+import WelcomeCouponList from "./coupon/WelcomeCouponList";
+import AdminPage from "./AdminPage";
 
 const App = () => {
     return (
@@ -22,6 +25,9 @@ const App = () => {
                 <main className="flex-grow-1">
                     <Routes>
                         <Route path="/" element={<Home />} /> {/* 홈 화면 */}
+
+                        <Route path="/admin" element={<AdminPage/>} /> {/*관리자 화면*/}
+
                         <Route path="/login" element={<Login />} /> {/* login 화면 */}
                         <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
@@ -33,6 +39,8 @@ const App = () => {
                         <Route path="/admin/orders" element={<OrderAdminList />}/> {/*관리자 주문 목록 화면*/}
 
                         <Route path="/admin/coupons" element={<CouponAdmin />} /> {/*쿠폰 관리자 화면*/}
+                        <Route path="/coupons" element={<CouponList />} /> {/*쿠폰 회원 화면*/}
+                        <Route path="/coupons/welcome" element={<WelcomeCouponList />} /> {/*웰컴 쿠폰 화면*/}
                     </Routes>
                 </main>
                 <Footer />
