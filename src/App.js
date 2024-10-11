@@ -15,6 +15,7 @@ import OrderAdminList from "./order/OrderAdminList";
 import CouponAdmin from "./coupon/admin/CouponAdmin";
 import CouponList from "./coupon/CouponList";
 import WelcomeCouponList from "./coupon/WelcomeCouponList";
+import AdminPage from "./AdminPage";
 
 const App = () => {
     return (
@@ -24,6 +25,9 @@ const App = () => {
                 <main className="flex-grow-1">
                     <Routes>
                         <Route path="/" element={<Home />} /> {/* 홈 화면 */}
+
+                        <Route path="/admin" element={<AdminPage/>} /> {/*관리자 화면*/}
+
                         <Route path="/login" element={<Login />} /> {/* login 화면 */}
                         <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
