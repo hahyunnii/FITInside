@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +88,34 @@ public class CouponService {
 
         // 성공메시지 + List<CouponResponseDto> -> CouponResponseWrapperDto 반환
         return new AvailableCouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos);
+    }
+
+    // 쿠폰 코드로 단일 쿠폰 조회
+    public CouponResponseDto findCoupon(String couponCode) {
+
+        // 권한 확인
+        getAuthenticatedMemberId();
+
+        Coupon foundCoupon = couponRepository.findByCode(couponCode).orElseThrow(() -> new CustomException(ErrorCode.INVALID_COUPON_DATA));
+
+        return CouponMapper.INSTANCE.toCouponResponseDto(foundCoupon);
+    }
+
+    // 웰컴 쿠폰 목록 조회
+    public CouponResponseWrapperDto findWelcomeCoupons() {
+
+        List<Coupon> coupons = couponRepository.findByNameContains("웰컴");
+
+        List<CouponResponseDto> dtos = new ArrayList<>();
+
+        // coupon -> List<CouponResponseDto>
+        for (Coupon coupon : coupons) {
+
+            CouponResponseDto couponResponseDto = CouponMapper.INSTANCE.toCouponResponseDto(coupon);
+            dtos.add(couponResponseDto);
+        }
+
+        return new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos, 1);
     }
 
     @Transactional

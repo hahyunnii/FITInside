@@ -52,7 +52,7 @@ public class CategoryService {
     //======================================================================
 
     // 단일 카테고리 조회 메서드 (ID로 조회)
-    public CategoryResponseDTO getCategoryResponse(Long id) {
+    public CategoryResponseDTO getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryResponseNotFoundException());
 
