@@ -21,8 +21,6 @@ public class ProductResponseDto {
     private List<String> productImgUrls;
 
 
-    private String manufacturer;
-
     private boolean isDeleted;       // 삭제 상태
     private LocalDateTime createdAt; // 생성 시간
     private LocalDateTime updatedAt; // 수정 시간
