@@ -29,3 +29,27 @@
     font-size: 14px;
     color: #333; /* 텍스트 색상 */
 }
+
+
+/*.add-category-button {*/
+/*    display: block;*/
+/*    margin: 20px auto 0;*/
+/*    padding: 10px 20px;*/
+/*    background-color: #efefef;*/
+/*    color: #333;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+.add-category-button {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #efefef;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
