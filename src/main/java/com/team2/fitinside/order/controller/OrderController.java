@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -33,7 +32,7 @@ public class OrderController {
     @Operation(summary = "로그인한 회원의 상세 주문 조회", description = "상세 주문 조회")
     @ApiResponse(responseCode = "200", description = "상세 주문 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<?> findOrder(@PathVariable("order_id") Long orderId) throws AccessDeniedException {
+    public ResponseEntity<?> findOrder(@PathVariable("order_id") Long orderId) {
         OrderDetailResponseDto response = orderService.findOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -63,7 +62,7 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
     public ResponseEntity<?> updateOrder(
             @PathVariable("order_id") Long orderId,
-            @RequestBody OrderRequestDto request) throws AccessDeniedException {
+            @RequestBody OrderRequestDto request) {
 
         OrderDetailResponseDto response = orderService.updateOrder(orderId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -74,7 +73,7 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "주문 취소 완료", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "400", description = "배송이 시작(완료)된 상품은 취소 불가", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<?> cancelOrder(@PathVariable("order_id") Long orderId) throws AccessDeniedException {
+    public ResponseEntity<?> cancelOrder(@PathVariable("order_id") Long orderId) {
         orderService.cancelOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body("주문 취소 완료. orderId: " + orderId);
     }

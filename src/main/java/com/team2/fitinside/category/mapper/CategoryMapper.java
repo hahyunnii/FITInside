@@ -14,11 +14,10 @@ public class CategoryMapper {
         }
 
         return CategoryCreateRequestDTO.builder()
-                //.id(category.getId())
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
                 .isDeleted(category.getIsDeleted())
-                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .parentId(getParentId(category))
                 .build();
     }
 
@@ -33,7 +32,7 @@ public class CategoryMapper {
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
                 .isDeleted(category.getIsDeleted())
-                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .parentId(getParentId(category))
                 .build();
     }
 
@@ -48,38 +47,41 @@ public class CategoryMapper {
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
                 .isDeleted(category.getIsDeleted())
-                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .parentId(getParentId(category))
                 .build();
     }
 
-//    // DTO -> Category 변환 (Create용)
-//    public static Category toEntityFromCreateDTO(CategoryCreateRequestDTO dto) {
-//        if (dto == null) {
-//            return null;
-//        }
-//
-//        return Category.builder()
-//                .name(dto.getName())
-//                .displayOrder(dto.getDisplayOrder())
-//                .isDeleted(dto.getIsDeleted())
-//                // parentId를 통해 parent Category 설정 가능 (이 부분은 별도의 로직 필요)
-//                .build();
-//    }
-//
-//    // DTO -> Category 변환 (Update용)
-//    public static Category toEntityFromUpdateDTO(CategoryUpdateRequestDTO dto) {
-//        if (dto == null) {
-//            return null;
-//        }
-//
-//        return Category.builder()
-//                .id(dto.getId())
-//                .name(dto.getName())
-//                .displayOrder(dto.getDisplayOrder())
-//                .isDeleted(dto.getIsDeleted())
-//                // parentId를 통해 parent Category 설정 가능 (이 부분은 별도의 로직 필요)
-//                .build();
-//    }
+    // DTO -> Category 변환 (Create용)
+    public static Category toEntityFromCreateDTO(CategoryCreateRequestDTO dto, Category parentCategory) {
+        if (dto == null) {
+            return null;
+        }
+
+        return Category.builder()
+                .name(dto.getName())
+                .displayOrder(dto.getDisplayOrder())
+                .isDeleted(dto.getIsDeleted())
+                .parent(parentCategory)
+                .build();
+    }
+
+    // DTO -> Category 변환 (Update용)
+    public static Category toEntityFromUpdateDTO(CategoryUpdateRequestDTO dto, Category parentCategory) {
+        if (dto == null) {
+            return null;
+        }
+
+        return Category.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .displayOrder(dto.getDisplayOrder())
+                .isDeleted(dto.getIsDeleted())
+                .parent(parentCategory)
+                .build();
+    }
+
+    // 부모 카테고리 ID를 반환하는 헬퍼 메서드
+    private static Long getParentId(Category category) {
+        return category.getParent() != null ? category.getParent().getId() : null;
+    }
 }
-
-
