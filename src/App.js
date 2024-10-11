@@ -19,6 +19,7 @@ import AdminPage from "./AdminPage";
 import CategoryAdminMain from "./category/CategoryAdminMain";
 import CategoryCreate from "./category/CategoryCreate";
 import CategoryUpdate from "./category/CategoryUpdate";
+import ProductList from "./product/ProductList";
 
 const App = () => {
     return (
