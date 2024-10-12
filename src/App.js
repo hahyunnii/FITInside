@@ -42,6 +42,7 @@ const App = () => {
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
+
                         <Route path="/order" element={<OrderCreate />} /> {/* 주문서 작성 화면 */}
                         <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
                         <Route path="/orders" element={<OrderList />} /> {/* 주문 목록 화면 */}

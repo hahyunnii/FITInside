@@ -9,6 +9,7 @@
     font-size: 24px; /* 주문상세내역 제목 크기 설정 */
     font-weight: bold;
     text-align: center;
+    margin-top: 50px;
     margin-bottom: 10px;
     border-bottom: 2px solid black; /* 아래쪽 검은 줄 추가 */
 }
@@ -60,7 +61,7 @@
     font-size: 18px; /* 강조된 글자 크기 */
 }
 
-.edit-delivery-button, .btn-custom {
+.edit-delivery-button, .order-detail-container .btn-custom {
     background-color: black; /* 검은색 배경 */
     color: white;
     border: none;
