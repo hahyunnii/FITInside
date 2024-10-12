@@ -3,6 +3,7 @@ package com.team2.fitinside.order.controller;
 import com.team2.fitinside.order.dto.OrderDetailResponseDto;
 import com.team2.fitinside.order.dto.OrderRequestDto;
 import com.team2.fitinside.order.dto.OrderUserResponseDto;
+import com.team2.fitinside.order.dto.OrderUserResponseWrapperDto;
 import com.team2.fitinside.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,8 +39,8 @@ public class OrderController {
     @GetMapping
     @Operation(summary = "로그인한 회원의 전체 주문 조회", description = "전체 주문 조회")
     @ApiResponse(responseCode = "200", description = "전체 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderUserResponseDto.class))))
-    public ResponseEntity<?> findAllOrders() {
-        List<OrderUserResponseDto> response = orderService.findAllOrders();
+    public ResponseEntity<?> findAllOrders(@RequestParam(required = false, value = "page", defaultValue = "1") int page) {
+        OrderUserResponseWrapperDto response = orderService.findAllOrders(page);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
