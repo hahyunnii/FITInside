@@ -81,6 +81,12 @@ public class CouponService {
         List<AvailableCouponResponseDto> dtos = new ArrayList<>();
         for (CouponMember couponMember : couponMembers) {
 
+            // 쿠폰이 유효하지 않은 경우
+            if(!couponMember.getCoupon().isActive()) continue;
+
+            // 상품 가격이 최소 주문 금액보다 적은 경우
+            if(couponMember.getCoupon().getMinValue() > product.getPrice()) continue;
+
             AvailableCouponResponseDto availableCouponResponseDto = CouponMapper.INSTANCE.toAvailableCouponResponseDto(couponMember.getCoupon());
             availableCouponResponseDto.setCouponMemberId(couponMember.getId());
             dtos.add(availableCouponResponseDto);
