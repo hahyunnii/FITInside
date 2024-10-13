@@ -1,13 +1,18 @@
 // Header.js
 import React, {useEffect, useState} from 'react';
 import './header.css';
-import { useCartCount } from '../cart/cartStorage';
 import {useNavigate} from "react-router-dom";
 
 const Header = () => {
-    const cartCount = useCartCount();
+    const [cartCount, setCartCount] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate(); // useNavigate 훅 사용
+
+    // 장바구니 개수 확인 및 업데이트 함수
+    const updateCartCount = () => {
+        const storedCart = JSON.parse(localStorage.getItem('localCart')) || [];
+        setCartCount(storedCart.length);
+    };
 
     // 로그인 상태 확인
     useEffect(() => {
@@ -17,6 +22,11 @@ const Header = () => {
         } else {
             setIsLoggedIn(false);
         }
+        updateCartCount(); // 초기 카운트 업데이트
+        window.addEventListener('storage', updateCartCount); // storage 이벤트 리스너 추가
+        return () => {
+            window.removeEventListener('storage', updateCartCount); // 언마운트 시 리스너 제거
+        };
     }, [navigate]);
 
     // 로그아웃 함수
@@ -25,6 +35,8 @@ const Header = () => {
         localStorage.removeItem('dbCart');
         localStorage.removeItem('localCart');
         setIsLoggedIn(false);
+        updateCartCount(); // 로그아웃 시 카운트 업데이트
+
         navigate('/'); // 로그인 페이지로 리다이렉트
     };
 
