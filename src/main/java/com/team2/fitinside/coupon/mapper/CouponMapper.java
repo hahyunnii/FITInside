@@ -30,5 +30,7 @@ public interface CouponMapper {
     CouponMemberResponseDto toCouponMemberResponseDto(Member member);
 
     @Mapping(target = "category", ignore = true)
+    @Mapping(source = "couponCreateRequestDto.name", target = "name")
+    @Mapping(source = "code", target = "code")
     Coupon toEntity(CouponCreateRequestDto couponCreateRequestDto, String code);
 }
