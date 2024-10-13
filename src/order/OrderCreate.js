@@ -5,7 +5,7 @@ import '../cart/cart.css';
 import './orderCreate.css';
 
 const OrderCreate = () => {
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]); // 장바구니와 상품 정보
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const deliveryFormRef = useRef(null); // DeliveryForm을 참조
@@ -15,35 +15,18 @@ const OrderCreate = () => {
         const fetchCartItems = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const cartResponse = await axios.get('http://localhost:8080/api/carts', {
+                const response = await axios.get('http://localhost:8080/api/order', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
-                const cartData = cartResponse.data.carts || []; // 장바구니 리스트
-
-                const updatedCartItems = await Promise.all( // 상품 정보
-                    cartData.map(async (item) => {
-                        const productResponse = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        });
-
-                        return {
-                            ...item,
-                            name: productResponse.data.productName, // 상품 이름
-                            price: productResponse.data.price,     // 상품 가격
-                        };
-                    })
-                );
-
-                setCartItems(updatedCartItems); // 업데이트된 장바구니 항목 설정
+                const cartData = response.data.cartProducts || []; // 장바구니 + 상품 정보
+                setCartItems(cartData); // cartProducts 리스트
                 setLoading(false);
             } catch (error) {
-                console.error('장바구니 데이터를 가져오는 데 실패했습니다:', error);
-                setError('장바구니 데이터를 가져오는 중 오류가 발생했습니다.');
+                console.error('장바구니 및 상품 데이터를 가져오는 데 실패했습니다:', error);
+                setError('장바구니 및 상품 데이터를 가져오는 중 오류가 발생했습니다.');
                 setLoading(false);
             }
         };
@@ -63,7 +46,7 @@ const OrderCreate = () => {
     const submitOrder = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/orders', deliveryData, {
+            const response = await axios.post('http://localhost:8080/api/order', deliveryData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -78,13 +61,13 @@ const OrderCreate = () => {
         }
     };
 
-    // if (loading) {
-    //     return <div className="spinner">Loading...</div>;
-    // }
-    //
-    // if (error) {
-    //     return <p>{error}</p>;
-    // }
+    if (loading) {
+        return <div className="spinner">Loading...</div>;
+    }
+
+    if (error) {
+        return <p>{error}</p>;
+    }
 
     const totalOrderPrice = cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
     const deliveryFee = totalOrderPrice >= 20000 ? 0 : 2500;
@@ -104,11 +87,11 @@ const OrderCreate = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {cartItems.map((item) => (
-                            <tr key={item.productId}>
+                        {cartItems.map((item, index) => (
+                            <tr key={index}>
                                 <td className="product-info">
                                     <div>
-                                        <p className="product-name">{item.name}</p>
+                                        <p className="product-name">{item.productName}</p>
                                         <p className="product-quantity">수량: {item.quantity}</p>
                                     </div>
                                 </td>
