@@ -1,9 +1,6 @@
 package com.team2.fitinside.cart.service;
 
-import com.team2.fitinside.cart.dto.CartCreateRequestDto;
-import com.team2.fitinside.cart.dto.CartResponseDto;
-import com.team2.fitinside.cart.dto.CartResponseWrapperDto;
-import com.team2.fitinside.cart.dto.CartUpdateRequestDto;
+import com.team2.fitinside.cart.dto.*;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.cart.mapper.CartMapper;
@@ -60,7 +57,7 @@ public class CartService {
         Long loginMemberID = getAuthenticatedMemberId();
 
         // 이미 같은 장바구니가 있다면 수정
-        if(cartRepository.existsCartByMember_IdAndProduct_Id(loginMemberID, dto.getProductId())) {
+        if (cartRepository.existsCartByMember_IdAndProduct_Id(loginMemberID, dto.getProductId())) {
             Cart foundCart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElse(null);
             Objects.requireNonNull(foundCart).updateQuantity(dto.getQuantity());
             return;
@@ -84,12 +81,12 @@ public class CartService {
 
         Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
 
-        if(!loginMemberID.equals(cart.getMember().getId())) {
+        if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
 
         // 수량을 동일하게 수정하면 리턴
-        if(cart.getQuantity() == dto.getQuantity()) return;
+        if (cart.getQuantity() == dto.getQuantity()) return;
         cart.updateQuantity(dto.getQuantity());
     }
 
@@ -101,7 +98,7 @@ public class CartService {
 
         Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
 
-        if(!loginMemberID.equals(cart.getMember().getId())) {
+        if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
 
@@ -121,7 +118,7 @@ public class CartService {
     // 수정범위 확인 메서드
     static void checkQuantity(int quantity) {
 
-        if(quantity < 1 || quantity > 20) {
+        if (quantity < 1 || quantity > 20) {
             throw new CartOutOfRangeException("상품 수량은 1개 이상 20개 이하여야 합니다!");
         }
     }
@@ -146,4 +143,26 @@ public class CartService {
 //        return userDetails.getUsername(); // getUsername()을 호출
 ////        return (CustomUserDetails) authentication.getPrincipal().getUserName();
 //    }
+
+    // 장바구니 조회 시 상품 정보 포함
+    public CartProductResponseWrapperDto getCartProducts() {
+        Long loginMemberID = getAuthenticatedMemberId();
+        List<Object[]> results = cartRepository.findCartProductsByMemberId(loginMemberID);
+
+        // Object[] 결과를 CartProductDto로 변환
+        List<CartProductResponseDto> dtos = new ArrayList<>();
+        for (Object[] result : results) {
+            String productName = (String) result[0];
+            int price = (int) result[1];
+            int quantity = (int) result[2];
+            dtos.add(CartProductResponseDto.builder()
+                    .productName(productName)
+                    .price(price)
+                    .quantity(quantity)
+                    .build());
+        }
+
+        return new CartProductResponseWrapperDto("장바구니 조회(상품 정보 포함) 완료했습니다!", dtos);
+    }
+
 }

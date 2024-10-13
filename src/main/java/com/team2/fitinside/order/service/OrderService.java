@@ -1,7 +1,9 @@
 package com.team2.fitinside.order.service;
 
+import com.team2.fitinside.cart.dto.CartProductResponseWrapperDto;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
+import com.team2.fitinside.cart.service.CartService;
 import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.member.entity.Member;
@@ -36,6 +38,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
 
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long orderId) {
@@ -63,6 +66,11 @@ public class OrderService {
 
         return new OrderUserResponseWrapperDto(orders, ordersPage.getTotalPages());
 
+    }
+
+    // 장바구니 정보 조회
+    public CartProductResponseWrapperDto findOrderCreateData(){
+        return cartService.getCartProducts();
     }
 
     // 주문 생성
