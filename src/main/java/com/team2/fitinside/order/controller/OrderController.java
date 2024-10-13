@@ -1,8 +1,10 @@
 package com.team2.fitinside.order.controller;
 
+import com.team2.fitinside.cart.dto.CartProductResponseWrapperDto;
 import com.team2.fitinside.order.dto.OrderDetailResponseDto;
 import com.team2.fitinside.order.dto.OrderRequestDto;
 import com.team2.fitinside.order.dto.OrderUserResponseDto;
+import com.team2.fitinside.order.dto.OrderUserResponseWrapperDto;
 import com.team2.fitinside.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,11 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/orders")
+@RequestMapping("/api")
 @ApiResponses({
         @ApiResponse(responseCode = "403", description = "권한이 없습니다!", content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json"))
@@ -28,7 +28,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/{order_id}")
+    @GetMapping("/orders/{order_id}")
     @Operation(summary = "로그인한 회원의 상세 주문 조회", description = "상세 주문 조회")
     @ApiResponse(responseCode = "200", description = "상세 주문 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
@@ -37,15 +37,22 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping
+    @GetMapping("/orders")
     @Operation(summary = "로그인한 회원의 전체 주문 조회", description = "전체 주문 조회")
     @ApiResponse(responseCode = "200", description = "전체 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderUserResponseDto.class))))
-    public ResponseEntity<?> findAllOrders() {
-        List<OrderUserResponseDto> response = orderService.findAllOrders();
+    public ResponseEntity<?> findAllOrders(@RequestParam(required = false, value = "page", defaultValue = "1") int page) {
+        OrderUserResponseWrapperDto response = orderService.findAllOrders(page);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping
+    // 주문 생성 페이지에서 보여줘야할 정보
+    @GetMapping("/order")
+    public ResponseEntity<?> findOrderCreateData(){
+        CartProductResponseWrapperDto response = orderService.findOrderCreateData();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/order")
     @Operation(summary = "로그인한 회원의 주문 생성", description = "주문 생성")
     @ApiResponse(responseCode = "201", description = "주문 생성 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
     @ApiResponse(responseCode = "400", description = "품절된 상품", content = @Content(mediaType = "application/json"))
@@ -55,7 +62,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/{order_id}")
+    @PatchMapping("/orders/{order_id}")
     @Operation(summary = "로그인한 회원의 주문 수정", description = "주문 수정")
     @ApiResponse(responseCode = "200", description = "주문 수정 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
     @ApiResponse(responseCode = "400", description = "배송이 시작(완료)된 상품은 수정 불가", content = @Content(mediaType = "application/json"))
@@ -68,7 +75,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/{order_id}")
+    @DeleteMapping("/orders/{order_id}")
     @Operation(summary = "로그인한 회원의 주문 취소", description = "주문 취소")
     @ApiResponse(responseCode = "200", description = "주문 취소 완료", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "400", description = "배송이 시작(완료)된 상품은 취소 불가", content = @Content(mediaType = "application/json"))

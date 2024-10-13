@@ -1,7 +1,9 @@
 package com.team2.fitinside.order.service;
 
+import com.team2.fitinside.cart.dto.CartProductResponseWrapperDto;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
+import com.team2.fitinside.cart.service.CartService;
 import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.member.entity.Member;
@@ -10,17 +12,21 @@ import com.team2.fitinside.order.common.OrderStatus;
 import com.team2.fitinside.order.dto.OrderDetailResponseDto;
 import com.team2.fitinside.order.dto.OrderRequestDto;
 import com.team2.fitinside.order.dto.OrderUserResponseDto;
+import com.team2.fitinside.order.dto.OrderUserResponseWrapperDto;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
 import com.team2.fitinside.order.mapper.OrderMapper;
 import com.team2.fitinside.order.repository.OrderRepository;
 import com.team2.fitinside.product.entity.Product;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.team2.fitinside.global.exception.ErrorCode.*;
 
@@ -32,6 +38,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
 
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long orderId) {
@@ -47,16 +54,23 @@ public class OrderService {
     }
 
     // 전체 주문 조회 (회원)
-    public List<OrderUserResponseDto> findAllOrders() {
+    public OrderUserResponseWrapperDto findAllOrders(int page) {
 
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
 
-        List<Order> orders = orderRepository.findByMemberId(loginMemberId).stream()
-                .filter(order -> !order.isDeleted())
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
+        Page<Order> ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
 
-        return orderMapper.toOrderUserResponseDtoList(orders);
+        List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
 
+
+        return new OrderUserResponseWrapperDto(orders, ordersPage.getTotalPages());
+
+    }
+
+    // 장바구니 정보 조회
+    public CartProductResponseWrapperDto findOrderCreateData(){
+        return cartService.getCartProducts();
     }
 
     // 주문 생성
