@@ -91,6 +91,9 @@ public class CouponService {
             // 상품 가격이 최소 주문 금액보다 적은 경우
             if(couponMember.getCoupon().getMinValue() > product.getPrice()) continue;
 
+            // 상품을 이미 사용한 경우
+            if(couponMember.isUsed()) continue;
+
             AvailableCouponResponseDto availableCouponResponseDto = CouponMapper.INSTANCE.toAvailableCouponResponseDto(couponMember.getCoupon());
             availableCouponResponseDto.setCouponMemberId(couponMember.getId());
             dtos.add(availableCouponResponseDto);
