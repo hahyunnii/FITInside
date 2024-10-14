@@ -42,6 +42,10 @@ public class Order {
     @Builder.Default
     private int totalPrice = 0;
 
+    @Column(name = "discounted_total_price")
+    @Builder.Default
+    private int discountedTotalPrice = 0;
+
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
 
@@ -85,12 +89,13 @@ public class Order {
         }
     }
 
-    // 주문 상품 추가 및 총 가격 업데이트
+    // 주문 상품 추가 및 총 가격, 할인 가격 업데이트
     public void addOrderProduct(OrderProduct orderProduct) {
         this.orderProducts.add(orderProduct);
         orderProduct.setOrder(this); // OrderProduct에도 해당 Order 설정 (양방향 관계)
 
-        this.totalPrice += orderProduct.getDiscountedPrice();
+        this.totalPrice += orderProduct.getOrderProductPrice() * orderProduct.getCount();
+        this.discountedTotalPrice += orderProduct.getDiscountedPrice();
     }
 
     // 주문 수정
