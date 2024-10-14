@@ -6,7 +6,7 @@ import { Header, Footer } from "./fragments";
 import Home from "./Home";
 import { Cart } from "./cart";
 import { ProductSection, ProductList } from "./product";
-import { Login, Signup } from "./auth";
+import { Login, Signup, GoogleTokenCheck } from "./auth";
 import { MyPage } from "./member";
 import { OrderCreate, OrderDetail, OrderList, OrderAdminList } from "./order";
 import { CouponAdmin, CouponList, WelcomeCouponList } from "./coupon";
@@ -28,7 +28,9 @@ const App = () => {
 
                         <Route path="/login" element={<Login />} /> {/* login 화면 */}
                         <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
+                        <Route path="/tokenCheck" element={<GoogleTokenCheck />} /> {/* Google로그인 후 토큰 저장 */}
                         <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
+
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
 
