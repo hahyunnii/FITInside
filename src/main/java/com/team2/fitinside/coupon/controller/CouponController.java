@@ -1,6 +1,7 @@
 package com.team2.fitinside.coupon.controller;
 
 import com.team2.fitinside.coupon.dto.AvailableCouponResponseWrapperDto;
+import com.team2.fitinside.coupon.dto.CouponResponseDto;
 import com.team2.fitinside.coupon.dto.CouponResponseWrapperDto;
 import com.team2.fitinside.coupon.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class CouponController {
     @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseWrapperDto.class)))
     public ResponseEntity<CouponResponseWrapperDto> findAllCoupons(
             @RequestParam(required = false, value = "page", defaultValue = "1") int page,
-            @RequestParam(required = false, value = "includeInActiveCoupons", defaultValue = "false") boolean includeInActiveCoupons) throws AccessDeniedException {
+            @RequestParam(required = false, value = "includeInActiveCoupons", defaultValue = "false") boolean includeInActiveCoupons) {
 
         CouponResponseWrapperDto allCoupons = couponService.findAllCoupons(page, includeInActiveCoupons);
         return ResponseEntity.status(HttpStatus.OK).body(allCoupons);
@@ -44,6 +44,25 @@ public class CouponController {
 
         AvailableCouponResponseWrapperDto allAvailableCoupons = couponService.findAllAvailableCoupons(productId);
         return ResponseEntity.status(HttpStatus.OK).body(allAvailableCoupons);
+    }
+
+    @GetMapping("/code/{couponCode}")
+    @Operation(summary = "쿠폰 검색", description = "쿠폰 검색")
+    @ApiResponse(responseCode = "200", description = "쿠폰 정보 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseDto.class)))
+    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<CouponResponseDto> findCoupon(@PathVariable("couponCode") String couponCode) {
+
+        CouponResponseDto coupon = couponService.findCoupon(couponCode);
+        return ResponseEntity.status(HttpStatus.OK).body(coupon);
+    }
+
+    @GetMapping("/welcome")
+    @Operation(summary = "웰컴 쿠폰 목록 조회", description = "웰컴 쿠폰 목록 조회")
+    @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseWrapperDto.class)))
+    public ResponseEntity<CouponResponseWrapperDto> findWelcomeCoupons() {
+
+        CouponResponseWrapperDto allCoupons = couponService.findWelcomeCoupons();
+        return ResponseEntity.status(HttpStatus.OK).body(allCoupons);
     }
 
     @PostMapping
@@ -65,5 +84,13 @@ public class CouponController {
 
         couponService.redeemCoupon(couponMemberId);
         return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 사용되었습니다!");
+    }
+
+    // 쿠폰을 적용한 주문 조회
+    @GetMapping("/{couponId}/order")
+    public ResponseEntity<String> findOrder(@PathVariable("couponId") Long couponId) {
+
+        Long orderId = couponService.findOrder(couponId);
+        return ResponseEntity.status(HttpStatus.OK).body(Long.toString(orderId));
     }
 }

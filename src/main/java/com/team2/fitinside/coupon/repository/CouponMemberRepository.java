@@ -5,8 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CouponMemberRepository extends JpaRepository<CouponMember, Long> {
 
@@ -20,7 +22,9 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
     @Query("SELECT cm FROM CouponMember cm " +
             "WHERE cm.member.id = :memberId AND " +
             "(cm.coupon.category.id = :categoryId OR cm.coupon.category IS NULL)")
-    List<CouponMember> findByMember_IdAndCoupon_Category_Id(Long memberId, Long categoryId);
+    List<CouponMember> findByMember_IdAndCoupon_Category_Id(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
 
     boolean existsByCoupon_Code(String code);
+
+    Optional<CouponMember> findByMember_IdAndCoupon_IdAndUsedIs(Long memberId, Long couponId, boolean used);
 }

@@ -1,5 +1,6 @@
 package com.team2.fitinside.order.entity;
 
+import com.team2.fitinside.coupon.entity.CouponMember;
 import com.team2.fitinside.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,10 +33,17 @@ public class OrderProduct {
     private String orderProductName;
 
     @Column(name = "order_product_price", nullable = false)
-    private int orderProductPrice;
+    private int orderProductPrice; // 상품 1개의 주문 당시 가격
 
     @Column(name = "count", nullable = false)
     private int count;
+
+    @OneToOne
+    @JoinColumn(name = "coupon_member_id")
+    private CouponMember couponMember;
+
+    @Column(name = "discounted_price")
+    private int discountedPrice; // (상품가격 * 개수 - 할인)이 적용된 총가격
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;

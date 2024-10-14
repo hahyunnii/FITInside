@@ -22,6 +22,9 @@ public interface OrderMapper {
     @Mapping(source = "id", target="productId")
     OrderProductResponseDto toOrderProductResponseDto(OrderProduct orderProduct);
 
+    @Mapping(target = "orderStatus", expression = "java(order.getOrderStatus().getDisplayName())")
+    OrderStatusResponseDto toOrderStatusResponseDto(Order order);
+
     // Order -> OrderResponseDto 변환 (주문 상태 변경 시 사용)
     @Mapping(source = "id", target = "orderId")
 
