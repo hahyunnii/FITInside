@@ -85,4 +85,12 @@ public class CouponController {
         couponService.redeemCoupon(couponMemberId);
         return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 사용되었습니다!");
     }
+
+    // 쿠폰을 적용한 주문 조회
+    @GetMapping("/{couponId}/order")
+    public ResponseEntity<String> findOrder(@PathVariable("couponId") Long couponId) {
+
+        Long orderId = couponService.findOrder(couponId);
+        return ResponseEntity.status(HttpStatus.OK).body(Long.toString(orderId));
+    }
 }

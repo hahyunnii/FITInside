@@ -14,6 +14,8 @@ import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
+import com.team2.fitinside.order.entity.OrderProduct;
+import com.team2.fitinside.order.repository.OrderProductRepository;
 import com.team2.fitinside.product.entity.Product;
 import com.team2.fitinside.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class CouponService {
     private final CouponMemberRepository couponMemberRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final OrderProductRepository orderProductRepository;
 
     // 보유 쿠폰 모두 조회
     public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
@@ -160,6 +162,19 @@ public class CouponService {
         }
 
         couponMember.useCoupon();
+    }
+
+    // 쿠폰이 적용된 주문 찾기
+    public Long findOrder(Long couponId) {
+
+        Long loginMemberId = getAuthenticatedMemberId();
+
+        CouponMember foundCouponMember = couponMemberRepository.findByMember_IdAndCoupon_IdAndUsedIs(loginMemberId, couponId, true)
+                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        OrderProduct foundOrderProduct = orderProductRepository.findByCouponMember_Id(foundCouponMember.getId()).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        return foundOrderProduct.getOrder().getId();
     }
 
     private Long getAuthenticatedMemberId()  {
