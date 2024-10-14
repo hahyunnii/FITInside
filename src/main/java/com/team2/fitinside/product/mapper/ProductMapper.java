@@ -1,9 +1,6 @@
 package com.team2.fitinside.product.mapper;
 
-import com.team2.fitinside.product.dto.ProductCreateDto;
-import com.team2.fitinside.product.dto.ProductImgDto;
-import com.team2.fitinside.product.dto.ProductResponseDto;
-import com.team2.fitinside.product.dto.ProductUpdateDto;
+import com.team2.fitinside.product.dto.*;
 import com.team2.fitinside.product.entity.Product;
 import com.team2.fitinside.product.entity.ProductImg;
 import org.mapstruct.Mapper;
@@ -21,6 +18,10 @@ public interface ProductMapper {
 
     Product toEntity(Long id,ProductUpdateDto productUpdateDto);
 
+    @Mapping(target = "productImgUrls", ignore = true)
+    // ProductInsertDto -> ProductCreateDto 변환
+    ProductCreateDto toProductCreateDto(ProductInsertDto productInsertDto);
+
     // 기존 엔티티에 업데이트 정보를 반영하는 메서드
     void updateEntityFromDto(ProductUpdateDto productUpdateDto, @MappingTarget Product product);
 
@@ -31,4 +32,7 @@ public interface ProductMapper {
 
     // ProductImgDto -> ProductImg 엔티티 변환
     ProductImg toProductImg(ProductImgDto productImgDto);
+
+    @Mapping(target = "productImgUrls", ignore = true)
+    ProductUpdateDto toProductUpdateDto(ProductInsertDto productInsertDto);
 }
