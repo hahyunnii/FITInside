@@ -45,9 +45,11 @@ public class TokenProvider {
     // 토큰DTO 생성
     public TokenDto generateTokenDto(Authentication authentication) {
         String accessToken = generateAccessToken(authentication);
+        String refreshToken = generateRefreshToken(authentication);
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
