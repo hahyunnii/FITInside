@@ -167,14 +167,36 @@ const CategoryCreate = () => {
             });
     };
 
+    // const uploadCategoryImage = (categoryId) => {
+    //     const formData = new FormData();
+    //     formData.append('image', image);
+    //     console.log("토큰 값:", token); // 토큰 값을 콘솔에 출력
+    //
+    //     axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
+    //         headers: {
+    //             'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //             // 'Content-Type': 'multipart/form-data'
+    //         }
+    //     })
+    //         .then(() => {
+    //             navigate('/admin/categories');
+    //         })
+    //         .catch(error => {
+    //             console.error('Error uploading image:', error);
+    //             alert("이미지 업로드에 실패했습니다.");
+    //         });
+    // };
     const uploadCategoryImage = (categoryId) => {
+        const token = localStorage.getItem('token'); // token 변수를 선언하고 값을 가져옴
+        console.log("토큰 값:", token); // 콘솔에 토큰 값 출력
+
         const formData = new FormData();
         formData.append('image', image);
 
         axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                // 'Content-Type': 'multipart/form-data'
+                'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 추가
+                // 'Content-Type': 'multipart/form-data' // Axios가 자동으로 설정
             }
         })
             .then(() => {
@@ -185,6 +207,7 @@ const CategoryCreate = () => {
                 alert("이미지 업로드에 실패했습니다.");
             });
     };
+
 
     return (
         <div className="category-create-container">
