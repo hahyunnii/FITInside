@@ -60,6 +60,7 @@ public class CouponService {
         for (CouponMember couponMember : couponMembers) {
 
             CouponResponseDto couponResponseDto = CouponMapper.INSTANCE.toCouponResponseDto(couponMember.getCoupon());
+            couponResponseDto.setUsed(couponMember.isUsed());   // 사용 여부 설정
             if(couponMember.isUsed()) couponResponseDto.setActive(false);
             dtos.add(couponResponseDto);
         }
