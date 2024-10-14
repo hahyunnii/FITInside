@@ -24,6 +24,13 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
+    // 상품 전체 목록 조회 (카테고리 필터 없이 모든 상품 반환)
+    public List<ProductResponseDto> findAllProducts() {
+        return productRepository.findByIsDeletedFalse().stream()
+                .map(ProductMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
+    }
+
     // 카테고리 필터를 적용한 상품 목록 조회
     public List<ProductResponseDto> findAllProducts(Long categoryId) {
         return productRepository.findByIsDeletedFalse().stream()

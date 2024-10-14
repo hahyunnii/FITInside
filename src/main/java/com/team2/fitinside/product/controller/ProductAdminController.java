@@ -1,34 +1,79 @@
 package com.team2.fitinside.product.controller;
 
 import com.team2.fitinside.product.dto.ProductCreateDto;
+import com.team2.fitinside.product.dto.ProductInsertDto;
 import com.team2.fitinside.product.dto.ProductResponseDto;
 import com.team2.fitinside.product.dto.ProductUpdateDto;
+import com.team2.fitinside.product.image.S3ImageService;
+import com.team2.fitinside.product.mapper.ProductMapper;
 import com.team2.fitinside.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/products")
-@RequiredArgsConstructor
 public class ProductAdminController {
 
     private final ProductService productService;
+    private final S3ImageService s3ImageService; // S3ImageService 의존성 주입
+
+    // 생성자 주입
+    @Autowired
+    public ProductAdminController(ProductService productService, S3ImageService s3ImageService) {
+        this.productService = productService;
+        this.s3ImageService = s3ImageService; // 의존성 주입
+    }
 
     // 상품 등록 (관리자 전용)
-    @PostMapping
-    @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
+//    @PostMapping
+//    @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
+//    @ApiResponse(responseCode = "201", description = "상품 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
+//    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
+//    @ApiResponse(responseCode = "404", description = "카테고리가 존재하지 않음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateDto productCreateDto) {
+//        ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
+//        return ResponseEntity.status(201).body(createdProduct);
+//    }
+
+    @PostMapping(consumes = "multipart/form-data")
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "상품 등록", description = "새로운 상품을 등록하며 이미지를 함께 업로드합니다.")
     @ApiResponse(responseCode = "201", description = "상품 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
     @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "카테고리가 존재하지 않음", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductCreateDto productCreateDto) {
+    public ResponseEntity<ProductResponseDto> createProduct(
+            @ModelAttribute("productData") ProductInsertDto productInsertDto) {
+
+        // 이미지 업로드 처리 (S3 업로드 후 URL 생성)
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile image : productInsertDto.getProductImgUrls()) {
+            String imageUrl = s3ImageService.upload(image); // 인스턴스 메서드 호출
+            imageUrls.add(imageUrl);
+        }
+
+        // 매퍼를 사용하여 ProductInsertDto를 ProductCreateDto로 변환
+        ProductCreateDto productCreateDto = ProductMapper.INSTANCE.toProductCreateDto(productInsertDto);
+
+        // 이미지 URL 추가
+        productCreateDto.setProductImgUrls(imageUrls);
+
+        // 상품 등록 처리
         ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
         return ResponseEntity.status(201).body(createdProduct);
     }
+
+
 
     // 상품 수정 (관리자 전용)
     @PutMapping("/{id}")
