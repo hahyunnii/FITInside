@@ -56,7 +56,7 @@ const Cart = () => {
         setProductDetails({});
         setSelectedItems(new Set());
         setTotalDiscount(0);
-        setAppliedCoupons(null); // 전체 삭제 시 적용된 쿠폰 초기화
+        setAppliedCoupons([]); // 전체 삭제 시 적용된 쿠폰 초기화
     };
 
     const handleSelectAll = () => {
