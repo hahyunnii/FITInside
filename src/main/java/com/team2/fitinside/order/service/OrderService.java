@@ -5,14 +5,14 @@ import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
 import com.team2.fitinside.cart.service.CartService;
 import com.team2.fitinside.config.SecurityUtil;
+import com.team2.fitinside.coupon.entity.CouponMember;
+import com.team2.fitinside.coupon.repository.CouponMemberRepository;
+import com.team2.fitinside.coupon.service.CouponService;
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
 import com.team2.fitinside.order.common.OrderStatus;
-import com.team2.fitinside.order.dto.OrderDetailResponseDto;
-import com.team2.fitinside.order.dto.OrderRequestDto;
-import com.team2.fitinside.order.dto.OrderUserResponseDto;
-import com.team2.fitinside.order.dto.OrderUserResponseWrapperDto;
+import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
 import com.team2.fitinside.order.mapper.OrderMapper;
@@ -39,6 +39,8 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final CartService cartService;
+    private final CouponService couponService;
+    private final CouponMemberRepository couponMemberRepository;
 
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long orderId) {
@@ -69,7 +71,7 @@ public class OrderService {
     }
 
     // 장바구니 정보 조회
-    public CartProductResponseWrapperDto findOrderCreateData(){
+    public CartProductResponseWrapperDto findOrderCreateData() {
         return cartService.getCartProducts();
     }
 
@@ -89,6 +91,7 @@ public class OrderService {
         // 주문 생성
         Order order = Order.builder()
                 .member(findMember)
+                .deliveryFee(request.getDeliveryFee())
                 .deliveryAddress(request.getDeliveryAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
                 .deliveryPhone(request.getDeliveryPhone())
@@ -101,20 +104,39 @@ public class OrderService {
                 throw new CustomException(OUT_OF_STOCK);
             }
 
+            // 장바구니 상품ID와 일치하는 상품ID를 갖고 있는 OrderCartRequestDto 조회
+            OrderCartRequestDto orderCartRequestDto = request.getOrderItems().stream()
+                    .filter(dto -> dto.getProductId().equals(product.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(ORDER_PRODUCT_NOT_FOUND));
+
+            // id에 맞는 couponMember 조회
+            CouponMember couponMember = null;
+            if (orderCartRequestDto.getCouponMemberId() != null) {
+                couponMember = couponMemberRepository.findById(orderCartRequestDto.getCouponMemberId())
+                        .orElseThrow(() -> new CustomException(COUPON_NOT_FOUND));
+            }
+
             OrderProduct orderProduct = OrderProduct.builder()
                     .product(product)
                     .orderProductName(product.getProductName())
                     .orderProductPrice(product.getPrice())
                     .count(cart.getQuantity())
+                    .couponMember(couponMember)
+                    .discountedPrice(orderCartRequestDto.getDiscountedTotalPrice())
                     .build();
+
+            // 쿠폰 사용
+            if(orderCartRequestDto.getCouponMemberId() != null){
+                couponService.redeemCoupon(orderCartRequestDto.getCouponMemberId());
+            }
 
             // 주문에 상품 추가 (총가격도 업데이트)
             order.addOrderProduct(orderProduct);
-            cartRepository.delete(cart); // 로컬 스토리지도 삭제해야 함 나중에 확인!
+            cartRepository.delete(cart);
         }
 
         // 주문(+주문상품) 저장
-        order.calculateDeliveryFee();
         Order createdOrder = orderRepository.save(order);
         return orderMapper.toOrderDetailResponseDto(createdOrder);
     }
