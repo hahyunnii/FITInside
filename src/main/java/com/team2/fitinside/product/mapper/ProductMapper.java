@@ -32,4 +32,7 @@ public interface ProductMapper {
 
     // ProductImgDto -> ProductImg 엔티티 변환
     ProductImg toProductImg(ProductImgDto productImgDto);
+
+    @Mapping(target = "productImgUrls", ignore = true)
+    ProductUpdateDto toProductUpdateDto(ProductInsertDto productInsertDto);
 }
