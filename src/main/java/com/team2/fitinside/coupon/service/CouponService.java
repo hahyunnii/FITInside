@@ -38,6 +38,7 @@ public class CouponService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final SecurityUtil securityUtil;
 
     // 보유 쿠폰 모두 조회
     public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
@@ -180,7 +181,7 @@ public class CouponService {
 
     private Long getAuthenticatedMemberId()  {
         try {
-            return SecurityUtil.getCurrentMemberId();
+            return securityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }

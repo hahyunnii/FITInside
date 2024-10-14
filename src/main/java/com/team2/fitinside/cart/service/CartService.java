@@ -29,6 +29,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final SecurityUtil securityUtil;
 
     // 장바구니 조회 메서드
     public CartResponseWrapperDto findAllCarts() {
@@ -127,7 +128,7 @@ public class CartService {
     // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
     private Long getAuthenticatedMemberId() {
         try {
-            return SecurityUtil.getCurrentMemberId();
+            return securityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
