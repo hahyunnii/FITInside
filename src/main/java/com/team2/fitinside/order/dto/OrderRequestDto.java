@@ -12,5 +12,7 @@ public class OrderRequestDto { // 주문 생성, 수정 DTO
     private String deliveryAddress;
     private String deliveryReceiver;
     private String deliveryPhone;
+    private List<OrderCartRequestDto> orderItems;
+    private int deliveryFee;
 
 }

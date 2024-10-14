@@ -90,7 +90,7 @@ public class Order {
         this.orderProducts.add(orderProduct);
         orderProduct.setOrder(this); // OrderProduct에도 해당 Order 설정 (양방향 관계)
 
-        this.totalPrice += orderProduct.getOrderProductPrice() * orderProduct.getCount();
+        this.totalPrice += orderProduct.getDiscountedPrice();
     }
 
     // 주문 수정
@@ -99,10 +99,5 @@ public class Order {
         this.deliveryReceiver = request.getDeliveryReceiver();
         this.deliveryPhone = request.getDeliveryPhone();
     }
-
-    public void calculateDeliveryFee() {
-        this.deliveryFee = (this.totalPrice >= 20000) ? 0 : 2500;
-    }
-
 
 }

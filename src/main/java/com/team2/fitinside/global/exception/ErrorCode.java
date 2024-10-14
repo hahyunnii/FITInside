@@ -38,6 +38,7 @@ public enum ErrorCode {
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     CART_EMPTY(HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
+    ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품에 대한 주문을 찾을 수 없습니다."),
 
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
