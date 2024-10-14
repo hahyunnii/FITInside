@@ -61,11 +61,69 @@ const ProductManagement = () => {
     };
 
     // 상품 삭제
+    // const handleDeleteClick = async (productId) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
+    //         if (response.ok) {
+    //             setProducts(products.filter((product) => product.id !== productId));
+    //         } else {
+    //             console.error('상품 삭제 실패');
+    //         }
+    //     } catch (error) {
+    //         console.error('상품 삭제 중 오류 발생:', error);
+    //     }
+    // };
+    //////////
+    // const handleDeleteClick = async (productId) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
+    //         if (response.ok) {
+    //             // 삭제된 상품의 isDeleted 필드만 true로 업데이트
+    //             setProducts((prevProducts) =>
+    //                 prevProducts.map((product) =>
+    //                     product.id === productId ? { ...product, isDeleted: true } : product
+    //                 )
+    //             );
+    //         } else {
+    //             console.error('상품 삭제 실패');
+    //         }
+    //     } catch (error) {
+    //         console.error('상품 삭제 중 오류 발생:', error);
+    //     }
+    // };
+    ////////////
+    // const handleDeleteClick = async (productId) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
+    //         if (response.ok) {
+    //             // 상품 목록에서 해당 상품을 바로 제거
+    //             setProducts((prevProducts) =>
+    //                 prevProducts.filter((product) => product.id !== productId)
+    //             );
+    //         } else {
+    //             console.error('상품 삭제 실패');
+    //         }
+    //     } catch (error) {
+    //         console.error('상품 삭제 중 오류 발생:', error);
+    //     }
+    // };
+
     const handleDeleteClick = async (productId) => {
+        // 삭제 확인 경고문 표시
+        const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
+
+        if (!confirmDelete) {
+            // 사용자가 삭제를 취소한 경우
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
             if (response.ok) {
-                setProducts(products.filter((product) => product.id !== productId));
+                // 상품 목록에서 해당 상품을 바로 제거
+                setProducts((prevProducts) =>
+                    prevProducts.filter((product) => product.id !== productId)
+                );
             } else {
                 console.error('상품 삭제 실패');
             }
@@ -73,6 +131,10 @@ const ProductManagement = () => {
             console.error('상품 삭제 중 오류 발생:', error);
         }
     };
+
+
+
+
 
     // 상품 수정 폼 제출
     const handleFormSubmit = async (e) => {
