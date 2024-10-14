@@ -45,13 +45,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // 주문 생성 페이지에서 보여줘야할 정보
-    @GetMapping("/order")
-    public ResponseEntity<?> findOrderCreateData(){
-        CartProductResponseWrapperDto response = orderService.findOrderCreateData();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @PostMapping("/order")
     @Operation(summary = "로그인한 회원의 주문 생성", description = "주문 생성")
     @ApiResponse(responseCode = "201", description = "주문 생성 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
