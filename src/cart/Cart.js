@@ -4,6 +4,7 @@ import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCa
 import AvailableCouponModal from '../coupon/AvailableCouponModal';
 import './cart.css';
 
+
 const Cart = () => {
     const [cart, setCart] = useState([]);
     const [productDetails, setProductDetails] = useState({});
