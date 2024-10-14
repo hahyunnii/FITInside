@@ -12,32 +12,28 @@ const ProductManagement = () => {
         info: '',
         stock: '',
         manufacturer: '',
-        productImgUrls: [],
+        productImgUrls: [], // 기존 이미지 URL 배열
     });
-    const [selectedImages, setSelectedImages] = useState([]); // 새로 업로드할 이미지 저장
+    const [selectedImages, setSelectedImages] = useState([]); // 새로 업로드할 이미지 파일들 저장
 
     // 상품 목록 가져오기
     useEffect(() => {
         fetchProducts();
     }, []);
 
-
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/products'); // 서버에서 상품 목록을 가져옴
-            console.log('Response status:', response.status);
+            const response = await fetch('http://localhost:8080/api/products');
             const data = await response.json();
-            console.log('Fetched data:', data);
             setProducts(data);
         } catch (error) {
             console.error('상품 목록을 불러오는 중 오류 발생:', error);
         }
     };
 
-
-    // 수정 아이콘 클릭 시, 해당 상품 데이터 설정
+    // 수정할 상품 선택
     const handleEditClick = (product) => {
-        setEditProduct(product); // 수정할 상품 선택
+        setEditProduct(product);
         setFormData({
             isDeleted: product.isDeleted,
             categoryId: product.categoryId,
@@ -46,28 +42,28 @@ const ProductManagement = () => {
             info: product.info || '',
             stock: product.stock,
             manufacturer: product.manufacturer || '',
-            productImgUrls: product.productImgUrls, // 이미지 URL 배열로 처리
+            productImgUrls: product.productImgUrls, // 기존 이미지 URLs
         });
-        setSelectedImages([]); // 이미지 선택 초기화
+        setSelectedImages([]); // 새 이미지 초기화
     };
 
     // 이미지 선택 핸들러
     const handleImageChange = (e) => {
-        setSelectedImages([...e.target.files]); // 선택된 이미지 파일들 저장
+        setSelectedImages([...e.target.files]); // 새로 선택한 이미지 파일들 저장
     };
 
     // 기존 이미지 삭제 핸들러
     const handleDeleteExistingImage = (imageUrl) => {
         setFormData({
             ...formData,
-            productImgUrls: formData.productImgUrls.filter((url) => url !== imageUrl), // 이미지 배열에서 선택된 이미지 삭제
+            productImgUrls: formData.productImgUrls.filter((url) => url !== imageUrl), // 삭제한 이미지 URL 제거
         });
     };
 
-    // 삭제 버튼 클릭 시 상품 삭제
+    // 상품 삭제
     const handleDeleteClick = async (productId) => {
         try {
-            const response = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+            const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
             if (response.ok) {
                 setProducts(products.filter((product) => product.id !== productId));
             } else {
@@ -78,7 +74,7 @@ const ProductManagement = () => {
         }
     };
 
-    // 수정 폼 제출 시 상품 수정
+    // 상품 수정 폼 제출
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
@@ -103,16 +99,12 @@ const ProductManagement = () => {
         });
 
         try {
-            // 백엔드 서버 경로로 요청을 보냅니다 (localhost:8080)
-            const response = await fetch(`http://localhost:8080/api/products/${editProduct.id}`, {
+            const response = await fetch(`http://localhost:8080/api/admin/products/${editProduct.id}`, {
                 method: 'PUT',
-                headers: {
-                    // 'Authorization': `Bearer ${yourAuthToken}`, // 인증 토큰 추가
-                },
-                body: data,
+                body: data, // FormData 사용
             });
+
             if (response.ok) {
-                // 수정된 데이터로 상태를 업데이트
                 fetchProducts();
                 setEditProduct(null); // 수정 완료 후 초기화
             } else {
@@ -123,7 +115,7 @@ const ProductManagement = () => {
         }
     };
 
-
+    // 입력 값 변경 핸들러
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -132,6 +124,7 @@ const ProductManagement = () => {
     return (
         <div className="container mt-5">
             <h1>상품 관리</h1>
+
             {/* 상품 목록 테이블 */}
             <table className="table table-bordered">
                 <thead>

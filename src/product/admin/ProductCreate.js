@@ -42,7 +42,7 @@ const ProductCreate = () => {
 
         // 서버에 데이터 전송 로직 작성
         try {
-            const response = await fetch('/api/products', {
+            const response = await fetch('http://localhost:8080/api/admin/products', {
                 method: 'POST',
                 body: data
             });
