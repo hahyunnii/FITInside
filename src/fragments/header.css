@@ -1,0 +1,7 @@
+.navbar-brand img {
+    width: 100px; /* 원하는 너비로 조정 */
+    height: auto; /* 비율을 유지하도록 설정 */
+}
+.nav-item {
+    margin-right: 15px; /* 항목 간의 간격을 설정 */
+}

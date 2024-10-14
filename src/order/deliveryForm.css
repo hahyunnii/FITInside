@@ -1,0 +1,50 @@
+.delivery-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+h4 {
+    padding-top: 50px;
+}
+
+.delivery-table td {
+    padding: 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd; /* 각 행 구분선 유지 */
+}
+
+.delivery-table .label-cell {
+    width: 20%; /* 라벨 셀의 너비 */
+}
+
+.delivery-table .input-cell {
+    width: 80%; /* 입력 셀의 너비 */
+}
+
+.delivery-table .input-cell input[type="text"] {
+    width: 70%; /* 받는 분과 주소 입력 필드의 너비 조정 */
+    height: 30px; /* 입력 필드 높이 줄임 */
+    padding: 4px 8px; /* 내부 여백 조정 */
+    box-sizing: border-box;
+    border: 1px solid #ddd; /* 입력 필드 테두리 조정 */
+    border-radius: 4px; /* 모서리 둥글게 처리 */
+}
+
+.phone-number-container {
+    display: flex;
+    gap: 5px;
+}
+
+.phone-number-container select {
+    width: 65px; /* 선택 상자의 너비를 충분히 줄여서 '010'이 잘리지 않도록 조정 */
+}
+
+.phone-number-container input {
+    width: 50px; /* 각 입력 필드의 너비를 더 줄여서 크기를 조정 */
+    height: 30px; /* 입력 필드 높이 조정 */
+    padding: 4px 8px; /* 내부 여백 조정 */
+    box-sizing: border-box;
+    border: 1px solid #ddd; /* 입력 필드 테두리 조정 */
+    border-radius: 4px; /* 모서리 둥글게 처리 */
+}

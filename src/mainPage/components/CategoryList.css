@@ -1,0 +1,55 @@
+.category-list {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;
+    flex-wrap: wrap; /* 줄 바꿈 허용 */
+    gap: 20px; /* 카테고리 사이의 간격 */
+    padding: 20px 0;
+    background-color: #f9f9f9; /* 배경색 (선택사항) */
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100px;
+    padding: 10px;
+}
+
+.category-item img {
+    width: 80px; /* 이미지 크기 */
+    height: 80px; /* 이미지 크기 */
+    border-radius: 50%; /* 둥근 이미지 */
+    object-fit: cover; /* 이미지 비율 유지 */
+}
+
+.category-item span {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333; /* 텍스트 색상 */
+}
+
+
+/*.add-category-button {*/
+/*    display: block;*/
+/*    margin: 20px auto 0;*/
+/*    padding: 10px 20px;*/
+/*    background-color: #efefef;*/
+/*    color: #333;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+.add-category-button {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #efefef;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
