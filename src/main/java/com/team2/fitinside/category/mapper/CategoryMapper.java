@@ -80,6 +80,8 @@ public class CategoryMapper {
                 .build();
     }
 
+
+
     // 부모 카테고리 ID를 반환하는 헬퍼 메서드
     private static Long getParentId(Category category) {
         return category.getParent() != null ? category.getParent().getId() : null;
