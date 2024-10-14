@@ -19,6 +19,9 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         List<CategoryResponseDTO> categories = categoryService.getAllCategories();
+//        if (categories.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
         return ResponseEntity.ok(categories);
     }
 
@@ -29,6 +32,4 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 }
-
-
 
