@@ -3,6 +3,7 @@ package com.team2.fitinside.order.mapper;
 import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
+import jakarta.persistence.MapsId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -20,6 +21,8 @@ public interface OrderMapper {
     OrderDetailResponseDto toOrderDetailResponseDto(Order order);
 
     @Mapping(source = "id", target="productId")
+    @Mapping(target = "couponName",
+            expression = "java(orderProduct.getCouponMember() != null ? orderProduct.getCouponMember().getCoupon().getName() : null)")
     OrderProductResponseDto toOrderProductResponseDto(OrderProduct orderProduct);
 
     @Mapping(target = "orderStatus", expression = "java(order.getOrderStatus().getDisplayName())")
