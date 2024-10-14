@@ -1,4 +1,5 @@
 package com.team2.fitinside.category.entity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,9 +29,11 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonManagedReference // 순환 참조 방지
     private Category parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // 순환 참조 방지
     private List<Category> children = new ArrayList<>();
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,6 +48,18 @@ public class Category {
         this.name = name;
         this.displayOrder = displayOrder;
         this.parent = parent;
+    }
+
+    // 하위 카테고리를 추가하는 메서드
+    public void addChildCategory(Category child) {
+        child.parent = this;
+        this.children.add(child);
+    }
+
+    // 하위 카테고리를 제거하는 메서드
+    public void removeChildCategory(Category child) {
+        this.children.remove(child);
+        child.parent = null;
     }
 }
 
