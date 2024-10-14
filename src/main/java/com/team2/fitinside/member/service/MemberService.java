@@ -21,16 +21,17 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
+    private final SecurityUtil securityUtil;
 
     public MemberResponseDto getMyInfoBySecurity() {
-        Member me = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+        Member me = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return memberMapper.memberToResponse(me);
     }
 
     @Transactional
     public MemberResponseDto changeMemberUserName(String userName) {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         member.setUserName(userName);
         return memberMapper.memberToResponse(memberRepository.save(member));
@@ -38,7 +39,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto changeMemberPassword(String exPassword, String newPassword) {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         if (!passwordEncoder.matches(exPassword, member.getPassword())) {
             throw new CustomException(ErrorCode.AUTH_CODE_EXTENSION);
@@ -50,7 +51,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto changeMemberPhone(String phone) {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         member.setPhone(phone);
         return memberMapper.memberToResponse(memberRepository.save(member));
@@ -58,7 +59,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto deleteMember(){
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         memberRepository.delete(member);
         return memberMapper.memberToResponse(member);
