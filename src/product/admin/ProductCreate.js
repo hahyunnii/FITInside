@@ -13,6 +13,7 @@ const ProductCreate = () => {
     });
 
     const [images, setImages] = useState([]);
+    const [previewImages, setPreviewImages] = useState([]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,7 +21,12 @@ const ProductCreate = () => {
     };
 
     const handleImageChange = (e) => {
-        setImages([...e.target.files]);
+        const selectedFiles = Array.from(e.target.files);
+        setImages(selectedFiles);
+
+        // 미리보기 이미지 생성
+        const previewUrls = selectedFiles.map(file => URL.createObjectURL(file));
+        setPreviewImages(previewUrls);
     };
 
     const handleSubmit = async (e) => {
@@ -36,11 +42,10 @@ const ProductCreate = () => {
         data.append('condition', formData.condition);
 
         // 이미지를 FormData에 추가
-        images.forEach((image, index) => {
+        images.forEach((image) => {
             data.append('productImgUrls', image);
         });
 
-        // 서버에 데이터 전송 로직 작성
         try {
             const response = await fetch('http://localhost:8080/api/admin/products', {
                 method: 'POST',
@@ -136,44 +141,7 @@ const ProductCreate = () => {
                         />
                     </div>
                 </div>
-                {/*<div className="form-group row">*/}
-                {/*    <label className="col-sm-2 col-form-label">상태</label>*/}
-                {/*    <div className="col-sm-5">*/}
-                {/*        <div className="form-check form-check-inline">*/}
-                {/*            <input*/}
-                {/*                className="form-check-input"*/}
-                {/*                type="radio"*/}
-                {/*                name="condition"*/}
-                {/*                value="New"*/}
-                {/*                checked={formData.condition === 'New'}*/}
-                {/*                onChange={handleChange}*/}
-                {/*            />*/}
-                {/*            <label className="form-check-label">신규 제품</label>*/}
-                {/*        </div>*/}
-                {/*        <div className="form-check form-check-inline">*/}
-                {/*            <input*/}
-                {/*                className="form-check-input"*/}
-                {/*                type="radio"*/}
-                {/*                name="condition"*/}
-                {/*                value="Old"*/}
-                {/*                checked={formData.condition === 'Old'}*/}
-                {/*                onChange={handleChange}*/}
-                {/*            />*/}
-                {/*            <label className="form-check-label">중고 제품</label>*/}
-                {/*        </div>*/}
-                {/*        <div className="form-check form-check-inline">*/}
-                {/*            <input*/}
-                {/*                className="form-check-input"*/}
-                {/*                type="radio"*/}
-                {/*                name="condition"*/}
-                {/*                value="Refurbished"*/}
-                {/*                checked={formData.condition === 'Refurbished'}*/}
-                {/*                onChange={handleChange}*/}
-                {/*            />*/}
-                {/*            <label className="form-check-label">재생 제품</label>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
+                {/* 이미지 업로드 필드 */}
                 <div className="form-group row">
                     <label className="col-sm-2 col-form-label">이미지 업로드</label>
                     <div className="col-sm-3">
@@ -186,6 +154,26 @@ const ProductCreate = () => {
                         />
                     </div>
                 </div>
+
+                {/* 이미지 미리보기 */}
+                <div className="form-group row">
+                    <label className="col-sm-2 col-form-label">이미지 미리보기</label>
+                    <div className="col-sm-10">
+                        <div className="row">
+                            {previewImages.map((src, index) => (
+                                <div key={index} className="col-md-3">
+                                    <img
+                                        src={src}
+                                        alt={`미리보기 ${index + 1}`}
+                                        className="img-thumbnail"
+                                        style={{ width: '100%', height: 'auto' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 <div className="form-group row">
                     <div className="col-sm-10">
                         <button type="submit" className="btn btn-primary">등록</button>
