@@ -1,77 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import DeliveryForm from "./DeliveryForm";
 import '../cart/cart.css';
 import './orderCreate.css';
 
 const OrderCreate = () => {
-    const [cartItems, setCartItems] = useState([]); // 장바구니와 상품 정보
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [orderItems, setOrderItems] = useState([]); // 장바구니와 상품 정보
+    const [deliveryFee, setDeliveryFee] = useState(0); // 배송비
+    const [totalOriginalPrice, setTotalOriginalPrice] = useState(0); // 할인 전 총 금액
+    const [totalDiscountedPrice, setTotalDiscountedPrice] = useState(0); // 할인된 총 금액
     const deliveryFormRef = useRef(null); // DeliveryForm을 참조
 
-    // 장바구니 데이터와 상품 정보를 가져오기
+    // 장바구니 데이터와 배송비, 할인가격 로컬 스토리지에서 가져오기
     useEffect(() => {
-        const fetchCartItems = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8080/api/order', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        const storedOrderData = JSON.parse(localStorage.getItem('orderData')) || [];
+        const storedShippingCost = JSON.parse(localStorage.getItem('shippingCost')) || 0;
 
-                const cartData = response.data.cartProducts || []; // 장바구니 + 상품 정보
-                setCartItems(cartData); // cartProducts 리스트
-                setLoading(false);
-            } catch (error) {
-                console.error('장바구니 및 상품 데이터를 가져오는 데 실패했습니다:', error);
-                setError('장바구니 및 상품 데이터를 가져오는 중 오류가 발생했습니다.');
-                setLoading(false);
-            }
-        };
+        setOrderItems(storedOrderData); // 장바구니 데이터
+        setDeliveryFee(storedShippingCost); // 배송비
 
-        fetchCartItems();
+        // 총 금액과 할인된 금액 계산
+        const totalOriginal = storedOrderData.reduce((acc, item) => acc + item.originalTotalPrice, 0);
+        const totalDiscounted = storedOrderData.reduce((acc, item) => acc + item.discountedTotalPrice, 0);
+
+        setTotalOriginalPrice(totalOriginal);
+        setTotalDiscountedPrice(totalDiscounted);
     }, []);
 
     const handleOrderSubmit = async () => {
         const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
+        console.log("배송 정보: ", deliveryData);
         if (!deliveryData || Object.keys(deliveryData).length === 0) {
             alert('배송 정보를 입력해주세요.');
             return;
         }
-        submitOrder(deliveryData);
+
+        const { deliveryAddress, deliveryReceiver, deliveryPhone } = deliveryData;  // deliveryData를 분리
+
+        submitOrder(deliveryAddress, deliveryReceiver, deliveryPhone);  // 개별 필드를 전달
     };
 
-    const submitOrder = async (deliveryData) => {
+    const submitOrder = async (deliveryAddress, deliveryReceiver, deliveryPhone) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/order', deliveryData, {
+            const response = await fetch('http://localhost:8080/api/order', {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
+                body: JSON.stringify({
+                    deliveryAddress,
+                    deliveryReceiver,
+                    deliveryPhone,
+                    orderItems,
+                    deliveryFee,
+                }),
             });
+            const result = await response.json();
             alert('주문이 완료되었습니다.');
+            localStorage.removeItem('orderData');
+            localStorage.removeItem('shippingCost');
             localStorage.removeItem('localCart');
             localStorage.removeItem('dbCart');
-            window.location.href = `/orders/${response.data.orderId}`;
+            window.location.href = `/orders/${result.orderId}`;
         } catch (error) {
             console.error('주문이 실패했습니다:', error);
             alert('주문이 실패했습니다. 다시 시도해주세요.');
         }
     };
 
-    if (loading) {
-        return <div className="spinner">Loading...</div>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
-
-    const totalOrderPrice = cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
-    const deliveryFee = totalOrderPrice >= 20000 ? 0 : 2500;
-    const totalPayment = totalOrderPrice + deliveryFee;
+    const discountAmount = totalOriginalPrice - totalDiscountedPrice; // 할인 금액 계산
+    const totalPayment = totalDiscountedPrice + deliveryFee; // 최종 결제 금액 계산
 
     return (
         <div className="container order-create-container my-5">
@@ -87,16 +86,28 @@ const OrderCreate = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {cartItems.map((item, index) => (
+                        {orderItems.map((item, index) => (
                             <tr key={index}>
                                 <td className="product-info">
                                     <div>
                                         <p className="product-name">{item.productName}</p>
                                         <p className="product-quantity">수량: {item.quantity}</p>
+                                        {item.couponName && <p className="coupon-info">적용된 쿠폰 [{item.couponName}]</p>}
                                     </div>
                                 </td>
                                 <td className="product-price">
-                                    {(item.price * item.quantity).toLocaleString()} 원
+                                    {item.originalTotalPrice !== item.discountedTotalPrice ? (
+                                        <div>
+                                            <p style={{ textDecoration: 'line-through', marginBottom: '5px' }}>
+                                                {item.originalTotalPrice.toLocaleString()} 원
+                                            </p>
+                                            <p style={{ color: '#B22222' }}>
+                                                {item.discountedTotalPrice.toLocaleString()} 원
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p>{item.originalTotalPrice.toLocaleString()} 원</p>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -108,8 +119,12 @@ const OrderCreate = () => {
                 <div className="right-container">
                     <div className="order-summary-box">
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <p>총 상품 금액 ({cartItems.length})</p>
-                            <p>{totalOrderPrice.toLocaleString()} 원</p>
+                            <p>총 상품 금액 ({orderItems.length})</p>
+                            <p>{totalOriginalPrice.toLocaleString()} 원</p>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p>할인 금액</p>
+                            <p style={{ color: '#B22222' }}>- {discountAmount.toLocaleString()} 원</p>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <p>배송비</p>
