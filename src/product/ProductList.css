@@ -1,0 +1,20 @@
+/* Ensuring the card body and image have consistent size */
+.card-body {
+    min-height: 150px; /* Adjust the height to fit the content */
+}
+
+.product-image {
+    object-fit: cover; /* Ensure images cover the container */
+    height: 300px; /* Fixed height for all images */
+    width: 100%; /* Make sure images take full width */
+}
+
+.card {
+    height: 100%; /* Ensure cards are of equal height */
+    display: flex;
+    flex-direction: column;
+}
+
+.card-footer {
+    margin-top: auto; /* Push the footer to the bottom */
+}

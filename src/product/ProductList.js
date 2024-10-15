@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import './ProductList.css'; // Import CSS file for custom styles
 
 const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
@@ -58,11 +59,11 @@ const ProductList = () => {
                                             Sale
                                         </div>
                                     )}
-                                    {/* Product images (displays the first image) */}
+                                    {/* Product image */}
                                     {product.productImgUrls && product.productImgUrls.length > 0 ? (
-                                        <img className="card-img-top" src={product.productImgUrls[0]} alt={product.productName} />
+                                        <img className="card-img-top product-image" src={product.productImgUrls[0]} alt={product.productName} />
                                     ) : (
-                                        <img className="card-img-top" src="/placeholder-image.jpg" alt="No image available" />
+                                        <img className="card-img-top product-image" src="/placeholder-image.jpg" alt="No image available" />
                                     )}
                                     {/* Product details */}
                                     <div className="card-body p-4">
