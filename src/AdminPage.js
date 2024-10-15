@@ -6,6 +6,9 @@ const AdminPage = () => {
         <div style={{ padding: '20px' }}>
             <h2 className="mb-4">관리자 페이지</h2>
             <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
+                <Link to='/admin/member' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>
+                    회원 관리
+                </Link>
                 <Link to='/admin/coupons' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>
                     쿠폰 관리
                 </Link>
