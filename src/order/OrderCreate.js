@@ -34,12 +34,12 @@ const OrderCreate = () => {
             return;
         }
 
-        const { deliveryAddress, deliveryReceiver, deliveryPhone } = deliveryData;  // deliveryData를 분리
+        const { postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone } = deliveryData;  // deliveryData를 분리
 
-        submitOrder(deliveryAddress, deliveryReceiver, deliveryPhone);  // 개별 필드를 전달
+        submitOrder(postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone);  // 개별 필드를 전달
     };
 
-    const submitOrder = async (deliveryAddress, deliveryReceiver, deliveryPhone) => {
+    const submitOrder = async (postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone) => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:8080/api/order', {
@@ -49,7 +49,9 @@ const OrderCreate = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
+                    postalCode,
                     deliveryAddress,
+                    detailedAddress,
                     deliveryReceiver,
                     deliveryPhone,
                     orderItems,

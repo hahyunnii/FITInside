@@ -37,7 +37,9 @@ const OrderDetail = () => {
 
                 setOrderDetail(response.data);
                 setDeliveryData({
+                    postalCode: response.data.postalCode,
                     deliveryAddress: response.data.deliveryAddress,
+                    detailedAddress: response.data.detailedAddress,
                     deliveryReceiver: response.data.deliveryReceiver,
                     deliveryPhone: response.data.deliveryPhone,
                 });
@@ -53,7 +55,9 @@ const OrderDetail = () => {
     const handleEditClick = () => {
         // isEditing 상태가 변경될 때 deliveryData를 최신 orderDetail 정보로 설정
         setDeliveryData({
+            postalCode: orderDetail.postalCode,
             deliveryAddress: orderDetail.deliveryAddress,
+            detailedAddress: orderDetail.detailedAddress,
             deliveryReceiver: orderDetail.deliveryReceiver,
             deliveryPhone: orderDetail.deliveryPhone,
         });
@@ -75,7 +79,9 @@ const OrderDetail = () => {
 
             setOrderDetail(response.data);
             setDeliveryData({
+                postalCode: response.data.postalCode,
                 deliveryAddress: response.data.deliveryAddress,
+                detailedAddress: response.data.detailedAddress,
                 deliveryReceiver: response.data.deliveryReceiver,
                 deliveryPhone: response.data.deliveryPhone,
             }); // 업데이트된 데이터를 deliveryData에 반영
@@ -232,7 +238,7 @@ const OrderDetail = () => {
                         <td className="receiver-info">
                             {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
                             <br />
-                            {orderDetail.deliveryAddress}
+                            ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
                         </td>
                     </tr>
                     </tbody>
