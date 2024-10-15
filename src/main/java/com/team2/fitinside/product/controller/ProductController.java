@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,22 +22,53 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // 상품 목록 조회 (카테고리 필터 없이 모든 상품 반환)
+//    // 상품 목록 조회 (카테고리 필터 없이 모든 상품 반환)
+//    @GetMapping
+//    @Operation(summary = "상품 목록 조회", description = "등록된 모든 상품 목록을 반환합니다.")
+//    @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
+//    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+//        List<ProductResponseDto> products = productService.findAllProducts();
+//        return ResponseEntity.ok(products);
+//    }
+//
+//
+//    // 상품 목록 조회 (카테고리별)
+//    @GetMapping("/category/{categoryId}")
+//    @Operation(summary = "상품 목록 조회", description = "특정 카테고리에 해당하는 모든 상품 목록을 반환합니다.")
+//    @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
+//    public ResponseEntity<List<ProductResponseDto>> getProductsByCategory(@PathVariable Long categoryId) {
+//        List<ProductResponseDto> products = productService.findAllProducts(categoryId);
+//        return ResponseEntity.ok(products);
+//    }
+
+    // 페이지네이션, 정렬, 검색을 적용한 상품 목록 조회
     @GetMapping
-    @Operation(summary = "상품 목록 조회", description = "등록된 모든 상품 목록을 반환합니다.")
+    @Operation(summary = "상품 목록 조회", description = "등록된 모든 상품 목록을 페이지네이션, 정렬, 검색 기능과 함께 반환합니다.")
     @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        List<ProductResponseDto> products = productService.findAllProducts();
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size,
+            @RequestParam(value = "sortField", defaultValue = "createdAt") String sortField,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        Page<ProductResponseDto> products = productService.getAllProducts(page, size, sortField, sortDir, keyword);
         return ResponseEntity.ok(products);
     }
 
-
-    // 상품 목록 조회 (카테고리별)
+    // 페이지네이션, 정렬, 검색을 적용한 특정 카테고리 상품 목록 조회
     @GetMapping("/category/{categoryId}")
-    @Operation(summary = "상품 목록 조회", description = "특정 카테고리에 해당하는 모든 상품 목록을 반환합니다.")
+    @Operation(summary = "카테고리별 상품 목록 조회", description = "특정 카테고리의 상품 목록을 페이지네이션, 정렬, 검색 기능과 함께 반환합니다.")
     @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
-    public ResponseEntity<List<ProductResponseDto>> getProductsByCategory(@PathVariable Long categoryId) {
-        List<ProductResponseDto> products = productService.findAllProducts(categoryId);
+    public ResponseEntity<Page<ProductResponseDto>> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size,
+            @RequestParam(value = "sortField", defaultValue = "createdAt") String sortField,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        Page<ProductResponseDto> products = productService.getProductsByCategory(categoryId, page, size, sortField, sortDir, keyword);
         return ResponseEntity.ok(products);
     }
 

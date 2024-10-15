@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByIsDeletedFalse();
+//    List<Product> findByIsDeletedFalse();
 
     // 삭제되지 않은 상품들만 조회 (페이지네이션 적용)
     Page<Product> findByIsDeletedFalse(Pageable pageable);
