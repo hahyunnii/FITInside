@@ -23,11 +23,11 @@
     text-align: center;
 }
 
-.btn-primary {
+.orderList .btn-primary {
     background-color: #333;
     border: none;
 }
 
-.btn-primary:hover {
+.orderList .btn-primary:hover {
     background-color: #555;
 }

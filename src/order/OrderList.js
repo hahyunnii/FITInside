@@ -55,7 +55,7 @@ const OrderList = () => {
     }
 
     return (
-        <div className="container my-4">
+        <div className="orderList container my-4">
             <h2 className="text-center mb-4">주문 내역</h2>
             <div className="order-card-list">
                 {orders.map((order) => (
@@ -66,6 +66,7 @@ const OrderList = () => {
                         <div className="card-body">
                             <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
                             <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
+                            <p className="card-text"><strong>결제 금액:</strong> {(order.discountedTotalPrice).toLocaleString()}원</p>
                             <p className="card-text"><strong>주문 날짜:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
                         <div className="card-footer bg-light">
