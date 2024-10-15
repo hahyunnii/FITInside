@@ -2,7 +2,6 @@ package com.team2.fitinside.cart.service;
 
 import com.team2.fitinside.cart.dto.*;
 import com.team2.fitinside.cart.entity.Cart;
-import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.cart.mapper.CartMapper;
 import com.team2.fitinside.cart.repository.CartRepository;
 import com.team2.fitinside.config.SecurityUtil;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -53,7 +51,8 @@ public class CartService {
     @Transactional
     public void createCart(CartCreateRequestDto dto) {
 
-        checkQuantity(dto.getQuantity());
+        Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        checkQuantity(dto.getQuantity(), foundProduct);
 
         Long loginMemberID = getAuthenticatedMemberId();
 
@@ -65,7 +64,6 @@ public class CartService {
         }
 
         Cart cart = CartMapper.INSTANCE.toEntity(dto);
-        Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         Member foundMember = memberRepository.findById(loginMemberID).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         cart.setUserAndProduct(foundMember, foundProduct);
 
@@ -78,9 +76,9 @@ public class CartService {
 
         Long loginMemberID = getAuthenticatedMemberId();
 
-        checkQuantity(dto.getQuantity());
-
         Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
+
+        checkQuantity(dto.getQuantity(), cart.getProduct());
 
         if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
@@ -117,10 +115,15 @@ public class CartService {
     }
 
     // 수정범위 확인 메서드
-    static void checkQuantity(int quantity) {
+    static void checkQuantity(int quantity, Product product) {
 
         if (quantity < 1 || quantity > 20) {
             throw new CustomException(ErrorCode.CART_OUT_OF_RANGE);
+        }
+
+        // 상품의 재고보다 많은 경우
+        if(product.getStock() < quantity) {
+            throw new CustomException(ErrorCode.OUT_OF_STOCK);
         }
     }
 
