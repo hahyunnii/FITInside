@@ -58,8 +58,12 @@ const ProductList = () => {
                                             Sale
                                         </div>
                                     )}
-                                    {/* Product image */}
-                                    <img className="card-img-top" src={product.image} alt={product.name} />
+                                    {/* Product images (displays the first image) */}
+                                    {product.productImgUrls && product.productImgUrls.length > 0 ? (
+                                        <img className="card-img-top" src={product.productImgUrls[0]} alt={product.productName} />
+                                    ) : (
+                                        <img className="card-img-top" src="/placeholder-image.jpg" alt="No image available" />
+                                    )}
                                     {/* Product details */}
                                     <div className="card-body p-4">
                                         <div className="text-center">
