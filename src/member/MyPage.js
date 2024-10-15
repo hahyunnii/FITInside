@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import sendRefreshTokenAndStoreAccessToken from "../auth/RefeshAccessToken";
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const MyPage = () => {
     const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
