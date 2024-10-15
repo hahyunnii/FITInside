@@ -28,7 +28,7 @@ const MyPage = () => {
             } catch (err) {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    await fetchUserData();
+                    window.location.reload(); // 새로고침
                 } catch (error) {
                     setError('사용자 정보를 가져오는 데 실패했습니다.');
                 }
