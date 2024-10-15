@@ -35,14 +35,14 @@ spring:
       client:
         registration:
           google:
-            client-id: 1006088789721-cv49ic31sas3lcq8gilb0judfhe51g13.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_OAUTH_ID}
+            client-secret: ${GOOGLE_OAUTH_PW}
             scope:
               - email
               - profile
 
 jwt:
-  secret: 'KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0'
+  secret: ${JWT_SECRET_KEY}
 
 cloud:
   aws:
