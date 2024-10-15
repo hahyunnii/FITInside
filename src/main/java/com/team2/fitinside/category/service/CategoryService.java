@@ -33,6 +33,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
 
+
     // 카테고리 생성
     public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO, MultipartFile imageFile) {
         String imageUrl = null;
