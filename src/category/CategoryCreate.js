@@ -101,6 +101,166 @@
 // export default CategoryCreate;
 
 
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import { useNavigate } from 'react-router-dom';
+//
+// const CategoryCreate = () => {
+//     const [name, setName] = useState('');
+//     const [displayOrder, setDisplayOrder] = useState('');
+//     const [parentId, setParentId] = useState(null);
+//     const [parentCategories, setParentCategories] = useState([]); // 부모 카테고리만 저장
+//     const [image, setImage] = useState(null); // 이미지 상태 추가
+//
+//     const navigate = useNavigate();
+//
+//     useEffect(() => {
+//         // 서버에서 카테고리 목록 가져오기
+//         axios.get('http://localhost:8080/api/categories', {
+//             headers: {
+//                 'Authorization': `Bearer ${localStorage.getItem('token')}`
+//             }
+//         })
+//             .then(response => {
+//                 const parentCategories = response.data.filter(category => category.parentId === null);
+//                 setParentCategories(parentCategories);
+//             })
+//             .catch(error => {
+//                 console.error('Error fetching categories:', error);
+//                 if (error.response && error.response.status === 401) {
+//                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+//                 }
+//             });
+//     }, []);
+//
+//     const handleImageChange = (e) => {
+//         setImage(e.target.files[0]);
+//     };
+//
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//
+//         const categoryData = {
+//             name,
+//             displayOrder: displayOrder ? Number(displayOrder) : null,
+//             parentId
+//         };
+//
+//         axios.post('http://localhost:8080/api/admin/categories', categoryData, {
+//             headers: {
+//                 'Authorization': `Bearer ${localStorage.getItem('token')}`
+//             }
+//         })
+//             .then(response => {
+//                 const categoryId = response.data.id;
+//                 if (image) {
+//                     uploadCategoryImage(categoryId);
+//                 } else {
+//                     navigate('/admin/categories');
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error creating category:', error);
+//                 if (error.response && error.response.status === 401) {
+//                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+//                 }
+//             });
+//     };
+//
+//     // const uploadCategoryImage = (categoryId) => {
+//     //     const formData = new FormData();
+//     //     formData.append('image', image);
+//     //     console.log("토큰 값:", token); // 토큰 값을 콘솔에 출력
+//     //
+//     //     axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
+//     //         headers: {
+//     //             'Authorization': `Bearer ${localStorage.getItem('token')}`,
+//     //             // 'Content-Type': 'multipart/form-data'
+//     //         }
+//     //     })
+//     //         .then(() => {
+//     //             navigate('/admin/categories');
+//     //         })
+//     //         .catch(error => {
+//     //             console.error('Error uploading image:', error);
+//     //             alert("이미지 업로드에 실패했습니다.");
+//     //         });
+//     // };
+//     const uploadCategoryImage = (categoryId) => {
+//         const token = localStorage.getItem('token'); // token 변수를 선언하고 값을 가져옴
+//         console.log("토큰 값:", token); // 콘솔에 토큰 값 출력
+//
+//         const formData = new FormData();
+//         formData.append('image', image);
+//
+//         axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
+//             headers: {
+//                 'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 추가
+//                 // 'Content-Type': 'multipart/form-data' // Axios가 자동으로 설정
+//             }
+//         })
+//             .then(() => {
+//                 navigate('/admin/categories');
+//             })
+//             .catch(error => {
+//                 console.error('Error uploading image:', error);
+//                 alert("이미지 업로드에 실패했습니다.");
+//             });
+//     };
+//
+//
+//     return (
+//         <div className="category-create-container">
+//             <h2>카테고리 생성</h2>
+//             <form onSubmit={handleSubmit}>
+//                 <div className="form-group">
+//                     <label>이름:</label>
+//                     <input
+//                         type="text"
+//                         value={name}
+//                         onChange={(e) => setName(e.target.value)}
+//                         required
+//                     />
+//                 </div>
+//                 <div className="form-group">
+//                     <label>표시 순서:</label>
+//                     <input
+//                         type="number"
+//                         value={displayOrder}
+//                         onChange={(e) => setDisplayOrder(e.target.value)}
+//                     />
+//                 </div>
+//                 <div className="form-group">
+//                     <label>부모 카테고리 선택:</label>
+//                     <select
+//                         value={parentId || ''}
+//                         onChange={(e) => setParentId(e.target.value || null)}
+//                     >
+//                         <option value="">부모 카테고리 없음</option>
+//                         {parentCategories.map((category) => (
+//                             <option key={category.id} value={category.id}>
+//                                 {category.name}
+//                             </option>
+//                         ))}
+//                     </select>
+//                 </div>
+//                 <div className="form-group">
+//                     <label>카테고리 이미지:</label>
+//                     <input
+//                         type="file"
+//                         accept="image/*"
+//                         onChange={handleImageChange}
+//                     />
+//                 </div>
+//                 <button type="submit" className="submit-button">카테고리 생성</button>
+//             </form>
+//         </div>
+//     );
+// };
+//
+// export default CategoryCreate;
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -110,7 +270,6 @@ const CategoryCreate = () => {
     const [displayOrder, setDisplayOrder] = useState('');
     const [parentId, setParentId] = useState(null);
     const [parentCategories, setParentCategories] = useState([]); // 부모 카테고리만 저장
-    const [image, setImage] = useState(null); // 이미지 상태 추가
 
     const navigate = useNavigate();
 
@@ -133,10 +292,6 @@ const CategoryCreate = () => {
             });
     }, []);
 
-    const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -151,13 +306,8 @@ const CategoryCreate = () => {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         })
-            .then(response => {
-                const categoryId = response.data.id;
-                if (image) {
-                    uploadCategoryImage(categoryId);
-                } else {
-                    navigate('/admin/categories');
-                }
+            .then(() => {
+                navigate('/admin/categories');
             })
             .catch(error => {
                 console.error('Error creating category:', error);
@@ -166,48 +316,6 @@ const CategoryCreate = () => {
                 }
             });
     };
-
-    // const uploadCategoryImage = (categoryId) => {
-    //     const formData = new FormData();
-    //     formData.append('image', image);
-    //     console.log("토큰 값:", token); // 토큰 값을 콘솔에 출력
-    //
-    //     axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
-    //         headers: {
-    //             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    //             // 'Content-Type': 'multipart/form-data'
-    //         }
-    //     })
-    //         .then(() => {
-    //             navigate('/admin/categories');
-    //         })
-    //         .catch(error => {
-    //             console.error('Error uploading image:', error);
-    //             alert("이미지 업로드에 실패했습니다.");
-    //         });
-    // };
-    const uploadCategoryImage = (categoryId) => {
-        const token = localStorage.getItem('token'); // token 변수를 선언하고 값을 가져옴
-        console.log("토큰 값:", token); // 콘솔에 토큰 값 출력
-
-        const formData = new FormData();
-        formData.append('image', image);
-
-        axios.post(`http://localhost:8080/api/admin/categories/${categoryId}/image`, formData, {
-            headers: {
-                'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 추가
-                // 'Content-Type': 'multipart/form-data' // Axios가 자동으로 설정
-            }
-        })
-            .then(() => {
-                navigate('/admin/categories');
-            })
-            .catch(error => {
-                console.error('Error uploading image:', error);
-                alert("이미지 업로드에 실패했습니다.");
-            });
-    };
-
 
     return (
         <div className="category-create-container">
@@ -243,14 +351,6 @@ const CategoryCreate = () => {
                             </option>
                         ))}
                     </select>
-                </div>
-                <div className="form-group">
-                    <label>카테고리 이미지:</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
                 </div>
                 <button type="submit" className="submit-button">카테고리 생성</button>
             </form>
