@@ -38,7 +38,7 @@ public class CategoryService {
     public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO, MultipartFile imageFile) {
         String imageUrl = null;
         if (imageFile != null && !imageFile.isEmpty()) {
-            imageUrl = s3ImageService.uploadImage(imageFile); // S3에 이미지 업로드하고 URL 받기
+            imageUrl = s3ImageService.upload(imageFile); // S3에 이미지 업로드하고 URL 받기
         }
 
         Category category = Category.builder()
@@ -100,7 +100,7 @@ public class CategoryService {
             if (imageUrl != null) {
                 s3ImageService.deleteImageFromS3(imageUrl); // 기존 이미지 삭제
             }
-            imageUrl = s3ImageService.uploadImage(imageFile); // 새 이미지 업로드
+            imageUrl = s3ImageService.upload(imageFile); // 새 이미지 업로드
         }
 
         category.updateCategory(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory, imageUrl);
