@@ -42,11 +42,22 @@ public class Order {
     @Builder.Default
     private int totalPrice = 0;
 
+    @Column(name = "discounted_total_price")
+    @Builder.Default
+    private int discountedTotalPrice = 0;
+
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
 
+    // 배송 관련 정보
+    @Column(name = "postal_code", nullable = false)
+    private String postalCode;
+
     @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
+
+    @Column(name = "detailed_address")
+    private String detailedAddress;
 
     @Column(name = "delivery_receiver", nullable = false)
     private String deliveryReceiver;
@@ -85,24 +96,22 @@ public class Order {
         }
     }
 
-    // 주문 상품 추가 및 총 가격 업데이트
+    // 주문 상품 추가 및 총 가격, 할인 가격 업데이트
     public void addOrderProduct(OrderProduct orderProduct) {
         this.orderProducts.add(orderProduct);
         orderProduct.setOrder(this); // OrderProduct에도 해당 Order 설정 (양방향 관계)
 
         this.totalPrice += orderProduct.getOrderProductPrice() * orderProduct.getCount();
+        this.discountedTotalPrice += orderProduct.getDiscountedPrice();
     }
 
     // 주문 수정
     public void updateDeliveryInfo(OrderRequestDto request) {
+        this.postalCode = request.getPostalCode();
         this.deliveryAddress = request.getDeliveryAddress();
+        this.detailedAddress = request.getDetailedAddress();
         this.deliveryReceiver = request.getDeliveryReceiver();
         this.deliveryPhone = request.getDeliveryPhone();
     }
-
-    public void calculateDeliveryFee() {
-        this.deliveryFee = (this.totalPrice >= 20000) ? 0 : 2500;
-    }
-
 
 }

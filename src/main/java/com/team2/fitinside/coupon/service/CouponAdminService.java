@@ -37,6 +37,7 @@ public class CouponAdminService {
     private final CouponMemberRepository couponMemberRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
+    private final SecurityUtil securityUtil;
 
     // 매일 쿠폰의 유효기간 확인 및 비활성화
     @Transactional
@@ -131,7 +132,7 @@ public class CouponAdminService {
     // 관리자 권한이 없는 경우 예외 던지는 메서드
     private void checkAdmin() {
 
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Long currentMemberId = securityUtil.getCurrentMemberId();
 
         Member member = memberRepository.findById(currentMemberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 

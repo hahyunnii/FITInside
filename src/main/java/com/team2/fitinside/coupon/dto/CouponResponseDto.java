@@ -22,4 +22,5 @@ public class CouponResponseDto {
     private boolean active;
     private LocalDate expiredAt;
     private String categoryName;
+    private boolean used;
 }

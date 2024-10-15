@@ -3,6 +3,7 @@ spring:
     name: fitinside
   servlet:
     multipart:
+      enabled: true
       max-file-size: 128MB
       max-request-size: 128MB
 
@@ -27,26 +28,27 @@ spring:
       hibernate:
         format_sql: true  # 쿼리 로그 포맷 (저렬)
         show_sql: true    # 쿼리 로그 출력
+    defer-datasource-initialization: true
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: 1006088789721-cv49ic31sas3lcq8gilb0judfhe51g13.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_OAUTH_ID}
+            client-secret: ${GOOGLE_OAUTH_PW}
             scope:
               - email
               - profile
 
 jwt:
-  secret: 'KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0'
+  secret: ${JWT_SECRET_KEY}
 
 cloud:
   aws:
     credentials:
-      accessKey: AKIAZI2LDLMW2DIHF6RH
-      secretKey: 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
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
     s3:
       bucketName: fitinside
     region:

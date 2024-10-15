@@ -9,6 +9,7 @@ import com.team2.fitinside.member.service.MemberService;
 import com.team2.fitinside.member.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,6 @@ import java.time.Duration;
 public class TokenService {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenService refreshTokenService;
-    private final MemberService memberService;
 
 
     public String createNewAccessToken(String refreshToken) {
@@ -28,11 +27,11 @@ public class TokenService {
         if(!tokenProvider.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Unexpected token");
         }
+        // 리프레시 토큰에서 사용자 정보 추출
+        Authentication authentication = tokenProvider.getAuthentication(refreshToken);
 
-        Long memberId = refreshTokenService.findByRefreshToken(refreshToken).getMemberId();
-        Member member = memberService.findById(memberId);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(member.getEmail(), member.getPassword());
-
+        // 새로운 JWT 액세스 토큰 생성
         return tokenProvider.generateAccessToken(authentication);
+
     }
 }

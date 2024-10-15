@@ -18,6 +18,7 @@ public interface CouponMapper {
     CouponMapper INSTANCE = Mappers.getMapper(CouponMapper.class);
 
     @Mapping(source = "category", target = "categoryName")
+    @Mapping(target = "used", ignore = true)
     CouponResponseDto toCouponResponseDto(Coupon coupon);
 
     default String mapCategoryToString(Category category) {

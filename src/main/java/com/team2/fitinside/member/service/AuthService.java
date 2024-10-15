@@ -9,6 +9,8 @@ import com.team2.fitinside.member.entity.Authority;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.jwt.TokenProvider;
 import com.team2.fitinside.member.mapper.MemberMapper;
+import com.team2.fitinside.member.oath.entity.RefreshToken;
+import com.team2.fitinside.member.oath.repository.RefreshTokenRepository;
 import com.team2.fitinside.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public MemberResponseDto signup(MemberRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
@@ -47,7 +50,16 @@ public class AuthService {
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
 
-        return tokenProvider.generateTokenDto(authentication);
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+
+        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
+                .map(entity -> entity.update(tokenDto.getRefreshToken()))      // 기존 토큰이 있으면 업데이트
+                .orElse(new RefreshToken(member.getId(), tokenDto.getRefreshToken())); // 없으면 새로 생성
+
+        refreshTokenRepository.save(refreshToken); // 저장소에 리프레시 토큰 저장
+
+        return tokenDto;
     }
 
 }
