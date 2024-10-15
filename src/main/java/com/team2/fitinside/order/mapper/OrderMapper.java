@@ -17,6 +17,7 @@ public interface OrderMapper {
     // Order -> OrderDetailResponseDto 변환 (주문 생성 후 반환 시 사용)
     @Mapping(source = "id", target = "orderId")
     @Mapping(source = "orderProducts", target="orderProducts") // 복합 객체나 리스트는 매핑 시 명시적 선언(자동 변환)
+    @Mapping(source = "discountedTotalPrice", target = "discountedTotalPrice")
     @Mapping(target = "orderStatus", expression = "java(order.getOrderStatus().getDisplayName())") // Enum displayName 매핑
     OrderDetailResponseDto toOrderDetailResponseDto(Order order);
 
