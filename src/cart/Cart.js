@@ -76,10 +76,14 @@ const Cart = () => {
         setSelectedItems(new Set());
     };
 
-    const handleQuantityChange = (id, newQuantity) => {
-        updateCartQuantity(id, newQuantity);
-        setCart(getCart());
+    const handleQuantityChange = async (id, newQuantity) => {
+        const updatedSuccessfully = await updateCartQuantity(id, newQuantity);
+        if (updatedSuccessfully) {
+            // 수량이 성공적으로 업데이트된 경우에만 장바구니 상태를 업데이트
+            setCart(getCart());
+        }
     };
+
 
     const cartCount = useCartCount();
 
