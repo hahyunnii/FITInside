@@ -64,6 +64,22 @@ const ProductSection = () => {
         ? product.productImgUrls
         : ['https://dummyimage.com/450x300/dee2e6/6c757d.jpg'];
 
+    // 장바구니 담기 => 상품 재고 수량과 비교
+    const handleQuantityChange = (e) => {
+        const newQuantity = parseInt(e.target.value, 10);
+        const maxQuantity = product.stock || 1; // 재고 수량
+
+        // 수량이 1 이상이고 재고를 초과하지 않도록 설정
+        if (newQuantity >= 1 && newQuantity <= maxQuantity) {
+            setQuantity(newQuantity);
+        } else if (newQuantity > maxQuantity) {
+            alert(`남은 재고는 ${maxQuantity}개입니다.`);
+            setQuantity(maxQuantity); // 최대 수량으로 설정
+        } else {
+            setQuantity(1); // 최소 수량을 1로 설정
+        }
+    };
+
     return (
         <section className="py-5">
             <div className="container px-4 px-lg-5 my-5">
@@ -145,13 +161,15 @@ const ProductSection = () => {
                                 id="inputQuantity"
                                 type="number"
                                 value={quantity}
-                                onChange={(e) => setQuantity(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-                                style={{ maxWidth: '3rem' }}
+                                onChange={handleQuantityChange}
+                                style={{maxWidth: '4rem'}}
+                                min="1"
                             />
                             <button className="btn btn-dark flex-shrink-0" type="button" onClick={handleAddToCart}>
                                 장바구니 담기
                             </button>
                         </div>
+
                     </div>
                 </div>
                 {/* 탭 구성 섹션 */}
