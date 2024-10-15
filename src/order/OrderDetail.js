@@ -79,6 +79,7 @@ const OrderDetail = () => {
                 deliveryReceiver: response.data.deliveryReceiver,
                 deliveryPhone: response.data.deliveryPhone,
             }); // 업데이트된 데이터를 deliveryData에 반영
+            alert('배송지 변경이 완료되었습니다.');
             setIsEditing(false); // 수정 완료 후 편집 모드 종료
         } catch (err) {
             console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
@@ -143,7 +144,7 @@ const OrderDetail = () => {
                     <th>판매금액</th>
                     <th>할인금액</th>
                     <th>배송비</th>
-                    <th>결제금액</th>
+                    <th>결제금액</th> {/*할인이 적용된 총금액 + 배송비*/}
                     <th>진행상태</th>
                     <th>비고</th>
                 </tr>
@@ -161,7 +162,7 @@ const OrderDetail = () => {
                                         {orderDetail.deliveryFee.toLocaleString()}원
                                     </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
-                                        {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                                        {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
                                     </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
                                         {getStatusLabel(orderDetail.orderStatus)}
@@ -184,20 +185,20 @@ const OrderDetail = () => {
 
             <div className="order-summary">
                 <span className="light-text">총 상품 가격 </span>
-                {orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0).toLocaleString()}원 +
+                {(orderDetail.totalPrice).toLocaleString()}원 +
                 <span className="light-text">배송비 </span>
                 {orderDetail.deliveryFee.toLocaleString()}원 -
                 <span className="light-text">할인 </span>
-                {orderDetail.orderProducts.reduce((totalDiscount, product) => totalDiscount + (product.orderProductPrice * product.count - product.discountedPrice), 0).toLocaleString()}원
+                {(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
                 <span> = 총 결제금액 </span>
                 <span className="total-amount">
-                    {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                    {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
                 </span>
             </div>
 
             <div className="total-payment-highlight">
                 총 결제금액 :
-                <span style={{ color: '#B22222' }}> {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
+                <span style={{ color: '#B22222' }}> {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
             </div>
 
             <h3 className="order-section-header">
@@ -245,11 +246,10 @@ const OrderDetail = () => {
                     <th>주문금액</th>
                     <td>
                         <span>
-                            {(orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0) +
-                            orderDetail.deliveryFee).toLocaleString()}원
+                            {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
                         </span>
                         <div style={{ color: '#888', marginTop: '5px' }}>
-                            상품금액: {(orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0)).toLocaleString()}원,
+                            상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
                             배송비: {orderDetail.deliveryFee.toLocaleString()}원
                         </div>
                     </td>
@@ -259,7 +259,7 @@ const OrderDetail = () => {
                     <th>할인금액</th>
                     <td>
                         <span>
-                            -{orderDetail.orderProducts.reduce((totalDiscount, product) => totalDiscount + (product.orderProductPrice * product.count - product.discountedPrice), 0).toLocaleString()}원
+                            -{(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
                         </span>
                         <div style={{ color: '#888', marginTop: '5px' }}>
                             {/* 사용한 쿠폰 리스트 */}
@@ -275,7 +275,7 @@ const OrderDetail = () => {
                 </tr>
                 <tr>
                     <th>총 결제금액</th>
-                    <td style={{ color: '#B22222' }}>{(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
+                    <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
                 </tr>
                 </tbody>
             </table>

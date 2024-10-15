@@ -16,7 +16,8 @@ const OrderAdminList = () => {
             const response = await axios.get('http://localhost:8080/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
-                }
+                },
+                params: { page: currentPage }
             });
 
             setOrders(response.data.orders);
@@ -126,8 +127,10 @@ const OrderAdminList = () => {
                 <thead>
                 <tr>
                     <th>주문 날짜</th>
-                    <th>배송 주소</th>
+                    <th>이메일</th>
                     <th>총 가격</th>
+                    <th>결제 금액</th>
+                    <th>쿠폰 할인</th>
                     <th>주문 상태</th>
                     <th>액션</th>
                 </tr>
@@ -136,8 +139,20 @@ const OrderAdminList = () => {
                     {orders.map((order) => (
                         <tr key={order.orderId}>
                             <td>{new Date(order.createdAt).toLocaleString()}</td>
-                            <td>{order.deliveryAddress}</td>
+                            <td>{order.email}</td>
                             <td>{(order.totalPrice).toLocaleString()}원</td>
+                            <td>{(order.discountedTotalPrice).toLocaleString()}원</td>
+                            <td>
+                                {order.coupons && order.coupons.length > 0 ? (
+                                    order.coupons.map((coupon, index) => (
+                                        <div key={index}>
+                                            {coupon.name} ({(coupon.discountPrice).toLocaleString()}원)
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>-</div>
+                                )}
+                            </td>
                             <td>
                                 <select
                                     value={pendingStatusChanges[order.orderId] || order.orderStatus}
