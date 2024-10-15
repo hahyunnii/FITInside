@@ -1,7 +1,7 @@
 package com.team2.fitinside.coupon.controller;
 
-import com.team2.fitinside.cart.dto.CartResponseWrapperDto;
 import com.team2.fitinside.coupon.dto.CouponCreateRequestDto;
+import com.team2.fitinside.coupon.dto.CouponEmailRequestDto;
 import com.team2.fitinside.coupon.dto.CouponMemberResponseWrapperDto;
 import com.team2.fitinside.coupon.dto.CouponResponseWrapperDto;
 import com.team2.fitinside.coupon.service.CouponAdminService;
@@ -66,4 +66,19 @@ public class CouponAdminController {
         couponAdminService.deActiveCoupon(couponId);
         return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 비활성화 되었습니다!");
     }
+
+    @PostMapping("/email")
+    public ResponseEntity<String> sendCouponEmails(@RequestBody CouponEmailRequestDto couponEmailRequestDto) {
+
+        couponAdminService.sendEmail(couponEmailRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("쿠폰 이메일 전송을 완료했습니다!");
+    }
+
+    @GetMapping("/{couponId}/members")
+    public ResponseEntity<CouponMemberResponseWrapperDto> findMembersWithOutCoupons(@PathVariable("couponId") Long couponId) {
+
+        CouponMemberResponseWrapperDto dto = couponAdminService.findMembersWithOutCoupons(couponId);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    }
+
 }

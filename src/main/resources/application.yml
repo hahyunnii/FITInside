@@ -41,6 +41,20 @@ spring:
               - email
               - profile
 
+  # 메일 SMTP 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: chm20060
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
 jwt:
   secret: ${JWT_SECRET_KEY}
 
