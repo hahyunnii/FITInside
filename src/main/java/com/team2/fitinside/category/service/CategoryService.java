@@ -1,16 +1,16 @@
 package com.team2.fitinside.category.service;
 
 import com.team2.fitinside.category.dto.CategoryCreateRequestDTO;
-import com.team2.fitinside.category.dto.CategoryImageResponseDTO;
+
 import com.team2.fitinside.category.dto.CategoryResponseDTO;
 import com.team2.fitinside.category.dto.CategoryUpdateRequestDTO;
-import com.team2.fitinside.category.entity.CategoryImage;
+//import com.team2.fitinside.category.entity.CategoryImage;
 import com.team2.fitinside.category.exception.CategoryAlreadyDeletedException;
 import com.team2.fitinside.category.exception.CategoryResponseNotFoundException;
-import com.team2.fitinside.category.mapper.CategoryImageMapper;
+//import com.team2.fitinside.category.mapper.CategoryImageMapper;
 import com.team2.fitinside.category.mapper.CategoryMapper;
 import com.team2.fitinside.category.entity.Category;
-import com.team2.fitinside.category.repository.CategoryImageRepository;
+//import com.team2.fitinside.category.repository.CategoryImageRepository;
 import com.team2.fitinside.category.repository.CategoryRepository;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.product.image.S3ImageService;
@@ -31,11 +31,15 @@ import static com.team2.fitinside.category.mapper.CategoryMapper.toCreateDTO;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryImageRepository categoryImageRepository;
     private final S3ImageService s3ImageService;
 
     // 카테고리 생성
-    public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO) {
+    public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO, MultipartFile imageFile) {
+        String imageUrl = null;
+        if (imageFile != null && !imageFile.isEmpty()) {
+            imageUrl = s3ImageService.uploadImage(imageFile); // S3에 이미지 업로드하고 URL 받기
+        }
+
         Category category = Category.builder()
                 .name(categoryDTO.getName())
                 .displayOrder(categoryDTO.getDisplayOrder())
@@ -44,42 +48,11 @@ public class CategoryService {
                                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
                         : null)
                 .isDeleted(false)
+                .imageUrl(imageUrl) // 이미지 URL 설정
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
-        return toCreateDTO(savedCategory);
-    }
-
-    //=====================================================================
-    // 카테고리 이미지 업로드
-    public CategoryImageResponseDTO uploadCategoryImage(Long categoryId, MultipartFile image) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        // 이미지 파일을 S3에 업로드하고 URL을 저장
-        String imageUrl = s3ImageService.upload(image);
-
-        // 기존 이미지가 있다면 삭제
-        categoryImageRepository.findByCategory(category).ifPresent(categoryImageRepository::delete);
-
-        // 새로운 이미지 저장
-        CategoryImage categoryImage = CategoryImage.builder()
-                .imageUrl(imageUrl)
-                .category(category)
-                .build();
-        categoryImageRepository.save(categoryImage);
-
-        return CategoryImageMapper.toResponseDTO(categoryImage);
-    }
-
-    //======================================================================
-    // 카테고리 이미지 조회
-    public Optional<CategoryImageResponseDTO> getCategoryImage(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        return categoryImageRepository.findByCategory(category)
-                .map(CategoryImageMapper::toResponseDTO);
+        return CategoryMapper.toCreateDTO(savedCategory);
     }
 
     //======================================================================
@@ -102,19 +75,13 @@ public class CategoryService {
             throw new CategoryResponseNotFoundException();
         }
 
-        return new CategoryResponseDTO(
-                category.getId(),
-                category.getName(),
-                category.getDisplayOrder(),
-                category.getIsDeleted(),
-                category.getParent() != null ? category.getParent().getId() : null
-        );
+        return CategoryMapper.toResponseDTO(category); // Mapper로 응답 DTO 변환
     }
 
     //=======================================================================
 
     // 카테고리 수정
-    public CategoryUpdateRequestDTO updateCategory(Long id, CategoryUpdateRequestDTO categoryDTO) {
+    public CategoryUpdateRequestDTO updateCategory(Long id, CategoryUpdateRequestDTO categoryDTO, MultipartFile imageFile) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -127,11 +94,17 @@ public class CategoryService {
                         .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
                 : null;
 
-        category.updateCategory(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory);
+        String imageUrl = category.getImageUrl();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            if (imageUrl != null) {
+                s3ImageService.deleteImageFromS3(imageUrl); // 기존 이미지 삭제
+            }
+            imageUrl = s3ImageService.uploadImage(imageFile); // 새 이미지 업로드
+        }
 
+        category.updateCategory(categoryDTO.getName(), categoryDTO.getDisplayOrder(), parentCategory, imageUrl);
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
-
 
     //===========================================================================
     // 카테고리 삭제 (soft delete)
@@ -142,27 +115,6 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    // 카테고리 이미지 삭제
-    public void deleteCategoryImage(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        // 카테고리 이미지 조회 부분에서 예외 처리 주석 처리
-        CategoryImage categoryImage = categoryImageRepository.findByCategory(category)
-                // .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_IMAGE_NOT_FOUND));
-                .orElse(null); // 예외 처리 없이 null을 반환
-
-        // 이미지가 없으면 메서드를 종료
-        if (categoryImage == null) {
-            return;
-        }
-
-        // S3에서 이미지 삭제
-        s3ImageService.deleteImageFromS3(categoryImage.getImageUrl());
-
-        // 데이터베이스에서 이미지 삭제
-        categoryImageRepository.delete(categoryImage);
-    }
 }
 
 //--------------
