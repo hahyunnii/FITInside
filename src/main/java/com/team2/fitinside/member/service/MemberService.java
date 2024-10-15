@@ -3,15 +3,22 @@ package com.team2.fitinside.member.service;
 import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
+import com.team2.fitinside.member.dto.MemberListResponse;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.mapper.MemberMapper;
 import com.team2.fitinside.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -71,5 +78,24 @@ public class MemberService {
 
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+
+    // admin
+    public MemberListResponse getMemberList(int page) {
+
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").ascending());
+
+        Page<Member> memberList = memberRepository.findAll(pageRequest);
+
+        List<MemberResponseDto> members = new ArrayList<>();
+
+        for(Member member : memberList) {
+            members.add(memberMapper.memberToResponse(member));
+        }
+        // 총 페이지 수
+        int totalPages = (memberList.getTotalPages()==0 ? 1 : memberList.getTotalPages());
+
+        return new MemberListResponse(members, totalPages);
     }
 }
