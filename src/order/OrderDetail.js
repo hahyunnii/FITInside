@@ -141,7 +141,7 @@ const OrderDetail = () => {
                     <th>주문상품정보</th>
                     <th>수량</th>
                     <th>판매금액</th>
-                    <th>총금액</th>
+                    <th>할인금액</th>
                     <th>배송비</th>
                     <th>결제금액</th>
                     <th>진행상태</th>
@@ -154,11 +154,9 @@ const OrderDetail = () => {
                             <td>{product.orderProductName}</td>
                             <td>{product.count}</td>
                             <td>{(product.orderProductPrice * product.count).toLocaleString()}원</td>
+                            <td>{product.discountedPrice !== product.orderProductPrice * product.count ? `${(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원` : '-'}</td>
                             {index === 0 && ( /* 첫 번째 상품에서만 셀 병합하여 총금액 및 배송비 표시 */
                                 <>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        {(orderDetail.totalPrice).toLocaleString()}원
-                                    </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
                                         {orderDetail.deliveryFee.toLocaleString()}원
                                     </td>
@@ -185,7 +183,21 @@ const OrderDetail = () => {
             </table>
 
             <div className="order-summary">
-                총 결제금액 <span className="total-amount">{(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
+                <span className="light-text">총 상품 가격 </span>
+                {orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0).toLocaleString()}원 +
+                <span className="light-text">배송비 </span>
+                {orderDetail.deliveryFee.toLocaleString()}원 -
+                <span className="light-text">할인 </span>
+                {orderDetail.orderProducts.reduce((totalDiscount, product) => totalDiscount + (product.orderProductPrice * product.count - product.discountedPrice), 0).toLocaleString()}원
+                <span> = 총 결제금액 </span>
+                <span className="total-amount">
+                    {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                </span>
+            </div>
+
+            <div className="total-payment-highlight">
+                총 결제금액 :
+                <span style={{ color: '#B22222' }}> {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
             </div>
 
             <h3 className="order-section-header">
@@ -231,11 +243,35 @@ const OrderDetail = () => {
                 <tbody>
                 <tr>
                     <th>주문금액</th>
-                    <td>{(orderDetail.totalPrice).toLocaleString()}원</td>
+                    <td>
+                        <span>
+                            {(orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0) +
+                            orderDetail.deliveryFee).toLocaleString()}원
+                        </span>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            상품금액: {(orderDetail.orderProducts.reduce((totalPrice, product) => totalPrice + (product.orderProductPrice * product.count), 0)).toLocaleString()}원,
+                            배송비: {orderDetail.deliveryFee.toLocaleString()}원
+                        </div>
+                    </td>
+
                 </tr>
                 <tr>
-                    <th>배송비</th>
-                    <td>{(orderDetail.deliveryFee).toLocaleString()}원</td>
+                    <th>할인금액</th>
+                    <td>
+                        <span>
+                            -{orderDetail.orderProducts.reduce((totalDiscount, product) => totalDiscount + (product.orderProductPrice * product.count - product.discountedPrice), 0).toLocaleString()}원
+                        </span>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            {/* 사용한 쿠폰 리스트 */}
+                            {orderDetail.orderProducts.map(product => (
+                                product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
+                                    <div key={product.productId}>
+                                        {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
+                                    </div>
+                                ) : null
+                            ))}
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th>총 결제금액</th>

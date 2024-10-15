@@ -22,6 +22,9 @@
 .black {
     background: linear-gradient(to bottom, #1e1e1e 0%, #1e1e1e 26%, #e3e3e3 26%, #e3e3e3 100%);
 }
+.green {
+    background: linear-gradient(to bottom, #68bf2f 0%, #68bf2f 26%, #e3e3e3 26%, #e3e3e3 100%);
+}
 
 .couponLeft {
     border-top-left-radius: 8px;

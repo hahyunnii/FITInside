@@ -1,57 +1,93 @@
-/* src/pages/CategoryAdminMain.css */
+/* CategoryAdminMain.css */
+
 .category-admin-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    max-width: 600px;
-    margin: 0 auto;
 }
 
-.category-admin-container h1 {
-    text-align: center;
-    color: #333;
+h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+.create-button {
+    padding: 5px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    cursor: pointer;
+}
+
+.create-button:hover {
+    background-color: #ddd;
 }
 
 .category-list {
     list-style-type: none;
     padding: 0;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .category-item {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    background-color: #fff;
     margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 5px 10px;
+    border: 1px solid #222;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.category-item .category-name {
+    flex-grow: 1;
+    text-align: center;
 }
 
 .category-item button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
     padding: 5px 10px;
+    margin-left: 5px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #fff;
     cursor: pointer;
-    border-radius: 4px;
 }
 
 .category-item button:hover {
-    background-color: #45a049;
+    background-color: #ddd;
 }
 
-.create-button {
-    display: block;
-    width: 100%;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px;
-    margin: 20px 0;
+.delete-button {
+    color: #ff4d4d;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.pagination button {
+    padding: 5px 15px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
     cursor: pointer;
-    border-radius: 4px;
 }
 
-.create-button:hover {
-    background-color: #0069d9;
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+.pagination button:disabled {
+    background-color: #eee;
+    cursor: not-allowed;
 }

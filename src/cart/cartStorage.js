@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 const LOCAL_CART_KEY = 'localCart';
 const DB_CART_KEY = 'dbCart';
 
+
 export const useCartCount = () => {
     const [cartCount, setCartCount] = useState(0);
 

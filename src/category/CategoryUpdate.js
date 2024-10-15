@@ -7,6 +7,7 @@ const CategoryUpdate = () => {
     const [name, setName] = useState('');
     const [displayOrder, setDisplayOrder] = useState('');
     const [parentId, setParentId] = useState(null);
+    const [parentCategories, setParentCategories] = useState([]); // 부모 카테고리만 저장
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -14,8 +15,26 @@ const CategoryUpdate = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 카테고리 정보를 불러오기
-        axios.get(`http://localhost:8080/api/admin/categories/${id}`, {
+        // 모든 카테고리 목록 불러오기
+        axios.get('http://localhost:8080/api/categories', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => {
+                // parentId가 null인 카테고리만 필터링하여 부모 카테고리 목록으로 저장
+                const filteredParentCategories = response.data.filter(category => category.parentId === null);
+                setParentCategories(filteredParentCategories);
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+                if (error.response && error.response.status === 401) {
+                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                }
+            });
+
+        // 현재 카테고리 정보 불러오기
+        axios.get(`http://localhost:8080/api/categories/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -24,8 +43,8 @@ const CategoryUpdate = () => {
                 const category = response.data;
                 setName(category.name);
                 setDisplayOrder(category.displayOrder);
-                // setParentId(category.parentId);
-                setLoading(false); // 데이터 로딩 완료
+                setParentId(category.parentId || null); // 부모 카테고리가 없으면 null
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching category data:', error);
@@ -33,7 +52,7 @@ const CategoryUpdate = () => {
                 if (error.response && error.response.status === 401) {
                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
                 }
-                setLoading(false); // 에러 발생 시 로딩 종료
+                setLoading(false);
             });
     }, [id]);
 
@@ -54,7 +73,7 @@ const CategoryUpdate = () => {
             .then(response => {
                 console.log('Category updated:', response.data);
                 alert('카테고리가 성공적으로 수정되었습니다.');
-                navigate('/category-admin'); // 성공적으로 수정된 후 메인 화면으로 이동
+                navigate('/admin/categories'); // 성공적으로 수정된 후 메인 화면으로 이동
             })
             .catch(error => {
                 console.error('Error updating category:', error);
@@ -93,6 +112,20 @@ const CategoryUpdate = () => {
                         value={displayOrder}
                         onChange={(e) => setDisplayOrder(e.target.value)}
                     />
+                </div>
+                <div className="form-group">
+                    <label>부모 카테고리 선택:</label>
+                    <select
+                        value={parentId || ''}
+                        onChange={(e) => setParentId(e.target.value || null)}
+                    >
+                        <option value="">부모 카테고리 없음</option>
+                        {parentCategories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <button type="submit" className="submit-button">카테고리 수정</button>
             </form>
