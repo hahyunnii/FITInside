@@ -27,7 +27,7 @@ public class CouponController {
     private final CouponService couponService;
 
     @GetMapping
-    @Operation(summary = "보유 쿠폰 목록 조회", description = "보유 쿠폰 목록 조회")
+    @Operation(summary = "보유 쿠폰 목록 조회", description = "로그인 한 회원의 보유 쿠폰 전체 조회 (유효한 쿠폰만 조회 / 전체 쿠폰 조회)")
     @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseWrapperDto.class)))
     public ResponseEntity<CouponResponseWrapperDto> findAllCoupons(
             @RequestParam(required = false, value = "page", defaultValue = "1") int page,
@@ -38,8 +38,9 @@ public class CouponController {
     }
 
     @GetMapping("/{productId}")
-    @Operation(summary = "적용 가능 쿠폰 목록 조회", description = "상품에 적용 가능한 쿠폰 목록 조회")
+    @Operation(summary = "적용 가능 쿠폰 목록 조회", description = "productId에 해당하는 상품에 적용 가능한 쿠폰 목록 조회")
     @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AvailableCouponResponseWrapperDto.class)))
+    @ApiResponse(responseCode = "404", description = "해당 상품을 찾을 수 없습니다.")
     public ResponseEntity<AvailableCouponResponseWrapperDto> findAllAvailableCoupons(@PathVariable("productId") Long productId) {
 
         AvailableCouponResponseWrapperDto allAvailableCoupons = couponService.findAllAvailableCoupons(productId);
@@ -47,9 +48,9 @@ public class CouponController {
     }
 
     @GetMapping("/code/{couponCode}")
-    @Operation(summary = "쿠폰 검색", description = "쿠폰 검색")
+    @Operation(summary = "쿠폰 검색", description = "쿠폰 다운로드를 위해 쿠폰 코드로 단일 검색")
     @ApiResponse(responseCode = "200", description = "쿠폰 정보 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseDto.class)))
-    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.")
     public ResponseEntity<CouponResponseDto> findCoupon(@PathVariable("couponCode") String couponCode) {
 
         CouponResponseDto coupon = couponService.findCoupon(couponCode);
@@ -57,7 +58,7 @@ public class CouponController {
     }
 
     @GetMapping("/welcome")
-    @Operation(summary = "웰컴 쿠폰 목록 조회", description = "웰컴 쿠폰 목록 조회")
+    @Operation(summary = "웰컴 쿠폰 목록 조회", description = "웰컴 쿠폰 목록 조회 (이름에 “웰컴” 을 포함하는 쿠폰 조회)")
     @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CouponResponseWrapperDto.class)))
     public ResponseEntity<CouponResponseWrapperDto> findWelcomeCoupons() {
 
@@ -66,20 +67,21 @@ public class CouponController {
     }
 
     @PostMapping
-    @Operation(summary = "쿠폰 입력", description = "쿠폰 입력")
-    @ApiResponse(responseCode = "201", description = "쿠폰이 입력되었습니다!", content = @Content(mediaType = "application/json"))
-    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.", content = @Content(mediaType = "application/json"))
-    @ApiResponse(responseCode = "409", description = "쿠폰 등록 이력이 존재합니다.", content = @Content(mediaType = "application/json"))
+    @Operation(summary = "쿠폰 다운로드", description = "쿠폰 코드를 입력하여 쿠폰 다운로드")
+    @ApiResponse(responseCode = "201", description = "쿠폰이 다운로드되었습니다!")
+    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.")
+    @ApiResponse(responseCode = "404", description = "해당하는 정보의 사용자를 찾을 수 없습니다.")
+    @ApiResponse(responseCode = "409", description = "쿠폰 등록 이력이 존재합니다.")
     public ResponseEntity<String> enterCouponCode(@RequestBody String code) {
 
         couponService.enterCouponCode(code);
-        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 입력되었습니다!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 다운로드되었습니다!");
     }
 
     @PostMapping("/{couponMemberId}")
-    @Operation(summary = "쿠폰 적용", description = "상품에 쿠폰 적용")
-    @ApiResponse(responseCode = "200", description = "쿠폰이 사용되었습니다!", content = @Content(mediaType = "application/json"))
-    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.", content = @Content(mediaType = "application/json"))
+    @Operation(summary = "쿠폰 사용", description = "상품에 쿠폰 사용")
+    @ApiResponse(responseCode = "200", description = "쿠폰이 사용되었습니다!")
+    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.")
     public ResponseEntity<String> redeemCoupon(@PathVariable("couponMemberId") Long couponMemberId) {
 
         couponService.redeemCoupon(couponMemberId);
@@ -88,6 +90,8 @@ public class CouponController {
 
     // 쿠폰을 적용한 주문 조회
     @GetMapping("/{couponId}/order")
+    @Operation(summary = "쿠폰 사용 내역 조회", description = "쿠폰 사용 내역 (주문서) 조회")
+    @ApiResponse(responseCode = "200", description = "쿠폰이 사용되었습니다!")
     public ResponseEntity<String> findOrder(@PathVariable("couponId") Long couponId) {
 
         Long orderId = couponService.findOrder(couponId);
