@@ -32,14 +32,6 @@ public class ProductController {
 
 
     // 상품 목록 조회 (카테고리별)
-//    @GetMapping
-//    @Operation(summary = "상품 목록 조회", description = "등록된 모든 상품 목록을 반환합니다.")
-//    @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
-//    public ResponseEntity<List<ProductResponseDto>> getAllProducts(@RequestParam(required = false) Long categoryId) {
-//        List<ProductResponseDto> products = productService.findAllProducts(categoryId);
-//        return ResponseEntity.ok(products);
-//    }
-
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "상품 목록 조회", description = "특정 카테고리에 해당하는 모든 상품 목록을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
