@@ -30,15 +30,6 @@ public class CategoryAdminController {
 //        return ResponseEntity.ok(createdCategory);
 //    }
 
-//    // 카테고리 생성 (이미지 파일 포함)
-//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<CategoryCreateRequestDTO> createCategory(
-//            @RequestPart("categoryDTO") @Valid CategoryCreateRequestDTO categoryDTO,
-//            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-//
-//        CategoryCreateRequestDTO createdCategory = categoryService.createCategory(categoryDTO, imageFile);
-//        return ResponseEntity.ok(createdCategory);
-//    }
     // 카테고리 생성 (이미지 파일 포함)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoryCreateRequestDTO> createCategory(
@@ -48,14 +39,7 @@ public class CategoryAdminController {
             @RequestParam(value = "parentId", required = false) Long parentId,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
 
-        CategoryCreateRequestDTO categoryDTO = CategoryCreateRequestDTO.builder()
-                .name(name)
-                .displayOrder(displayOrder)
-                .isDeleted(isDeleted)
-                .parentId(parentId)
-                .build();
-
-        CategoryCreateRequestDTO createdCategory = categoryService.createCategory(categoryDTO, imageFile);
+        CategoryCreateRequestDTO createdCategory = categoryService.createCategory(name, displayOrder, isDeleted, parentId, imageFile);
         return ResponseEntity.ok(createdCategory);
     }
 
