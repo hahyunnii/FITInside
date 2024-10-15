@@ -3,7 +3,6 @@ package com.team2.fitinside.order.mapper;
 import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
-import jakarta.persistence.MapsId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,12 +15,12 @@ public interface OrderMapper {
 
     // Order -> OrderDetailResponseDto 변환 (주문 생성 후 반환 시 사용)
     @Mapping(source = "id", target = "orderId")
-    @Mapping(source = "orderProducts", target="orderProducts") // 복합 객체나 리스트는 매핑 시 명시적 선언(자동 변환)
+    @Mapping(source = "orderProducts", target = "orderProducts") // 복합 객체나 리스트는 매핑 시 명시적 선언(자동 변환)
     @Mapping(source = "discountedTotalPrice", target = "discountedTotalPrice")
     @Mapping(target = "orderStatus", expression = "java(order.getOrderStatus().getDisplayName())") // Enum displayName 매핑
     OrderDetailResponseDto toOrderDetailResponseDto(Order order);
 
-    @Mapping(source = "id", target="productId")
+    @Mapping(source = "id", target = "productId")
     @Mapping(target = "couponName",
             expression = "java(orderProduct.getCouponMember() != null ? orderProduct.getCouponMember().getCoupon().getName() : null)")
     OrderProductResponseDto toOrderProductResponseDto(OrderProduct orderProduct);
@@ -31,7 +30,6 @@ public interface OrderMapper {
 
     // Order -> OrderResponseDto 변환 (주문 상태 변경 시 사용)
     @Mapping(source = "id", target = "orderId")
-
     OrderResponseDto toOrderResponseDto(Order order);
 
     // 관리자용 간단한 정보 조회 시 사용

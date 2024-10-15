@@ -49,8 +49,15 @@ public class Order {
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
 
+    // 배송 관련 정보
+    @Column(name = "postal_code", nullable = false)
+    private String postalCode;
+
     @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
+
+    @Column(name = "detailed_address")
+    private String detailedAddress;
 
     @Column(name = "delivery_receiver", nullable = false)
     private String deliveryReceiver;
@@ -100,7 +107,9 @@ public class Order {
 
     // 주문 수정
     public void updateDeliveryInfo(OrderRequestDto request) {
+        this.postalCode = request.getPostalCode();
         this.deliveryAddress = request.getDeliveryAddress();
+        this.detailedAddress = request.getDetailedAddress();
         this.deliveryReceiver = request.getDeliveryReceiver();
         this.deliveryPhone = request.getDeliveryPhone();
     }
