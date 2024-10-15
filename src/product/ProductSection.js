@@ -20,14 +20,16 @@ const ProductSection = () => {
                     setProduct(data);
                     setSelectedImage(data.productImgUrls ? data.productImgUrls[0] : '');
                 } else {
-                    console.error("Failed to fetch product data");
+                    throw new Error("Failed to fetch product data");
                 }
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
         };
+
         fetchProduct();
     }, [productId]);
+
 
     const handleAddToCart = async () => {
         if (product) {
@@ -58,7 +60,7 @@ const ProductSection = () => {
         return <p>Loading...</p>;
     }
 
-    const productImages = product.productImgUrls && product.productImgUrls.length > 0
+    const productImages = product.productImgUrls?.length > 0
         ? product.productImgUrls
         : ['https://dummyimage.com/450x300/dee2e6/6c757d.jpg'];
 
