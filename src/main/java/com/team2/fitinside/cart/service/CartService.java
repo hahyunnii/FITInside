@@ -65,8 +65,8 @@ public class CartService {
         }
 
         Cart cart = CartMapper.INSTANCE.toEntity(dto);
-        Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new NoSuchElementException("상품이 존재하지 않습니다!"));
-        Member foundMember = memberRepository.findById(loginMemberID).orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다!"));
+        Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+        Member foundMember = memberRepository.findById(loginMemberID).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         cart.setUserAndProduct(foundMember, foundProduct);
 
         cartRepository.save(cart);
@@ -80,7 +80,7 @@ public class CartService {
 
         checkQuantity(dto.getQuantity());
 
-        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다."));
+        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 
         if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
@@ -97,7 +97,7 @@ public class CartService {
 
         Long loginMemberID = getAuthenticatedMemberId();
 
-        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new NoSuchElementException("장바구니가 존재하지 않습니다!"));
+        Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 
         if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
@@ -120,7 +120,7 @@ public class CartService {
     static void checkQuantity(int quantity) {
 
         if (quantity < 1 || quantity > 20) {
-            throw new CartOutOfRangeException("상품 수량은 1개 이상 20개 이하여야 합니다!");
+            throw new CustomException(ErrorCode.CART_OUT_OF_RANGE);
         }
     }
 
