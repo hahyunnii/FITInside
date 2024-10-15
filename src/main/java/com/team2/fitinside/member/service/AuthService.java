@@ -53,7 +53,11 @@ public class AuthService {
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
         Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        refreshTokenRepository.save(new RefreshToken(member.getId(), tokenDto.getRefreshToken()));
+        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(member.getId())
+                .map(entity -> entity.update(tokenDto.getRefreshToken()))      // 기존 토큰이 있으면 업데이트
+                .orElse(new RefreshToken(member.getId(), tokenDto.getRefreshToken())); // 없으면 새로 생성
+
+        refreshTokenRepository.save(refreshToken); // 저장소에 리프레시 토큰 저장
 
         return tokenDto;
     }
