@@ -20,7 +20,7 @@ public enum ErrorCode {
     INVALID_COUPON_CREATE_DATA(HttpStatus.BAD_REQUEST, "쿠폰 생성 정보가 유효하지 않습니다."),
     OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "현재 주문 가능한 상품의 개수를 초과했습니다."),
     ORDER_MODIFICATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "배송이 시작된 주문은 수정할 수 없습니다."),
-
+    CART_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상 20개 이하여야 합니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),
@@ -35,6 +35,7 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다."),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장바구니를 찾을 수 없습니다."),
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 쿠폰을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     CART_EMPTY(HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
