@@ -85,7 +85,9 @@ public class OrderService {
         Order order = Order.builder()
                 .member(findMember)
                 .deliveryFee(request.getDeliveryFee())
+                .postalCode(request.getPostalCode())
                 .deliveryAddress(request.getDeliveryAddress())
+                .detailedAddress(request.getDetailedAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
                 .deliveryPhone(request.getDeliveryPhone())
                 .build();
