@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Form, Button, Row, Col } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './orderAdminList.css';
 
 const OrderAdminList = () => {
@@ -8,29 +11,56 @@ const OrderAdminList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [error, setError] = useState(null);
+    const [isNoResults, setIsNoResults] = useState(false);  // 검색 결과 유무 상태 추가
+
+    // 주문 상태와 날짜 필터링
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
     // 관리자의 전체 주문 정보를 가져오는 API 호출
-    const fetchAdminOrders = async () => {
+    const fetchAdminOrders = async (filter = false) => {
         try {
             const token = localStorage.getItem('token');
+            const params = {
+                page: currentPage,
+                orderStatus: filter && selectedStatus ? selectedStatus : null,
+                startDate: filter && startDate ? startDate.toLocaleDateString('en-CA') : null,
+                endDate: filter && endDate ? endDate.toLocaleDateString('en-CA') : null
+            };
+
+            console.log('Params sent to api: ', params);
+
             const response = await axios.get('http://localhost:8080/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-                params: { page: currentPage }
+                params: params
             });
 
             setOrders(response.data.orders);
             setTotalPages(response.data.totalPages);
+
+            if (response.data.orders.length === 0) {
+                setIsNoResults(true);
+            } else {
+                setIsNoResults(false);
+            }
         } catch (err) {
             console.error('전체 주문 정보 불러오기 실패:', err.response ? err.response.data : err.message);
             setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
         }
     };
 
+    // 처음 페이지 로드 시 전체 주문 목록 가져오기
     useEffect(() => {
-        fetchAdminOrders(currentPage);
+        fetchAdminOrders();
     }, [currentPage]);
+
+    // 검색 버튼 클릭 시 필터링된 주문 목록 가져오기
+    const handleSearch = () => {
+        fetchAdminOrders(true); // 필터링 모드로 호출
+    };
 
     // 상태 변경을 임시로 저장
     const handleStatusChange = (orderId, newStatus) => {
@@ -110,11 +140,8 @@ const OrderAdminList = () => {
         return <div>{error}</div>;
     }
 
-    if (!orders || orders.length === 0) {
-        return <div>주문 목록이 없습니다.</div>;
-    }
-
     const statusOptions = [
+        { value: '', label: '전체 상태' },
         { value: 'ORDERED', label: '주문 완료' },
         { value: 'SHIPPING', label: '배송 중' },
         { value: 'COMPLETED', label: '배송 완료' },
@@ -124,6 +151,63 @@ const OrderAdminList = () => {
     return (
         <div className="order-admin-container">
             <h2 className="order-admin-title">전체 주문 목록</h2>
+
+            <Form>
+                <Row className="align-items-center mb-3">
+                    <Col xs="auto" className="d-flex align-items-center">
+                        <Form.Group controlId="formStatus" className="d-flex align-items-center">
+                            <Form.Label className="me-2">주문 상태</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                className="me-2"
+                            >
+                                {statusOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs="auto" className="d-flex align-items-center">
+                        <Form.Group controlId="formStartDate" className="d-flex align-items-center">
+                            <Form.Label className="me-2">시작일</Form.Label>
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="시작 날짜 선택"
+                                className="form-control me-2"
+                            />
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs="auto" className="d-flex align-items-center">
+                        <Form.Group controlId="formEndDate" className="d-flex align-items-center">
+                            <Form.Label className="me-2">종료일</Form.Label>
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="종료 날짜 선택"
+                                className="form-control me-2"
+                            />
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs="auto" className="d-flex align-items-end">
+                        <Button variant="primary" onClick={handleSearch}>
+                            검색
+                        </Button>
+                    </Col>
+                </Row>
+            </Form>
+
+            {isNoResults && <p className="no-results">해당 주문이 없습니다.</p>}
+
             <table className="order-admin-table">
                 <thead>
                 <tr>
@@ -137,41 +221,41 @@ const OrderAdminList = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    {orders.map((order) => (
-                        <tr key={order.orderId}>
-                            <td>{new Date(order.createdAt).toLocaleString()}</td>
-                            <td>{order.email}</td>
-                            <td>{(order.totalPrice).toLocaleString()}원</td>
-                            <td>{(order.discountedTotalPrice).toLocaleString()}원</td>
-                            <td>
-                                {order.coupons && order.coupons.length > 0 ? (
-                                    order.coupons.map((coupon, index) => (
-                                        <div key={index}>
-                                            {coupon.name} ({(coupon.discountPrice).toLocaleString()}원)
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div>-</div>
-                                )}
-                            </td>
-                            <td>
-                                <select
-                                    value={pendingStatusChanges[order.orderId] || order.orderStatus}
-                                    onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
-                                >
-                                    {statusOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td>
-                                <button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
-                                <button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
-                            </td>
-                        </tr>
-                    ))}
+                {orders.map((order) => (
+                    <tr key={order.orderId}>
+                        <td>{new Date(order.createdAt).toLocaleString()}</td>
+                        <td>{order.email}</td>
+                        <td>{(order.totalPrice).toLocaleString()}원</td>
+                        <td>{(order.discountedTotalPrice).toLocaleString()}원</td>
+                        <td>
+                            {order.coupons && order.coupons.length > 0 ? (
+                                order.coupons.map((coupon, index) => (
+                                    <div key={index}>
+                                        {coupon.name} ({(coupon.discountPrice).toLocaleString()}원)
+                                    </div>
+                                ))
+                            ) : (
+                                <div>-</div>
+                            )}
+                        </td>
+                        <td>
+                            <select
+                                value={pendingStatusChanges[order.orderId] || order.orderStatus}
+                                onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
+                            >
+                                {statusOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </td>
+                        <td>
+                            <button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
+                            <button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
 
