@@ -61,9 +61,12 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
 
             onRequestClose(); // 모달 닫기
         } catch (error) {
-            alert('유효하지 않은 입력입니다!');
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                alert('유효하지 않은 입력입니다!');
+            }
         }
     };
 

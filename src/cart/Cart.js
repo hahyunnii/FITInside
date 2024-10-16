@@ -105,9 +105,12 @@ const Cart = () => {
             const data = await response.json();
             setCurrentProductCoupons(data.coupons);
         } catch (error) {
-            console.error(error.message);
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
     };
 

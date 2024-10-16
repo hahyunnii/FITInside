@@ -35,9 +35,12 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
             const data = await response.json();
             setMembers(data.members); // 응답 데이터 설정
         } catch (err) {
-            setError(err.message);
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -86,9 +89,12 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
             alert('모든 쿠폰 이메일 전송을 완료했습니다!');
             onRequestClose(); // 모달 닫기
         } catch (err) {
-            console.error(err.message);
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(err.message);
+            }
         } finally {
             setSending(false);
         }
