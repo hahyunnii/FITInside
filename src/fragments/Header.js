@@ -17,11 +17,7 @@ const Header = () => {
     // 로그인 상태 확인
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
-        }
+        setIsLoggedIn(!!token);
         updateCartCount(); // 초기 카운트 업데이트
         window.addEventListener('storage', updateCartCount); // storage 이벤트 리스너 추가
         return () => {
@@ -78,14 +74,14 @@ const Header = () => {
                         </li>
                     </ul>
                     <div className="d-flex m-3">
-                        {isLoggedIn ? (
+                        {isLoggedIn && (
                             <div>
                                 <a className="btn btn-outline-dark me-3" href="/admin">ADMIN</a>
                                 <a className="btn btn-outline-dark" href="/me">
                                     MY
                                 </a>
                             </div>
-                        ) : (<div></div>)}
+                        )}
                     </div>
                     <div className="d-flex">
                         <a className="btn btn-outline-dark" href="/cart"><i className="bi-cart-fill me-1"></i> Cart

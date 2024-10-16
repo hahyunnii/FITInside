@@ -37,7 +37,9 @@ const OrderDetail = () => {
 
                 setOrderDetail(response.data);
                 setDeliveryData({
+                    postalCode: response.data.postalCode,
                     deliveryAddress: response.data.deliveryAddress,
+                    detailedAddress: response.data.detailedAddress,
                     deliveryReceiver: response.data.deliveryReceiver,
                     deliveryPhone: response.data.deliveryPhone,
                 });
@@ -53,7 +55,9 @@ const OrderDetail = () => {
     const handleEditClick = () => {
         // isEditing 상태가 변경될 때 deliveryData를 최신 orderDetail 정보로 설정
         setDeliveryData({
+            postalCode: orderDetail.postalCode,
             deliveryAddress: orderDetail.deliveryAddress,
+            detailedAddress: orderDetail.detailedAddress,
             deliveryReceiver: orderDetail.deliveryReceiver,
             deliveryPhone: orderDetail.deliveryPhone,
         });
@@ -75,10 +79,13 @@ const OrderDetail = () => {
 
             setOrderDetail(response.data);
             setDeliveryData({
+                postalCode: response.data.postalCode,
                 deliveryAddress: response.data.deliveryAddress,
+                detailedAddress: response.data.detailedAddress,
                 deliveryReceiver: response.data.deliveryReceiver,
                 deliveryPhone: response.data.deliveryPhone,
             }); // 업데이트된 데이터를 deliveryData에 반영
+            alert('배송지 변경이 완료되었습니다.');
             setIsEditing(false); // 수정 완료 후 편집 모드 종료
         } catch (err) {
             console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
@@ -141,9 +148,9 @@ const OrderDetail = () => {
                     <th>주문상품정보</th>
                     <th>수량</th>
                     <th>판매금액</th>
-                    <th>총금액</th>
+                    <th>할인금액</th>
                     <th>배송비</th>
-                    <th>결제금액</th>
+                    <th>결제금액</th> {/*할인이 적용된 총금액 + 배송비*/}
                     <th>진행상태</th>
                     <th>비고</th>
                 </tr>
@@ -154,16 +161,14 @@ const OrderDetail = () => {
                             <td>{product.orderProductName}</td>
                             <td>{product.count}</td>
                             <td>{(product.orderProductPrice * product.count).toLocaleString()}원</td>
+                            <td>{product.discountedPrice !== product.orderProductPrice * product.count ? `${(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원` : '-'}</td>
                             {index === 0 && ( /* 첫 번째 상품에서만 셀 병합하여 총금액 및 배송비 표시 */
                                 <>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        {(orderDetail.totalPrice).toLocaleString()}원
-                                    </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
                                         {orderDetail.deliveryFee.toLocaleString()}원
                                     </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
-                                        {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                                        {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
                                     </td>
                                     <td rowSpan={orderDetail.orderProducts.length}>
                                         {getStatusLabel(orderDetail.orderStatus)}
@@ -185,7 +190,21 @@ const OrderDetail = () => {
             </table>
 
             <div className="order-summary">
-                총 결제금액 <span className="total-amount">{(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
+                <span className="light-text">총 상품 가격 </span>
+                {(orderDetail.totalPrice).toLocaleString()}원 +
+                <span className="light-text">배송비 </span>
+                {orderDetail.deliveryFee.toLocaleString()}원 -
+                <span className="light-text">할인 </span>
+                {(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
+                <span> = 총 결제금액 </span>
+                <span className="total-amount">
+                    {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                </span>
+            </div>
+
+            <div className="total-payment-highlight">
+                총 결제금액 :
+                <span style={{ color: '#B22222' }}> {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</span>
             </div>
 
             <h3 className="order-section-header">
@@ -219,7 +238,7 @@ const OrderDetail = () => {
                         <td className="receiver-info">
                             {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
                             <br />
-                            {orderDetail.deliveryAddress}
+                            ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
                         </td>
                     </tr>
                     </tbody>
@@ -231,15 +250,38 @@ const OrderDetail = () => {
                 <tbody>
                 <tr>
                     <th>주문금액</th>
-                    <td>{(orderDetail.totalPrice).toLocaleString()}원</td>
+                    <td>
+                        <span>
+                            {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                        </span>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
+                            배송비: {orderDetail.deliveryFee.toLocaleString()}원
+                        </div>
+                    </td>
+
                 </tr>
                 <tr>
-                    <th>배송비</th>
-                    <td>{(orderDetail.deliveryFee).toLocaleString()}원</td>
+                    <th>할인금액</th>
+                    <td>
+                        <span>
+                            -{(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
+                        </span>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            {/* 사용한 쿠폰 리스트 */}
+                            {orderDetail.orderProducts.map(product => (
+                                product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
+                                    <div key={product.productId}>
+                                        {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
+                                    </div>
+                                ) : null
+                            ))}
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th>총 결제금액</th>
-                    <td style={{ color: '#B22222' }}>{(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
+                    <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
                 </tr>
                 </tbody>
             </table>
