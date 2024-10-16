@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
     INVALID_COUPON_DATA(HttpStatus.BAD_REQUEST, "쿠폰 정보가 유효하지 않습니다."),
     INVALID_COUPON_CREATE_DATA(HttpStatus.BAD_REQUEST, "쿠폰 생성 정보가 유효하지 않습니다."),
+    INVALID_EMAIL_DATA(HttpStatus.BAD_REQUEST, "이메일 정보가 유효하지 않습니다."),
     OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "현재 주문 가능한 상품의 개수를 초과했습니다."),
     ORDER_MODIFICATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "배송이 시작된 주문은 수정할 수 없습니다."),
     CART_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상 20개 이하여야 합니다."),
