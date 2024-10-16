@@ -59,13 +59,7 @@ public class OrderService {
         Long loginMemberId = securityUtil.getCurrentMemberId();
 
         Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
-        Page<Order> ordersPage;
-
-        if(productName != null && !productName.isEmpty()){
-            ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
-        } else {
-            ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
-        }
+        Page<Order> ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
 
         List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
 
