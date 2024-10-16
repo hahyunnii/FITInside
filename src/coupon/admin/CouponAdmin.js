@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../coupon.css';
 import CouponCreateModal from "./CouponCreateModal";
 import CouponMemberModal from "./CouponMemberModal";
-import CouponEmailModal from "./CouponEmailModal"; // 이메일 모달 컴포넌트 import
+import CouponEmailModal from "./CouponEmailModal";
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken"; // 이메일 모달 컴포넌트 import
 
 const CouponAdmin = () => {
     const [coupons, setCoupons] = useState([]);
@@ -37,7 +38,8 @@ const CouponAdmin = () => {
             setCoupons(data.coupons);
             setTotalPages(data.totalPages); // 총 페이지 수 설정
         } catch (error) {
-            console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
@@ -58,6 +60,8 @@ const CouponAdmin = () => {
             setCategories(data);
         } catch (error) {
             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
@@ -97,7 +101,9 @@ const CouponAdmin = () => {
                 alert(`오류 발생: ${errorData.message}`);
             }
         } catch (error) {
-            alert(`네트워크 오류 발생: ${error.message}`);
+            console.error(`네트워크 오류 발생: ${error.message}`);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
