@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal'; // 모달 라이브러리 사용
-import CouponEmailTemplate from "./CouponEmailTemplate"; // 이메일 템플릿 컴포넌트 추가
+import CouponEmailTemplate from "./CouponEmailTemplate";
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken"; // 이메일 템플릿 컴포넌트 추가
 
 const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
     const [members, setMembers] = useState([]);
@@ -35,6 +36,8 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
             setMembers(data.members); // 응답 데이터 설정
         } catch (err) {
             setError(err.message);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         } finally {
             setLoading(false);
         }
@@ -83,7 +86,9 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
             alert('모든 쿠폰 이메일 전송을 완료했습니다!');
             onRequestClose(); // 모달 닫기
         } catch (err) {
-            alert(err.message);
+            console.error(err.message);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         } finally {
             setSending(false);
         }

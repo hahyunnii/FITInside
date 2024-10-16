@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const CouponSearchModal = ({ isOpen, onRequestClose }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -34,8 +35,13 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
             setCoupon(data); // 쿠폰 정보 설정
             setErrorMessage(''); // 에러 메시지 초기화
         } catch (error) {
-            setCoupon(null);
-            setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
+            if (error.response && (error.response.status === 400)) {
+                setCoupon(null);
+                setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
+            } else {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            }
         }
     };
 
@@ -64,7 +70,9 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
             // 페이지 새로 고침
             window.location.reload();
         } catch (error) {
-            alert(error.message); // 에러 메시지 표시
+            console.error(error.message); // 에러 메시지 표시
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
