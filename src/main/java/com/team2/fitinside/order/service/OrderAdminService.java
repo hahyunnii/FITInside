@@ -14,6 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,15 +31,24 @@ public class OrderAdminService {
     private final OrderRepository orderRepository;
 
     // 전체 주문 조회
-    public OrderResponseWrapperDto findAllOrdersByAdmin(int page) {
+    public OrderResponseWrapperDto findAllOrdersByAdmin(int page, String orderStatus, LocalDate startDate, LocalDate endDate) {
+
+        // orderStatus가 null이면 전체 조회
+        OrderStatus status = (orderStatus != null && !orderStatus.isEmpty()) ? OrderStatus.valueOf(orderStatus) : null;
+
+        // LocalDate를 LocalDateTime으로 변환
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by("createdAt").descending());
-        List<Order> orders = orderRepository.findAllOrdersWithDetails(pageable);
+
+        Page<Order> orders = orderRepository.findAllOrdersWithDetails(status, startDateTime, endDateTime, pageable);
 
         List<OrderResponseDto> orderResponseDtos = orders.stream().map(order -> {
             OrderResponseDto orderResponseDto = orderMapper.toOrderResponseDto(order);
 
             // 이메일 설정
-            orderResponseDto.setEmail(order.getMember().getEmail());  // 회원 이메일 설정
+            orderResponseDto.setEmail(order.getMember().getEmail());
 
             // 주문의 각 OrderProduct에서 쿠폰 정보를 추출
             List<CouponInfoResponseDto> couponInfoList = order.getOrderProducts().stream()
