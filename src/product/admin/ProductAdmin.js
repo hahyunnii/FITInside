@@ -9,12 +9,17 @@ const ProductAdmin = () => {
     const [page, setPage] = useState(0); // 현재 페이지 번호
     const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
     const [pageSize] = useState(9); // 페이지당 상품 수
+
+    // 정렬 기준 및 정렬 방향 상태
+    const [sortField, setSortField] = useState('createdAt'); // 기본 정렬 필드: 생성일
+    const [sortDir, setSortDir] = useState('desc'); // 기본 정렬 방향: 내림차순
+
     const navigate = useNavigate();
 
     // 상품 목록 가져오기
     useEffect(() => {
         fetchProducts(page);
-    }, [page]); // page 값이 변경될 때마다 새 데이터를 가져옴
+    }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
 
     const fetchProducts = async (pageNumber) => {
         try {
@@ -23,6 +28,8 @@ const ProductAdmin = () => {
                 params: {
                     page: pageNumber,
                     size: pageSize,
+                    sortField: sortField,  // 사용자가 선택한 정렬 기준
+                    sortDir: sortDir,      // 사용자가 선택한 정렬 방향
                 },
             });
             const data = response.data;
@@ -91,6 +98,24 @@ const ProductAdmin = () => {
         <div className="container mt-5">
             <h2>상품 관리</h2>
             <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
+
+            {/* 정렬 기준과 방향 선택 */}
+            <div className="sorting-controls mb-3">
+                <label>정렬 기준: </label>
+                <select value={sortField} onChange={(e) => setSortField(e.target.value)} className="mx-2">
+                    <option value="createdAt">생성일</option>
+                    <option value="productName">상품명</option>
+                    <option value="price">가격</option>
+                    <option value="stock">재고</option>
+                </select>
+
+                <label>정렬 방향: </label>
+                <select value={sortDir} onChange={(e) => setSortDir(e.target.value)} className="mx-2">
+                    <option value="asc">오름차순</option>
+                    <option value="desc">내림차순</option>
+                </select>
+            </div>
+
             <table className="table table-bordered">
                 <thead>
                 <tr>
