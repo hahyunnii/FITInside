@@ -1,19 +1,11 @@
 package com.team2.fitinside.member.oath.service;
 
 
-import com.team2.fitinside.global.exception.CustomException;
-import com.team2.fitinside.global.exception.ErrorCode;
-import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.jwt.TokenProvider;
-import com.team2.fitinside.member.service.MemberService;
-import com.team2.fitinside.member.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 
 @RequiredArgsConstructor
 @Service
