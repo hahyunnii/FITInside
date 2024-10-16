@@ -33,29 +33,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
 
-
-//    // 카테고리 생성
-//    public CategoryCreateRequestDTO createCategory(CategoryCreateRequestDTO categoryDTO, MultipartFile imageFile) {
-//        String imageUrl = null;
-//        if (imageFile != null && !imageFile.isEmpty()) {
-//            imageUrl = s3ImageService.upload(imageFile); // S3에 이미지 업로드하고 URL 받기
-//        }
-//
-//        Category category = Category.builder()
-//                .name(categoryDTO.getName())
-//                .displayOrder(categoryDTO.getDisplayOrder())
-//                .parent(categoryDTO.getParentId() != null ?
-//                        categoryRepository.findById(categoryDTO.getParentId())
-//                                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
-//                        : null)
-//                .isDeleted(false)
-//                .imageUrl(imageUrl) // 이미지 URL 설정
-//                .build();
-//
-//        Category savedCategory = categoryRepository.save(category);
-//        return CategoryMapper.toCreateDTO(savedCategory);
-//    }
-
     public CategoryCreateRequestDTO createCategory(String name, Long displayOrder, Boolean isDeleted, Long parentId, MultipartFile imageFile) {
         String imageUrl = uploadImageToS3(imageFile);
         // 부모 카테고리 조회
@@ -155,6 +132,3 @@ public class CategoryService {
     }
 
 }
-
-//--------------
-
