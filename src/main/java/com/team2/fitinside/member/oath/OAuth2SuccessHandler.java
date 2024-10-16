@@ -4,11 +4,8 @@ import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.jwt.TokenProvider;
-import com.team2.fitinside.member.oath.entity.RefreshToken;
-import com.team2.fitinside.member.oath.repository.RefreshTokenRepository;
-import com.team2.fitinside.member.oath.util.CookieUtil;
+import com.team2.fitinside.member.oath.util.RefreshTokenCookieUtil;
 import com.team2.fitinside.member.repository.MemberRepository;
-import com.team2.fitinside.member.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,14 +18,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
-import static com.team2.fitinside.member.jwt.TokenProvider.REFRESH_TOKEN_EXPIRE_TIME;
 
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenCookieUtil refreshTokenCookieUtil;
     private static final String URI = "http://localhost:3000/tokenCheck";
     private final MemberRepository memberRepository;
 
@@ -43,8 +39,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = tokenProvider.generateAccessToken(authentication);
 
         String refreshToken = tokenProvider.generateRefreshToken(authentication);
-        saveRefreshToken(member.getId(), refreshToken); // 리프레시 토큰 저장
-        addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
+        refreshTokenCookieUtil.saveRefreshToken(member.getId(), refreshToken); // 리프레시 토큰 저장
+        refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
 
 
         // 토큰 전달을 위한 redirect
@@ -56,20 +52,5 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     }
 
-    // 리프레시 토큰을 DB에 저장하는 메서드
-    private void saveRefreshToken(Long userId, String newRefreshToken) {
-        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(userId)
-                .map(entity -> entity.update(newRefreshToken))      // 기존 토큰이 있으면 업데이트
-                .orElse(new RefreshToken(userId, newRefreshToken)); // 없으면 새로 생성
 
-        refreshTokenRepository.save(refreshToken); // 저장소에 리프레시 토큰 저장
-    }
-
-    // 리프레시 토큰을 쿠키에 추가하는 메서드
-    private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
-        int cookieMaxAge = (int) REFRESH_TOKEN_EXPIRE_TIME; // 쿠키 유효 기간 설정
-
-        CookieUtil.deleteCookie(request, response, "refreshToken"); // 기존 쿠키 삭제
-        CookieUtil.addCookie(response, "refreshToken", refreshToken, cookieMaxAge); // 새 쿠키 추가
-    }
 }
