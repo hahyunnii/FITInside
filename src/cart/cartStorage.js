@@ -132,9 +132,12 @@ export const fetchProduct = async (id) => {
         console.log(productData);
         return productData;
     } catch (error) {
-        console.error('상품 가져오기 오류:', error);
-        await sendRefreshTokenAndStoreAccessToken();
-        window.location.reload();
+        try {
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
+        } catch (e) {
+            console.error('상품 가져오기 오류:', error);
+        }
     }
 };
 
@@ -170,9 +173,12 @@ export const fetchAndMergeCartData = async (token) => {
             throw new Error(`API 응답 오류: ${response.status}`);
         }
     } catch (error) {
-        console.error(error.message);
-        await sendRefreshTokenAndStoreAccessToken();
-        window.location.reload();
+        try {
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
+        } catch (e) {
+            console.error(error.message);
+        }
     }
 };
 
@@ -231,9 +237,12 @@ const updateDBWithDifferences = async (localCart) => {
                 });
                 console.log(`장바구니 아이템 추가됨: ${item.id}`);
             } catch (error) {
-                console.error(`장바구니 아이템 추가 중 오류 발생: ${error}`);
-                await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    window.location.reload();
+                } catch (e) {
+                    console.error(`장바구니 아이템 추가 중 오류 발생: ${error}`);
+                }
             }
         } else if (dbItem.quantity !== item.quantity) {
             // 수량이 다른 경우 업데이트
@@ -273,9 +282,12 @@ const updateCartItem = async (item) => {
 
         console.log(`장바구니 아이템 업데이트됨: ${item.id}`);
     } catch (error) {
-        console.error(error.message);
-        await sendRefreshTokenAndStoreAccessToken();
-        window.location.reload();
+        try {
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
+        } catch (e) {
+            console.error(error.message);
+        }
     }
 
 };
@@ -293,9 +305,12 @@ const deleteCartItem = async (item) => {
         });
         console.log(`장바구니 아이템 삭제됨: ${item.id}`);
     } catch (error) {
-        console.error(error.message);
-        await sendRefreshTokenAndStoreAccessToken();
-        window.location.reload();
+        try {
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
+        } catch (e) {
+            console.error(error.message);
+        }
     }
 
 };

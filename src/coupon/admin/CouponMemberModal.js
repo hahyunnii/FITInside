@@ -24,9 +24,12 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
             setMemberModalData(data);
             setTotalPages(data.totalPages);
         } catch (error) {
-            console.error(error);
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
     };
 
