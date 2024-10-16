@@ -52,6 +52,8 @@ public class CouponAdminController {
     @PostMapping
     @Operation(summary = "쿠폰 생성", description = "새로운 쿠폰 생성")
     @ApiResponse(responseCode = "201", description = "쿠폰이 생성되었습니다!")
+    @ApiResponse(responseCode = "400", description = "쿠폰 생성 정보가 유효하지 않습니다.")
+    @ApiResponse(responseCode = "404", description = "해당 카테고리를 찾을 수 없습니다.")
     public ResponseEntity<String> createCoupon(@RequestBody CouponCreateRequestDto couponCreateRequestDto) {
 
         couponAdminService.createCoupon(couponCreateRequestDto);
@@ -61,6 +63,7 @@ public class CouponAdminController {
     @DeleteMapping("/{couponId}")
     @Operation(summary = "쿠폰 비활성화", description = "쿠폰 비활성화")
     @ApiResponse(responseCode = "200", description = "쿠폰이 비활성화 되었습니다!")
+    @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
     public ResponseEntity<String> deActiveCoupon(@PathVariable("couponId") Long couponId) {
 
         couponAdminService.deActiveCoupon(couponId);
@@ -68,6 +71,11 @@ public class CouponAdminController {
     }
 
     @PostMapping("/email")
+    @Operation(summary = "쿠폰 이메일 전송", description = "쿠폰 미보유 회원에게 쿠폰 이메일 전송")
+    @ApiResponse(responseCode = "200", description = "쿠폰 이메일 전송을 완료했습니다!")
+    @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.")
+    @ApiResponse(responseCode = "400", description = "이메일 정보가 유효하지 않습니다.")
+    @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
     public ResponseEntity<String> sendCouponEmails(@RequestBody CouponEmailRequestDto couponEmailRequestDto) {
 
         couponAdminService.sendEmail(couponEmailRequestDto);
@@ -75,6 +83,9 @@ public class CouponAdminController {
     }
 
     @GetMapping("/{couponId}/members")
+    @Operation(summary = "쿠폰 미보유 회원 조회", description = "couponId 에 해당하는 쿠폰을 미보유한 회원 목록 조회")
+    @ApiResponse(responseCode = "200", description = "쿠폰 미보유 회원 목록을 조회했습니다!")
+    @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
     public ResponseEntity<CouponMemberResponseWrapperDto> findMembersWithOutCoupons(@PathVariable("couponId") Long couponId) {
 
         CouponMemberResponseWrapperDto dto = couponAdminService.findMembersWithOutCoupons(couponId);

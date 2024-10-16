@@ -10,10 +10,10 @@ import java.util.List;
 @Setter
 public class OrderRequestDto { // 주문 생성, 수정 DTO
 
-    @NotBlank(message = "배송지를 입력해 주세요.")
+    @NotBlank(message = "배송지(우편번호)를 입력해 주세요.")
     private String postalCode;
 
-    @NotBlank(message = "배송지를 입력해 주세요.")
+    @NotBlank(message = "배송지(주소)를 입력해 주세요.")
     private String deliveryAddress;
 
     private String detailedAddress;

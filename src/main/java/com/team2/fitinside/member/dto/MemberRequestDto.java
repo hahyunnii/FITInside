@@ -2,14 +2,12 @@ package com.team2.fitinside.member.dto;
 
 import com.team2.fitinside.member.entity.Authority;
 import com.team2.fitinside.member.entity.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberRequestDto {
