@@ -4,21 +4,15 @@ import axios from "axios";
 
 const sendRefreshTokenAndStoreAccessToken = async () => {
     try {
-        const refreshToken = getCookie('refreshToken'); // 쿠키에서 refreshToken 가져오기
-
-        if (!refreshToken) {
-            throw new Error('refreshToken이 없습니다.');
-        }
-
         // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
         const response = await axios.post(
             'http://localhost:8080/api/auth/token',
-            { refreshToken }, // refreshToken을 요청 바디에 포함
+            { }, // refreshToken을 요청 바디에 포함
             {
                 headers: {
                     'Content-Type': 'application/json', // 요청 헤더 설정
                 },
-                withCredentials: true, // 쿠키 기반 인증 사용
+                withCredentials: true, // 쿠키 기반 인증 사용 (httponly 쿠키를 같이 보냄)
             }
         );
 
@@ -30,11 +24,11 @@ const sendRefreshTokenAndStoreAccessToken = async () => {
     }
 };
 
-// 쿠키에서 특정 쿠키 값을 가져오는 함수
-const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-};
+// // 쿠키에서 특정 쿠키 값을 가져오는 함수
+// const getCookie = (name) => {
+//     const value = `; ${document.cookie}`;
+//     const parts = value.split(`; ${name}=`);
+//     if (parts.length === 2) return parts.pop().split(';').shift();
+// };
 
 export default sendRefreshTokenAndStoreAccessToken;

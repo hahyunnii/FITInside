@@ -18,7 +18,10 @@ const Login = () => {
             const response = await axios.post('http://localhost:8080/api/auth/login', {
                 email,
                 password
-            });
+            },
+                {
+                    withCredentials: true
+                });
 
             if (response.status === 200) {
                 // 로그인 성공 시 처리 (예: 토큰 저장, 리다이렉트)
