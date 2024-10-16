@@ -59,7 +59,6 @@ public class CategoryAdminController {
         return ResponseEntity.ok(updatedCategory);
     }
 
-
     // 카테고리 삭제 (soft delete)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long id) {

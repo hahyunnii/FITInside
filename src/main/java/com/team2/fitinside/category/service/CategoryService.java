@@ -51,7 +51,6 @@ public class CategoryService {
         return CategoryMapper.toCreateDTO(savedCategory);
     }
 
-
     // 이미지 업로드 메서드
     private String uploadImageToS3(MultipartFile imageFile) {
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -68,7 +67,6 @@ public class CategoryService {
         }
         return null; // 부모 카테고리가 없을 경우 null 반환
     }
-
 
     //======================================================================
     // 카테고리 조회
@@ -130,5 +128,4 @@ public class CategoryService {
         category.delete(); // Soft delete
         categoryRepository.save(category);
     }
-
 }
