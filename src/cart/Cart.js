@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCartQuantity} from './cartStorage';
 import AvailableCouponModal from '../coupon/AvailableCouponModal';
 import './cart.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 
 const Cart = () => {
@@ -88,19 +89,26 @@ const Cart = () => {
     const cartCount = useCartCount();
 
     const fetchAvailableCoupons = async (productId) => {
-        const response = await fetch(`http://localhost:8080/api/coupons/${productId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-        });
 
-        if (!response.ok) {
-            throw new Error('적용 가능 쿠폰 목록을 가져오는 데 실패했습니다.');
+        try {
+            const response = await fetch(`http://localhost:8080/api/coupons/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('적용 가능 쿠폰 목록을 가져오는 데 실패했습니다.');
+            }
+
+            const data = await response.json();
+            setCurrentProductCoupons(data.coupons);
+        } catch (error) {
+            console.error(error.message);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
-
-        const data = await response.json();
-        setCurrentProductCoupons(data.coupons);
     };
 
     const handleShowCouponModal = (item) => {

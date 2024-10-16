@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 const LOCAL_CART_KEY = 'localCart';
 const DB_CART_KEY = 'dbCart';
 
@@ -132,7 +133,8 @@ export const fetchProduct = async (id) => {
         return productData;
     } catch (error) {
         console.error('상품 가져오기 오류:', error);
-        return null; // 오류가 발생하면 null 반환
+        await sendRefreshTokenAndStoreAccessToken();
+        window.location.reload();
     }
 };
 
@@ -168,7 +170,9 @@ export const fetchAndMergeCartData = async (token) => {
             throw new Error(`API 응답 오류: ${response.status}`);
         }
     } catch (error) {
-        throw error; // 호출한 쪽으로 에러를 던짐
+        console.error(error.message);
+        await sendRefreshTokenAndStoreAccessToken();
+        window.location.reload();
     }
 };
 
@@ -216,15 +220,21 @@ const updateDBWithDifferences = async (localCart) => {
                 quantity: item.quantity,
             };
 
-            await fetch('http://localhost:8080/api/carts', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
-            });
-            console.log(`장바구니 아이템 추가됨: ${item.id}`);
+            try {
+                await fetch('http://localhost:8080/api/carts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
+                });
+                console.log(`장바구니 아이템 추가됨: ${item.id}`);
+            } catch (error) {
+                console.error(`장바구니 아이템 추가 중 오류 발생: ${error}`);
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            }
         } else if (dbItem.quantity !== item.quantity) {
             // 수량이 다른 경우 업데이트
             await updateCartItem(item);
@@ -251,82 +261,41 @@ const updateCartItem = async (item) => {
         productId: item.id, // id를 productId로 변환
         quantity: item.quantity,
     };
+    try {
+        await fetch('http://localhost:8080/api/carts', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
+        });
 
-    await fetch('http://localhost:8080/api/carts', {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
-    });
+        console.log(`장바구니 아이템 업데이트됨: ${item.id}`);
+    } catch (error) {
+        console.error(error.message);
+        await sendRefreshTokenAndStoreAccessToken();
+        window.location.reload();
+    }
 
-    console.log(`장바구니 아이템 업데이트됨: ${item.id}`);
 };
 
 const deleteCartItem = async (item) => {
 
     if(localStorage.getItem('token') === null) return;
-
-    await fetch(`http://localhost:8080/api/carts/${item.id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-        },
-    });
-    console.log(`장바구니 아이템 삭제됨: ${item.id}`);
-};
-
-
-export const clearCartItem = async (token) => {
-    // 1. 장바구니 초기화 요청 (DELETE)
-    const deleteResponse = await fetch('http://localhost:8080/api/carts', {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
-        },
-    });
-
-    if (!deleteResponse.ok) {
-        throw new Error('장바구니 초기화 실패');
+    try{
+        await fetch(`http://localhost:8080/api/carts/${item.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log(`장바구니 아이템 삭제됨: ${item.id}`);
+    } catch (error) {
+        console.error(error.message);
+        await sendRefreshTokenAndStoreAccessToken();
+        window.location.reload();
     }
-    console.log('장바구니가 서버에서 초기화되었습니다.');
-}
 
-// 장바구니 초기화 요청 및 데이터 다시 추가 요청
-// export const syncCartWithServer = async (token, cartDataToClear) => {
-//     // 1. 장바구니 초기화 요청 (DELETE)
-//     const deleteResponse = await fetch('http://localhost:8080/api/cart', {
-//         method: 'DELETE',
-//         headers: {
-//             'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
-//         },
-//     });
-//
-//     if (!deleteResponse.ok) {
-//         throw new Error('장바구니 초기화 실패');
-//     }
-//     console.log('장바구니가 서버에서 초기화되었습니다.');
-//
-//     // 2. 장바구니 데이터 다시 추가 요청 (POST)
-//     for (const item of cartDataToClear) {
-//         const postResponse = await fetch('http://localhost:8080/api/cart', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
-//             },
-//             body: JSON.stringify({
-//                 productId: item.id,
-//                 quantity: item.quantity,
-//             }),
-//         });
-//
-//         if (!postResponse.ok) {
-//             throw new Error(`장바구니 데이터 추가 실패: ${item.productId}`);
-//         }
-//
-//         console.log(`장바구니 데이터 (${item.productId})가 서버에 추가되었습니다.`);
-//     }
-// };
+};

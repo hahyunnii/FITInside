@@ -23,11 +23,20 @@ const ProductManagement = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/products');
+            const response = await fetch('http://localhost:8080/api/products?page=0&size=9');
             const data = await response.json();
-            setProducts(data);
+            console.log('받아온 데이터:', data); // 데이터 구조 확인
+
+            // 페이지네이션된 데이터의 content 배열만 사용
+            if (data && Array.isArray(data.content)) {
+                setProducts(data.content); // 상품 목록 저장
+            } else {
+                console.error('받아온 데이터가 올바른 형식이 아닙니다:', data);
+                setProducts([]); // 데이터가 비정상인 경우 빈 배열 설정
+            }
         } catch (error) {
             console.error('상품 목록을 불러오는 중 오류 발생:', error);
+            setProducts([]); // 오류 발생 시 빈 배열로 설정
         }
     };
 

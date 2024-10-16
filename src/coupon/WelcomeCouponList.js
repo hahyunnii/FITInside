@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './coupon.css';
 import CouponSearchModal from './CouponSearchModal';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const CouponList = () => {
     const [welcomeCoupons, setWelcomeCoupons] = useState([]);
@@ -29,6 +30,8 @@ const CouponList = () => {
             setWelcomeCoupons(data.coupons);
         } catch (error) {
             console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
@@ -49,6 +52,8 @@ const CouponList = () => {
             setCategories(data);
         } catch (error) {
             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
@@ -81,7 +86,9 @@ const CouponList = () => {
             // 페이지 새로 고침
             // window.location.reload(); // 페이지 새로 고침 대신 상태 업데이트로 대체
         } catch (error) {
-            alert(error.message); // 에러 메시지 표시
+            console.error(error.message); // 에러 메시지 표시
+            await sendRefreshTokenAndStoreAccessToken();
+            window.location.reload();
         }
     };
 
