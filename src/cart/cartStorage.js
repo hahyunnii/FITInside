@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 const LOCAL_CART_KEY = 'localCart';
 const DB_CART_KEY = 'dbCart';
 
+
 export const useCartCount = () => {
     const [cartCount, setCartCount] = useState(0);
 
@@ -61,6 +62,18 @@ export const addToCart = async (item) => {
 // 장바구니 수량 업데이트하기
 export const updateCartQuantity = async (id, quantity) => {
     const cart = getCart();
+    const productData = await fetchProduct(id); // 상품 정보를 가져옵니다.
+
+    if (!productData) {
+        alert('상품 정보를 가져오는 데 실패했습니다.');
+        return false; // 실패 시 false 반환
+    }
+
+    if (quantity > productData.stock) {
+        alert(`남은 재고는 ${productData.stock}개 입니다.`); // 재고 초과 알림
+        return false; // 재고 초과 시 false 반환
+    }
+
     const updatedCart = cart.map(item => {
         if (item.id === id) {
             return { ...item, quantity }; // 수량 업데이트
@@ -68,13 +81,18 @@ export const updateCartQuantity = async (id, quantity) => {
         return item;
     });
 
+    // 업데이트된 장바구니를 로컬 스토리지에 저장
     localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(updatedCart));
+
     // 카운트 업데이트
     window.dispatchEvent(new Event('storage')); // storage 이벤트 발생
 
     // 데이터베이스와 동기화
     await updateDBWithDifferences(updatedCart);
+
+    return true; // 성공적으로 업데이트됨
 };
+
 
 // 장바구니 삭제하기
 export const removeFromCart = async (id) => {

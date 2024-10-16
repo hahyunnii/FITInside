@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './orderAdminList.css';
 
 const OrderAdminList = () => {
     const [orders, setOrders] = useState([]);
-    const [error, setError] = useState(null);
     const [pendingStatusChanges, setPendingStatusChanges] = useState({});
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [error, setError] = useState(null);
 
     // 관리자의 전체 주문 정보를 가져오는 API 호출
     const fetchAdminOrders = async () => {
@@ -13,10 +16,12 @@ const OrderAdminList = () => {
             const response = await axios.get('http://localhost:8080/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
-                }
+                },
+                params: { page: currentPage }
             });
 
-            setOrders(response.data);
+            setOrders(response.data.orders);
+            setTotalPages(response.data.totalPages);
         } catch (err) {
             console.error('전체 주문 정보 불러오기 실패:', err.response ? err.response.data : err.message);
             setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
@@ -24,12 +29,11 @@ const OrderAdminList = () => {
     };
 
     useEffect(() => {
-        // 컴포넌트가 마운트될 때 주문 목록을 불러옴
-        fetchAdminOrders();
-    }, []);
+        fetchAdminOrders(currentPage);
+    }, [currentPage]);
 
+    // 상태 변경을 임시로 저장
     const handleStatusChange = (orderId, newStatus) => {
-        // 상태 변경을 임시로 저장
         setPendingStatusChanges((prevChanges) => ({
             ...prevChanges,
             [orderId]: newStatus
@@ -38,8 +42,11 @@ const OrderAdminList = () => {
 
     const handleSaveStatusChange = async (orderId) => {
         const newStatus = pendingStatusChanges[orderId];
-        if (!newStatus) {
-            alert('변경된 상태가 없습니다.');
+
+        // 만약 새로운 상태가 존재하지 않거나, 기존 상태와 동일한 경우 경고 메시지 표시
+        const order = orders.find((o) => o.orderId === orderId);
+        if (!newStatus || order.orderStatus === newStatus) {
+            alert('변경된 값이 없습니다.');
             return;
         }
 
@@ -47,16 +54,16 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+            const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
-            // 상태 업데이트 후 주문 목록 갱신
+            // 서버로부터 받은 새로운 주문 상태를 즉시 반영
             setOrders((prevOrders) =>
                 prevOrders.map((order) =>
-                    order.orderId === orderId ? { ...order, orderStatus: newStatus } : order
+                    order.orderId === orderId ? { ...order, orderStatus: response.data.orderStatus } : order
                 )
             );
 
@@ -66,6 +73,7 @@ const OrderAdminList = () => {
                 delete updatedChanges[orderId];
                 return updatedChanges;
             });
+            window.location.reload();
         } catch (err) {
             console.error('주문 상태 변경 실패:', err.response ? err.response.data : err.message);
             alert('주문 상태 변경에 실패했습니다. 다시 시도해주세요.');
@@ -86,20 +94,23 @@ const OrderAdminList = () => {
                 }
             });
 
-            // 삭제 성공 시 알림창 표시 및 목록 새로고침
             alert('주문이 성공적으로 삭제되었습니다.');
-            await fetchAdminOrders(); // 최신 주문 목록 불러오기
+            fetchAdminOrders(currentPage);
         } catch (err) {
             console.error('주문 삭제 실패:', err.response ? err.response.data : err.message);
             alert('주문 삭제에 실패했습니다. 다시 시도해주세요.');
         }
     };
 
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     if (error) {
         return <div>{error}</div>;
     }
 
-    if (!orders.length) {
+    if (!orders || orders.length === 0) {
         return <div>주문 목록이 없습니다.</div>;
     }
 
@@ -110,23 +121,38 @@ const OrderAdminList = () => {
     ];
 
     return (
-        <div>
-            <h2>관리자용 전체 주문 목록</h2>
-            <table>
+        <div className="order-admin-container">
+            <h2 className="order-admin-title">전체 주문 목록</h2>
+            <table className="order-admin-table">
                 <thead>
                 <tr>
-                    <th>주문 번호</th>
-                    <th>주문 상태</th>
-                    <th>총 가격</th>
-                    <th>배송 주소</th>
                     <th>주문 날짜</th>
+                    <th>이메일</th>
+                    <th>총 가격</th>
+                    <th>결제 금액</th>
+                    <th>쿠폰 할인</th>
+                    <th>주문 상태</th>
                     <th>액션</th>
                 </tr>
                 </thead>
                 <tbody>
                     {orders.map((order) => (
                         <tr key={order.orderId}>
-                            <td>{order.orderId}</td>
+                            <td>{new Date(order.createdAt).toLocaleString()}</td>
+                            <td>{order.email}</td>
+                            <td>{(order.totalPrice).toLocaleString()}원</td>
+                            <td>{(order.discountedTotalPrice).toLocaleString()}원</td>
+                            <td>
+                                {order.coupons && order.coupons.length > 0 ? (
+                                    order.coupons.map((coupon, index) => (
+                                        <div key={index}>
+                                            {coupon.name} ({(coupon.discountPrice).toLocaleString()}원)
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>-</div>
+                                )}
+                            </td>
                             <td>
                                 <select
                                     value={pendingStatusChanges[order.orderId] || order.orderStatus}
@@ -139,17 +165,26 @@ const OrderAdminList = () => {
                                     ))}
                                 </select>
                             </td>
-                            <td>{order.totalPrice}원</td>
-                            <td>{order.deliveryAddress}</td>
-                            <td>{new Date(order.createdAt).toLocaleString()}</td>
                             <td>
-                                <button onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
-                                <button onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
+                                <button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
+                                <button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index}
+                        className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+                        onClick={() => handlePageChange(index + 1)}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };

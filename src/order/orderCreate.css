@@ -41,7 +41,11 @@
     cursor: pointer;
     font-size: 18px;
     font-weight: bold;
-    margin-top: 0;
+    margin-left: 0;
+}
+
+.right-container .place-order-button {
+    margin-left: 0 !important;
 }
 
 .place-order-button:hover {
