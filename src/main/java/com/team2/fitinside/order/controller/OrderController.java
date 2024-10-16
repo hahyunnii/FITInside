@@ -44,13 +44,7 @@ public class OrderController {
             @RequestParam(required = false, value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "productName") String productName) {
 
-        OrderUserResponseWrapperDto response;
-
-        if(productName != null & !productName.isEmpty()){
-            response = orderService.findAllOrdersByProductName(productName, page);
-        } else {
-            response = orderService.findAllOrders(page);
-        }
+        OrderUserResponseWrapperDto response = orderService.findAllOrders(page, productName);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
