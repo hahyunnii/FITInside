@@ -54,12 +54,18 @@ public class OrderService {
     }
 
     // 전체 주문 조회 (회원)
-    public OrderUserResponseWrapperDto findAllOrders(int page) {
+    public OrderUserResponseWrapperDto findAllOrders(int page, String productName) {
 
         Long loginMemberId = securityUtil.getCurrentMemberId();
 
         Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
-        Page<Order> ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
+        Page<Order> ordersPage;
+
+        if(productName != null && !productName.isEmpty()){
+            ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
+        } else {
+            ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
+        }
 
         List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
 
