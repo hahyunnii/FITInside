@@ -28,7 +28,7 @@ public class TokenProvider {
     private static final String BEARER_TYPE = "bearer";
 
     public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-//    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000;
+//    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 30;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
 
     private final Key key;
@@ -45,11 +45,10 @@ public class TokenProvider {
     // 토큰DTO 생성
     public TokenDto generateTokenDto(Authentication authentication) {
         String accessToken = generateAccessToken(authentication);
-        String refreshToken = generateRefreshToken(authentication);
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .tokenExpiresIn(ACCESS_TOKEN_EXPIRE_TIME)
                 .build();
     }
 
