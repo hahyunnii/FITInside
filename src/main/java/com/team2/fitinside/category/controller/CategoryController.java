@@ -32,13 +32,5 @@ public class CategoryController {
         CategoryResponseDTO category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(category);
     }
-
-//    // 특정 카테고리의 이미지 조회
-//    @GetMapping("/{id}/image")
-//    public ResponseEntity<CategoryImageResponseDTO> getCategoryImage(@PathVariable Long id) {
-//        return categoryService.getCategoryImage(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
 }
 

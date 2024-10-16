@@ -58,8 +58,10 @@ public class CategoryService {
 
     public CategoryCreateRequestDTO createCategory(String name, Long displayOrder, Boolean isDeleted, Long parentId, MultipartFile imageFile) {
         String imageUrl = uploadImageToS3(imageFile);
+        // 부모 카테고리 조회
         Category parentCategory = getParentCategory(parentId);
 
+        // 카테고리 객체 생성
         Category category = Category.builder()
                 .name(name)
                 .displayOrder(displayOrder)
@@ -125,6 +127,7 @@ public class CategoryService {
             throw new CategoryAlreadyDeletedException();
         }
 
+        // 부모 카테고리 조회
         Category parentCategory = categoryDTO.getParentId() != null ?
                 categoryRepository.findById(categoryDTO.getParentId())
                         .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND))
