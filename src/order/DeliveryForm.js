@@ -123,7 +123,6 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
                                 type="text"
                                 value={detailedAddress}
                                 onChange={(e) => setDetailedAddress(e.target.value)}
-                                required
                             />
                         </td>
                     </tr>
