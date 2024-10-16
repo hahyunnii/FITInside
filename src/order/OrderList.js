@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './orderList.css';
+import { FaSearch } from 'react-icons/fa'; // 돋보기 아이콘
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
+    { value: 'SHIPPING', label: '배송 중' },
     { value: 'COMPLETED', label: '배송 완료' },
     { value: 'CANCELLED', label: '주문 취소' }
 ];
@@ -19,20 +21,28 @@ const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태 추가
     const [error, setError] = useState(null);
+    const [noResults, setNoResults] = useState(false); // 검색 결과가 없는지 여부
 
     useEffect(() => {
         fetchOrders(currentPage);
     }, [currentPage]);
 
-    const fetchOrders = async (page) => {
+    const fetchOrders = async (page, searchTerm = '') => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/orders?page=${page}`, {
+            const response = await axios.get(`http://localhost:8080/api/orders?page=${page}&productName=${searchTerm}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+
+            if (response.data.orders.length === 0) {
+                setNoResults(true); // 검색 결과가 없을 때
+            } else {
+                setNoResults(false); // 검색 결과가 있을 때
+            }
 
             setOrders(response.data.orders);
             setTotalPages(response.data.totalPages);
@@ -46,17 +56,49 @@ const OrderList = () => {
         setCurrentPage(pageNumber);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value); // 검색어 업데이트
+    };
+
+    const handleSearchClick = () => {
+        fetchOrders(1, searchTerm); // 검색 버튼 클릭 시 첫 페이지부터 검색
+    };
+
     if (error) {
         return <div>{error}</div>;
-    }
-
-    if (!orders.length) {
-        return <div>주문 목록이 없습니다.</div>;
     }
 
     return (
         <div className="orderList container my-4">
             <h2 className="text-center mb-4">주문 내역</h2>
+
+            {/* 검색 기능 추가 */}
+            <div className="input-group mb-4" style={{ maxWidth: '400px', margin: '0 auto' }}>
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="상품명을 입력하세요"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    style={{ backgroundColor: '#e0e0e0', border: '1px solid #555' }}
+                />
+                <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={handleSearchClick}
+                    style={{ backgroundColor: '#000', border: '1px solid #555' }}
+                >
+                    <FaSearch />
+                </button>
+            </div>
+
+            {noResults && (
+                <div className="text-center" style={{ color: '#ff0000', marginBottom: '20px' }}>
+                    주문이 없습니다.
+                </div>
+            )}
+
+            {/* 주문 목록 출력 */}
             <div className="order-card-list">
                 {orders.map((order) => (
                     <div key={order.orderId} className="order-card card shadow-sm mb-4">
