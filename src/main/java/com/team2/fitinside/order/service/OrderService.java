@@ -73,20 +73,6 @@ public class OrderService {
 
     }
 
-    // 전체 주문 중 상품 이름으로 검색
-    public OrderUserResponseWrapperDto findAllOrdersByProductName(String productName, int page) {
-
-        Long loginMemberId = securityUtil.getCurrentMemberId();
-
-        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
-        Page<Order> ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
-
-        List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
-
-        return new OrderUserResponseWrapperDto(orders, ordersPage.getTotalPages());
-
-    }
-
     // 주문 생성
     @Transactional
     public OrderDetailResponseDto createOrder(OrderRequestDto request) {
