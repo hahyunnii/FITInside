@@ -34,8 +34,8 @@ public class CategoryAdminController {
 
     // 카테고리 삭제 (soft delete)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("카테고리가 삭제되었습니다.");
     }
 }

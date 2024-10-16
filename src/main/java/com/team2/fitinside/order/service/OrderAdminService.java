@@ -2,12 +2,15 @@ package com.team2.fitinside.order.service;
 
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.order.common.OrderStatus;
-import com.team2.fitinside.order.dto.OrderResponseDto;
-import com.team2.fitinside.order.dto.OrderStatusUpdateRequestDto;
+import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.mapper.OrderMapper;
 import com.team2.fitinside.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,22 +27,44 @@ public class OrderAdminService {
     private final OrderRepository orderRepository;
 
     // 전체 주문 조회
-    public List<OrderResponseDto> findAllOrdersByAdmin() {
-        List<Order> orders = orderRepository.findAll().stream()
-                .filter(order -> !order.isDeleted())
-                .collect(Collectors.toList());
+    public OrderResponseWrapperDto findAllOrdersByAdmin(int page) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by("createdAt").descending());
+        List<Order> orders = orderRepository.findAllOrdersWithDetails(pageable);
 
-        return orderMapper.toOrderResponseDtoList(orders);
+        List<OrderResponseDto> orderResponseDtos = orders.stream().map(order -> {
+            OrderResponseDto orderResponseDto = orderMapper.toOrderResponseDto(order);
+
+            // 이메일 설정
+            orderResponseDto.setEmail(order.getMember().getEmail());  // 회원 이메일 설정
+
+            // 주문의 각 OrderProduct에서 쿠폰 정보를 추출
+            List<CouponInfoResponseDto> couponInfoList = order.getOrderProducts().stream()
+                    .filter(orderProduct -> orderProduct.getCouponMember() != null)
+                    .map(orderProduct -> {
+                        CouponInfoResponseDto couponInfo = new CouponInfoResponseDto();
+                        couponInfo.setCouponId(orderProduct.getCouponMember().getCoupon().getId());  // Coupon ID 가져오기
+                        couponInfo.setName(orderProduct.getCouponMember().getCoupon().getName());  // Coupon 이름 가져오기
+                        couponInfo.setDiscountPrice(orderProduct.getOrderProductPrice() * orderProduct.getCount() - orderProduct.getDiscountedPrice());  // 할인 금액 계산
+                        return couponInfo;
+                    })
+                    .collect(Collectors.toList());
+
+            // 쿠폰 정보 리스트 설정
+            orderResponseDto.setCoupons(couponInfoList);
+            return orderResponseDto;
+        }).collect(Collectors.toList());
+
+        return new OrderResponseWrapperDto(orderResponseDtos, pageable.getPageNumber());
     }
 
     // 주문 상태 수정
     @Transactional
-    public OrderResponseDto updateOrderStatus(Long orderId, OrderStatusUpdateRequestDto request) {
+    public OrderStatusResponseDto updateOrderStatus(Long orderId, OrderStatusUpdateRequestDto request) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         OrderStatus status = OrderStatus.valueOf(request.getStatus().toUpperCase());
         order.updateOrderStatus(status);
-        return orderMapper.toOrderResponseDto(order);
+        return orderMapper.toOrderStatusResponseDto(order);
     }
 
     // 주문 삭제

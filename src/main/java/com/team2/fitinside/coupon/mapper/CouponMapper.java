@@ -18,6 +18,7 @@ public interface CouponMapper {
     CouponMapper INSTANCE = Mappers.getMapper(CouponMapper.class);
 
     @Mapping(source = "category", target = "categoryName")
+    @Mapping(target = "used", ignore = true)
     CouponResponseDto toCouponResponseDto(Coupon coupon);
 
     default String mapCategoryToString(Category category) {
@@ -30,5 +31,7 @@ public interface CouponMapper {
     CouponMemberResponseDto toCouponMemberResponseDto(Member member);
 
     @Mapping(target = "category", ignore = true)
+    @Mapping(source = "couponCreateRequestDto.name", target = "name")
+    @Mapping(source = "code", target = "code")
     Coupon toEntity(CouponCreateRequestDto couponCreateRequestDto, String code);
 }

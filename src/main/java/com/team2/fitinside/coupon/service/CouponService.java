@@ -14,6 +14,8 @@ import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
+import com.team2.fitinside.order.entity.OrderProduct;
+import com.team2.fitinside.order.repository.OrderProductRepository;
 import com.team2.fitinside.product.entity.Product;
 import com.team2.fitinside.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,8 @@ public class CouponService {
     private final CouponMemberRepository couponMemberRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final SecurityUtil securityUtil;
 
     // 보유 쿠폰 모두 조회
     public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
@@ -58,6 +61,7 @@ public class CouponService {
         for (CouponMember couponMember : couponMembers) {
 
             CouponResponseDto couponResponseDto = CouponMapper.INSTANCE.toCouponResponseDto(couponMember.getCoupon());
+            couponResponseDto.setUsed(couponMember.isUsed());   // 사용 여부 설정
             if(couponMember.isUsed()) couponResponseDto.setActive(false);
             dtos.add(couponResponseDto);
         }
@@ -80,6 +84,15 @@ public class CouponService {
 
         List<AvailableCouponResponseDto> dtos = new ArrayList<>();
         for (CouponMember couponMember : couponMembers) {
+
+            // 쿠폰이 유효하지 않은 경우
+            if(!couponMember.getCoupon().isActive()) continue;
+
+            // 상품 가격이 최소 주문 금액보다 적은 경우
+            if(couponMember.getCoupon().getMinValue() > product.getPrice()) continue;
+
+            // 상품을 이미 사용한 경우
+            if(couponMember.isUsed()) continue;
 
             AvailableCouponResponseDto availableCouponResponseDto = CouponMapper.INSTANCE.toAvailableCouponResponseDto(couponMember.getCoupon());
             availableCouponResponseDto.setCouponMemberId(couponMember.getId());
@@ -156,9 +169,22 @@ public class CouponService {
         couponMember.useCoupon();
     }
 
+    // 쿠폰이 적용된 주문 찾기
+    public Long findOrder(Long couponId) {
+
+        Long loginMemberId = getAuthenticatedMemberId();
+
+        CouponMember foundCouponMember = couponMemberRepository.findByMember_IdAndCoupon_IdAndUsedIs(loginMemberId, couponId, true)
+                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        OrderProduct foundOrderProduct = orderProductRepository.findByCouponMember_Id(foundCouponMember.getId()).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        return foundOrderProduct.getOrder().getId();
+    }
+
     private Long getAuthenticatedMemberId()  {
         try {
-            return SecurityUtil.getCurrentMemberId();
+            return securityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
