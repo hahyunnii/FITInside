@@ -49,7 +49,7 @@ public class CartService {
 
     // 장바구니 생성 메서드
     @Transactional
-    public void createCart(CartCreateRequestDto dto) {
+    public Long createCart(CartCreateRequestDto dto) {
 
         Product foundProduct = productRepository.findById(dto.getProductId()).orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         checkQuantity(dto.getQuantity(), foundProduct);
@@ -60,19 +60,20 @@ public class CartService {
         if (cartRepository.existsCartByMember_IdAndProduct_Id(loginMemberID, dto.getProductId())) {
             Cart foundCart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, dto.getProductId()).orElse(null);
             Objects.requireNonNull(foundCart).updateQuantity(dto.getQuantity());
-            return;
+            return foundCart.getId();
         }
 
         Cart cart = CartMapper.INSTANCE.toEntity(dto);
         Member foundMember = memberRepository.findById(loginMemberID).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         cart.setUserAndProduct(foundMember, foundProduct);
 
-        cartRepository.save(cart);
+        Cart savedCart = cartRepository.save(cart);
+        return savedCart.getId();
     }
 
     // 장바구니 수정 메서드
     @Transactional
-    public void updateCart(CartUpdateRequestDto dto) {
+    public Long updateCart(CartUpdateRequestDto dto) {
 
         Long loginMemberID = getAuthenticatedMemberId();
 
@@ -85,23 +86,28 @@ public class CartService {
         }
 
         // 수량을 동일하게 수정하면 리턴
-        if (cart.getQuantity() == dto.getQuantity()) return;
+        if (cart.getQuantity() == dto.getQuantity()) return cart.getId();
+
         cart.updateQuantity(dto.getQuantity());
+        return cart.getId();
     }
 
     // 장바구니 단일 삭제 메서드
     @Transactional
-    public void deleteCart(Long productId) {
+    public Long deleteCart(Long productId) {
 
         Long loginMemberID = getAuthenticatedMemberId();
 
         Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
+        Long deletedCartId = cart.getId();
 
         if (!loginMemberID.equals(cart.getMember().getId())) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
 
         cartRepository.delete(cart);
+
+        return deletedCartId;
     }
 
     // 장바구니 단일 삭제 메서드
