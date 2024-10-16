@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BannerResponseDTO {
     private Long id;
+    private String title;
     private String imageUrl;
     private Integer displayOrder;
-    private String title;
     private Boolean isDeleted;
 }
