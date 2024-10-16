@@ -1,5 +1,6 @@
 package com.team2.fitinside.category.controller;
 
+//import com.team2.fitinside.category.dto.CategoryImageResponseDTO;
 import com.team2.fitinside.category.dto.CategoryResponseDTO;
 import com.team2.fitinside.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
