@@ -506,7 +506,7 @@ const CategoryAdminMain = () => {
 
     return (
         <div className="category-admin-container">
-            <h1>카테고리 관리자 메인 페이지</h1>
+            <h1>카테고리 관리</h1>
             <button className="create-button" onClick={handleCreateCategory}>카테고리 생성</button>
 
             {/* 부모 카테고리 테이블 */}
