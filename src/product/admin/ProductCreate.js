@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const ProductCreate = () => {
 
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
+    const navigate = useNavigate();
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -55,6 +58,7 @@ const ProductCreate = () => {
                 throw new Error('상품 등록에 실패했습니다.');
             }
             console.log('상품이 성공적으로 등록되었습니다.');
+            navigate('/admin/products');
         } catch (error) {
             console.error('에러 발생:', error);
         }
