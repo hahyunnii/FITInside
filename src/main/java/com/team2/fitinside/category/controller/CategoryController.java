@@ -39,6 +39,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
+//@RestController
+//@RequestMapping("/api/categories")
+//@RequiredArgsConstructor
+//public class CategoryController {
+//
+//    private final CategoryService categoryService;
+//
+//    @GetMapping
+//    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
+//        return ResponseEntity.ok(categoryService.getAllCategories());
+//    }
+//
+//    @GetMapping("/parents")
+//    public ResponseEntity<List<CategoryResponseDTO>> getParentCategories() {
+//        return ResponseEntity.ok(categoryService.getParentCategories());
+//    }
+//
+//    @GetMapping("/{parentId}/children")
+//    public ResponseEntity<List<CategoryResponseDTO>> getChildCategories(@PathVariable Long parentId) {
+//        return ResponseEntity.ok(categoryService.getChildCategories(parentId));
+//    }
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+//        return ResponseEntity.ok(categoryService.getCategoryById(id));
+//    }
+//}
+
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
@@ -64,5 +92,10 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
+    }
+
+    @GetMapping("/mainDisplay")
+    public ResponseEntity<List<CategoryResponseDTO>> getMainDisplayCategories() {
+        return ResponseEntity.ok(categoryService.getMainDisplayCategories());
     }
 }

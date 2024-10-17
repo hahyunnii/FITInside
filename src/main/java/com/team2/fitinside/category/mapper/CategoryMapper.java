@@ -99,6 +99,7 @@ public class CategoryMapper {
         return CategoryCreateRequestDTO.builder()
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
+                .mainDisplayOrder(category.getMainDisplayOrder())
                 .isDeleted(category.getIsDeleted())
                 .parentId(getParentId(category))
                 .imageUrl(category.getImageUrl()) // 이미지 URL 추가
@@ -115,6 +116,7 @@ public class CategoryMapper {
                 .id(category.getId())
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
+                .mainDisplayOrder(category.getMainDisplayOrder())
                 .isDeleted(category.getIsDeleted())
                 .parentId(getParentId(category))
                 .imageUrl(category.getImageUrl()) // 이미지 URL 추가
@@ -131,6 +133,7 @@ public class CategoryMapper {
                 .id(category.getId())
                 .name(category.getName())
                 .displayOrder(category.getDisplayOrder())
+                .mainDisplayOrder(category.getMainDisplayOrder())
                 .isDeleted(category.getIsDeleted())
                 .parentId(getParentId(category))
                 .imageUrl(category.getImageUrl()) // 이미지 URL 추가
@@ -146,6 +149,7 @@ public class CategoryMapper {
         return Category.builder()
                 .name(dto.getName())
                 .displayOrder(dto.getDisplayOrder())
+                .mainDisplayOrder(dto.getMainDisplayOrder())
                 .isDeleted(dto.getIsDeleted())
                 .parent(parentCategory)
                 .imageUrl(dto.getImageUrl()) // 이미지 URL 추가
@@ -163,6 +167,7 @@ public class CategoryMapper {
                 .name(dto.getName())
                 .displayOrder(dto.getDisplayOrder())
                 .isDeleted(dto.getIsDeleted())
+                .mainDisplayOrder(dto.getMainDisplayOrder())
                 .parent(parentCategory)
                 .imageUrl(dto.getImageUrl()) // 이미지 URL 추가
                 .build();
