@@ -98,4 +98,12 @@ public class MemberService {
 
         return new MemberListResponse(members, totalPages);
     }
+
+    @Transactional
+    public void deleteMemberByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        memberRepository.delete(member);
+    }
+
 }
