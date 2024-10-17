@@ -54,7 +54,7 @@ const App = () => {
                         <Route path="/products/category/:categoryId" element={<ProductList />} />
                         <Route path="/admin/products" element={<ProductAdmin />} /> {/* 관리자 상품 관리 화면 */}
                         <Route path="/admin/products/create" element={<ProductCreate />} />
-                        <Route path="/admin/products/update" element={<ProductUpdate />} />
+                        <Route path="/admin/products/update/:id" element={<ProductUpdate />} />
                         <Route path="/admin/products/delete" element={<ProductDelete />} />
                     </Routes>
                 </main>
