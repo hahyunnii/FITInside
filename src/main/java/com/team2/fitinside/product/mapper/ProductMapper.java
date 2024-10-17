@@ -2,7 +2,6 @@ package com.team2.fitinside.product.mapper;
 
 import com.team2.fitinside.product.dto.*;
 import com.team2.fitinside.product.entity.Product;
-import com.team2.fitinside.product.entity.ProductImg;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

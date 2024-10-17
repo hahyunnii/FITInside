@@ -101,4 +101,10 @@ public class Product {
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+    // 주문 시 재고 변동
+    public void sold(int count){
+        this.stock -= count;
+    }
+
 }

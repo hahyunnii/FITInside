@@ -12,9 +12,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,10 +31,15 @@ public class OrderAdminController {
     private final OrderAdminService orderAdminService;
 
     @GetMapping
-    @Operation(summary = "관리자의 전체 주문 조회", description = "전체 주문 조회")
+    @Operation(summary = "관리자의 전체 주문 조회(+주문 상태, 날짜 검색)", description = "전체 주문 조회(+주문 상태, 날짜 검색)")
     @ApiResponse(responseCode = "200", description = "전체 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderResponseDto.class))))
-    public ResponseEntity<?> findAllOrdersByAdmin(@RequestParam(required = false, value = "page", defaultValue = "1") int page) {
-        OrderResponseWrapperDto response = orderAdminService.findAllOrdersByAdmin(page);
+    public ResponseEntity<?> findAllOrdersByAdmin(
+            @RequestParam(required = false, value = "page", defaultValue = "1") int page,
+            @RequestParam(required = false, value = "orderStatus") String orderStatus,
+            @RequestParam(required = false, value = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false, value = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        OrderResponseWrapperDto response = orderAdminService.findAllOrdersByAdmin(page, orderStatus, startDate, endDate);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

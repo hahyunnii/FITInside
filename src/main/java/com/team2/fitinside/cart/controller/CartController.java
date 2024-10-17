@@ -43,8 +43,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "해당하는 정보의 사용자를 찾을 수 없습니다.")
     public ResponseEntity<String> createCart(@RequestBody CartCreateRequestDto dto) {
 
-        cartService.createCart(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("장바구니가 추가되었습니다!");
+        Long createdCartId = cartService.createCart(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("장바구니가 추가되었습니다! cartId: " + createdCartId);
     }
 
     @PutMapping
@@ -56,8 +56,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "해당 장바구니를 찾을 수 없습니다.")
     public ResponseEntity<String> updateCart(@RequestBody CartUpdateRequestDto dto) {
 
-        cartService.updateCart(dto);
-        return ResponseEntity.status(HttpStatus.OK).body("장바구니가 수정되었습니다!");
+        Long updatedCartId = cartService.updateCart(dto);
+        return ResponseEntity.status(HttpStatus.OK).body("장바구니가 수정되었습니다! cartId: " + updatedCartId);
     }
 
     @DeleteMapping("/{productId}")
@@ -66,8 +66,8 @@ public class CartController {
     @ApiResponse(responseCode = "404", description = "해당 장바구니를 찾을 수 없습니다.")
     public ResponseEntity<String> deleteCart(@PathVariable("productId") Long productId) {
 
-        cartService.deleteCart(productId);
-        return ResponseEntity.status(HttpStatus.OK).body("장바구니가 삭제되었습니다!");
+        Long deletedCartId = cartService.deleteCart(productId);
+        return ResponseEntity.status(HttpStatus.OK).body("장바구니가 삭제되었습니다! cartId: " + deletedCartId);
     }
 
     @DeleteMapping
