@@ -74,22 +74,6 @@ public class ProductService {
     }
 
     // 상품 등록 (이미지 업로드 포함)
-//    @Transactional
-//    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
-//        Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
-//
-//        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        product.setCategory(category);
-//
-//        // S3 이미지 업로드 처리
-//        List<String> imageUrls = uploadImages(images);
-//        product.setProductImgUrls(imageUrls);
-//
-//        Product savedProduct = productRepository.save(product);
-//        return ProductMapper.INSTANCE.toDto(savedProduct);
-//    }
-
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
@@ -114,27 +98,6 @@ public class ProductService {
 
 
     // 상품 수정 (이미지 업로드 포함)
-//    @Transactional
-//    public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto, List<MultipartFile> images) {
-//        Product existingProduct = productRepository.findById(id)
-//                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
-//
-//        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        updatedProduct.setCategory(category);
-//
-//        // S3 이미지 업데이트 처리
-//        if (images != null && !images.isEmpty()) {
-//            List<String> imageUrls = uploadImages(images);
-//            updatedProduct.setProductImgUrls(imageUrls);
-//        }
-//
-//        productRepository.save(updatedProduct);
-//        return ProductMapper.INSTANCE.toDto(updatedProduct);
-//    }
-
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto, List<MultipartFile> images) {
         Product existingProduct = productRepository.findById(id)
@@ -163,15 +126,6 @@ public class ProductService {
 
 
     // 이미지 업로드 처리 메서드 (S3 업로드)
-//    private List<String> uploadImages(List<MultipartFile> images) {
-//        List<String> imageUrls = new ArrayList<>();
-//        for (MultipartFile image : images) {
-//            String imageUrl = s3ImageService.upload(image);
-//            imageUrls.add(imageUrl);
-//        }
-//        return imageUrls;
-//    }
-
     private List<String> uploadImages(List<MultipartFile> images) {
         List<String> imageUrls = new ArrayList<>();
 
