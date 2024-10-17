@@ -24,12 +24,8 @@ public class Banner {
 
     private String title;
 
-    private Boolean isDeleted = false;
-
-    // Soft delete 메서드
-    public void setIsDeleted() {
-        this.isDeleted = true;
-    }
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     public Banner updateDetails(String title, String imageUrl, Integer displayOrder) {
         this.title = title;
