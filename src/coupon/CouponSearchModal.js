@@ -39,8 +39,12 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                 setCoupon(null);
                 setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
             } else {
-                await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    window.location.reload();
+                } catch (e) {
+                    console.error(error.message);
+                }
             }
         }
     };
@@ -70,9 +74,12 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
             // 페이지 새로 고침
             window.location.reload();
         } catch (error) {
-            console.error(error.message); // 에러 메시지 표시
-            await sendRefreshTokenAndStoreAccessToken();
-            window.location.reload();
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
     };
 

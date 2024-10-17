@@ -6,6 +6,7 @@ import './orderDetail.css';
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
+    { value: 'SHIPPING', label: '배송 중' },
     { value: 'COMPLETED', label: '배송 완료' },
     { value: 'CANCELLED', label: '주문 취소' }
 ];

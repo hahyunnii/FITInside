@@ -1,93 +1,127 @@
 /* CategoryAdminMain.css */
 
+/*.category-admin-container {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    padding: 20px;*/
+/*}*/
+
+/*h1 {*/
+/*    font-size: 20px;*/
+/*    margin-bottom: 15px;*/
+/*    font-weight: normal;*/
+/*}*/
+
+/*.create-button {*/
+/*    padding: 5px 15px;*/
+/*    margin-bottom: 15px;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    background-color: #f7f7f7;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.create-button:hover {*/
+/*    background-color: #ddd;*/
+/*}*/
+
+/*.category-list {*/
+/*    list-style-type: none;*/
+/*    padding: 0;*/
+/*    width: 100%;*/
+/*    max-width: 600px;*/
+/*    margin: 0 auto;*/
+/*}*/
+
+/*.category-item {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-between;*/
+/*    margin-bottom: 10px;*/
+/*    padding: 5px 10px;*/
+/*    border: 1px solid #222;*/
+/*    border-radius: 10px;*/
+/*    background-color: #f0f0f0;*/
+/*    color: #333;*/
+/*}*/
+
+/*.category-item .category-name {*/
+/*    flex-grow: 1;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.category-item button {*/
+/*    padding: 5px 10px;*/
+/*    margin-left: 5px;*/
+/*    border: 1px solid #333;*/
+/*    border-radius: 5px;*/
+/*    background-color: #fff;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.category-item button:hover {*/
+/*    background-color: #ddd;*/
+/*}*/
+
+/*.delete-button {*/
+/*    color: #ff4d4d;*/
+/*}*/
+
+/*.pagination {*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    margin-top: 15px;*/
+/*}*/
+
+/*.pagination button {*/
+/*    padding: 5px 15px;*/
+/*    margin: 0 5px;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    background-color: #f7f7f7;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.pagination button:hover {*/
+/*    background-color: #ddd;*/
+/*}*/
+
+/*.pagination button:disabled {*/
+/*    background-color: #eee;*/
+/*    cursor: not-allowed;*/
+/*}*/
+
 .category-admin-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     padding: 20px;
 }
 
-h1 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    font-weight: normal;
-}
-
-.create-button {
-    padding: 5px 15px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f7f7f7;
-    cursor: pointer;
-}
-
-.create-button:hover {
-    background-color: #ddd;
-}
-
-.category-list {
-    list-style-type: none;
-    padding: 0;
+.category-table {
     width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+    border-collapse: collapse;
 }
 
-.category-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    border: 1px solid #222;
-    border-radius: 10px;
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.category-item .category-name {
-    flex-grow: 1;
+.category-table th,
+.category-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
     text-align: center;
 }
 
-.category-item button {
-    padding: 5px 10px;
-    margin-left: 5px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    background-color: #fff;
-    cursor: pointer;
+.category-table th {
+    background-color: #f4f4f4;
 }
 
-.category-item button:hover {
-    background-color: #ddd;
+.category-image {
+    width: 50px;
+    height: auto;
 }
 
-.delete-button {
-    color: #ff4d4d;
+.create-button {
+    margin-bottom: 10px;
 }
 
 .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-}
-
-.pagination button {
-    padding: 5px 15px;
-    margin: 0 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f7f7f7;
-    cursor: pointer;
-}
-
-.pagination button:hover {
-    background-color: #ddd;
-}
-
-.pagination button:disabled {
-    background-color: #eee;
-    cursor: not-allowed;
+    margin-top: 20px;
+    text-align: center;
 }
