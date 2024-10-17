@@ -277,29 +277,40 @@ const Cart = () => {
                                     <td>
                                         {productDetails[item.id] ? (
                                             <div>
-                                                <p style={{margin: `0`}}>{productDetails[item.id].manufacturer}</p>
-                                                <p style={{fontWeight: 'bold'}}>
-                                                    <Link to={`/product/${item.id}`}
-                                                          style={{textDecoration: 'none', color: 'inherit'}}>
-                                                        {productDetails[item.id].productName}
-                                                    </Link>
-                                                </p>
-                                                <label className="d-flex align-items-center">
-                                                    수량
-                                                    <select
-                                                        className="form-select ms-2"
-                                                        style={{width: 'auto'}}
-                                                        value={item.quantity}
-                                                        onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-                                                    >
-                                                        {/* 1부터 20까지의 수량 선택 */}
-                                                        {[...Array(20)].map((_, index) => (
-                                                            <option key={index + 1} value={index + 1}>
-                                                                {index + 1}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </label>
+                                                <div className="d-flex justify-content-start">
+                                                    <img
+                                                        style={{ width: '100px', height: '100px', marginRight: '10px'}}
+                                                        src={productDetails[item.id].productImgUrls.length > 0
+                                                            ? productDetails[item.id].productImgUrls[0]
+                                                            : 'https://dummyimage.com/100x100'} // 여기에 더미 이미지 경로를 추가하세요
+                                                    />                                                    <div>
+                                                        <p style={{margin: `0`}}>{productDetails[item.id].manufacturer}</p>
+                                                        <p style={{fontWeight: 'bold'}}>
+                                                            <Link to={`/product/${item.id}`}
+                                                                  style={{textDecoration: 'none', color: 'inherit'}}>
+                                                                {productDetails[item.id].productName}
+                                                            </Link>
+                                                        </p>
+                                                        <label className="d-flex align-items-center">
+                                                            수량
+                                                            <select
+                                                                className="form-select ms-2"
+                                                                style={{width: 'auto'}}
+                                                                value={item.quantity}
+                                                                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+                                                            >
+                                                                {/* 1부터 20까지의 수량 선택 */}
+                                                                {[...Array(20)].map((_, index) => (
+                                                                    <option key={index + 1} value={index + 1}>
+                                                                        {index + 1}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+
                                                 {/* 현재 적용된 쿠폰 및 할인 금액 표시 */}
                                                 {appliedCoupons.filter(coupon => coupon.productId === item.id).map((coupon, index) => {
                                                     const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (productDetails[item.id].price * coupon.percentage) / 100;
