@@ -2,7 +2,6 @@ package com.team2.fitinside.product.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class ProductResponseDto {
     private int stock;               // 재고
     private String manufacturer;     // 재조사
     private Long userId;             // 판매자 ID
-    private List<String> productImgUrls;
+    private List<String> productImgUrls; //이미지url들
 
 
     private boolean isDeleted;       // 삭제 상태

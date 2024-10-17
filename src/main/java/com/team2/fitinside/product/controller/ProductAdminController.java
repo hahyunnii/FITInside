@@ -1,39 +1,28 @@
 package com.team2.fitinside.product.controller;
 
-import com.team2.fitinside.product.dto.ProductCreateDto;
 import com.team2.fitinside.product.dto.ProductInsertDto;
 import com.team2.fitinside.product.dto.ProductResponseDto;
-import com.team2.fitinside.product.dto.ProductUpdateDto;
-import com.team2.fitinside.product.image.S3ImageService;
 import com.team2.fitinside.product.mapper.ProductMapper;
 import com.team2.fitinside.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductAdminController {
 
     private final ProductService productService;
-    private final S3ImageService s3ImageService;
 
     // 생성자 주입
     @Autowired
-    public ProductAdminController(ProductService productService, S3ImageService s3ImageService) {
+    public ProductAdminController(ProductService productService) {
         this.productService = productService;
-        this.s3ImageService = s3ImageService;
     }
 
 

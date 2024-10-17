@@ -1,8 +1,6 @@
 package com.team2.fitinside.product.controller;
 
-import com.team2.fitinside.product.dto.ProductCreateDto;
 import com.team2.fitinside.product.dto.ProductResponseDto;
-import com.team2.fitinside.product.dto.ProductUpdateDto;
 import com.team2.fitinside.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -21,6 +18,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
 
     // 페이지네이션, 정렬, 검색을 적용한 상품 목록 조회
     @GetMapping
