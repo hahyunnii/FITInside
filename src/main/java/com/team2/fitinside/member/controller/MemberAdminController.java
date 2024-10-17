@@ -23,6 +23,14 @@ public class MemberAdminController {
         return ResponseEntity.ok(memberList);
     }
 
+    @GetMapping("/delete")
+    public ResponseEntity<MemberListResponse> getDeleteMember(
+            @RequestParam(required = false, value = "page", defaultValue = "1") int page) {
+        MemberListResponse memberList = memberService.getisDeleteMembers(page);
+
+        return ResponseEntity.ok(memberList);
+    }
+
     @DeleteMapping("/{memberId}")
     public ResponseEntity<?> deleteMember(@PathVariable("memberId") Long memberId) {
         memberService.deleteMemberByMemberId(memberId);
