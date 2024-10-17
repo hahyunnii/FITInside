@@ -416,6 +416,181 @@
 // export default CategoryAdminMain;
 
 
+// import React, { useEffect, useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import './CategoryAdminMain.css';
+//
+// const CategoryAdminMain = () => {
+//     const [categories, setCategories] = useState([]);
+//     const [selectedParentId, setSelectedParentId] = useState(null);
+//     const [parentPage, setParentPage] = useState(1);
+//     const [childPage, setChildPage] = useState(1);
+//     const categoriesPerPage = 5;
+//     const navigate = useNavigate();
+//
+//     const fetchCategories = async () => {
+//         try {
+//             const response = await axios.get('http://localhost:8080/api/categories', {
+//                 headers: {
+//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+//                 },
+//             });
+//             setCategories(response.data);
+//         } catch (error) {
+//             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+//             if (error.response && error.response.status === 401) {
+//                 alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+//             }
+//         }
+//     };
+//
+//     const deleteCategory = async (categoryId) => {
+//         // 삭제하려는 카테고리의 하위 카테고리 확인
+//         const hasChildCategories = categories.some(category => category.parentId === categoryId);
+//
+//         if (hasChildCategories) {
+//             alert("자식 카테고리가 있어 삭제가 불가능합니다.");
+//             return;
+//         }
+//
+//         const confirmDelete = window.confirm("이 카테고리를 삭제하시겠습니까?");
+//         if (!confirmDelete) return;
+//
+//         try {
+//             await axios.delete(`http://localhost:8080/api/admin/categories/${categoryId}`, {
+//                 headers: {
+//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+//                 }
+//             });
+//             // 삭제 후 상태 업데이트
+//             setCategories(categories.filter(category => category.id !== categoryId));
+//             alert("카테고리가 삭제되었습니다.");
+//             window.location.reload(); // 페이지 새로고침 추가
+//         } catch (error) {
+//             console.error('카테고리 삭제 중 오류가 발생했습니다.', error);
+//             if (error.response && error.response.status === 401) {
+//                 alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+//             }
+//         }
+//     };
+//
+//     useEffect(() => {
+//         fetchCategories();
+//     }, []);
+//
+//     const parentCategories = categories.filter(category => category.parentId === null);
+//     const childCategories = selectedParentId
+//         ? categories.filter(category => category.parentId === selectedParentId)
+//         : [];
+//
+//     const handleCreateCategory = () => {
+//         navigate('/category-create');
+//     };
+//
+//     const handleUpdateCategory = (categoryId) => {
+//         navigate(`/category-update/${categoryId}`);
+//     };
+//
+//     const handleParentCategoryClick = (parentId) => {
+//         setSelectedParentId(parentId === selectedParentId ? null : parentId);
+//         setChildPage(1); // 부모 카테고리를 변경할 때 자식 카테고리 페이지를 초기화
+//     };
+//
+//     const paginatedCategories = (categories, page) => {
+//         const startIndex = (page - 1) * categoriesPerPage;
+//         return categories.slice(startIndex, startIndex + categoriesPerPage);
+//     };
+//
+//     const totalParentPages = Math.ceil(parentCategories.length / categoriesPerPage);
+//     const totalChildPages = Math.ceil(childCategories.length / categoriesPerPage);
+//
+//     return (
+//         <div className="category-admin-container">
+//             <h1>카테고리 관리</h1>
+//             <button className="create-button" onClick={handleCreateCategory}>카테고리 생성</button>
+//
+//             {/* 부모 카테고리 테이블 */}
+//             <h2>부모 카테고리</h2>
+//             <table className="category-table">
+//                 <thead>
+//                 <tr>
+//                     <th>수정</th>
+//                     <th>삭제</th>
+//                     <th>카테고리 이름</th>
+//                     <th>카테고리 이미지</th>
+//                     <th>DISPLAY_ORDER</th>
+//                 </tr>
+//                 </thead>
+//                 <tbody>
+//                 {paginatedCategories(parentCategories, parentPage).map(category => (
+//                     <tr key={category.id} onClick={() => handleParentCategoryClick(category.id)}>
+//                         <td>
+//                             <button onClick={(e) => { e.stopPropagation(); handleUpdateCategory(category.id); }}>수정</button>
+//                         </td>
+//                         <td>
+//                             <button onClick={(e) => { e.stopPropagation(); deleteCategory(category.id); }} className="delete-button">삭제</button>
+//                         </td>
+//                         <td>{category.name}</td>
+//                         <td>
+//                             {category.imageUrl ? <img src={category.imageUrl} alt={category.name} className="category-image" /> : 'x'}
+//                         </td>
+//                         <td>{category.displayOrder}</td>
+//                     </tr>
+//                 ))}
+//                 </tbody>
+//             </table>
+//             <div className="pagination">
+//                 <button onClick={() => setParentPage(Math.max(parentPage - 1, 1))} disabled={parentPage === 1}>이전</button>
+//                 <span>{parentPage} / {totalParentPages}</span>
+//                 <button onClick={() => setParentPage(Math.min(parentPage + 1, totalParentPages))} disabled={parentPage === totalParentPages}>다음</button>
+//             </div>
+//
+//             {/* 자식 카테고리 테이블 */}
+//             {selectedParentId && (
+//                 <>
+//                     <h2>"{parentCategories.find(cat => cat.id === selectedParentId)?.name}"의 자식 카테고리</h2>
+//                     <table className="category-table">
+//                         <thead>
+//                         <tr>
+//                             <th>수정</th>
+//                             <th>삭제</th>
+//                             <th>카테고리 이름</th>
+//                             <th>카테고리 이미지</th>
+//                             <th>DISPLAY_ORDER</th>
+//                         </tr>
+//                         </thead>
+//                         <tbody>
+//                         {paginatedCategories(childCategories, childPage).map(category => (
+//                             <tr key={category.id}>
+//                                 <td>
+//                                     <button onClick={() => handleUpdateCategory(category.id)}>수정</button>
+//                                 </td>
+//                                 <td>
+//                                     <button onClick={() => deleteCategory(category.id)} className="delete-button">삭제</button>
+//                                 </td>
+//                                 <td>{category.name}</td>
+//                                 <td>
+//                                     {category.imageUrl ? <img src={category.imageUrl} alt={category.name} className="category-image" /> : 'x'}
+//                                 </td>
+//                                 <td>{category.displayOrder}</td>
+//                             </tr>
+//                         ))}
+//                         </tbody>
+//                     </table>
+//                     <div className="pagination">
+//                         <button onClick={() => setChildPage(Math.max(childPage - 1, 1))} disabled={childPage === 1}>이전</button>
+//                         <span>{childPage} / {totalChildPages}</span>
+//                         <button onClick={() => setChildPage(Math.min(childPage + 1, totalChildPages))} disabled={childPage === totalChildPages}>다음</button>
+//                     </div>
+//                 </>
+//             )}
+//         </div>
+//     );
+// };
+//
+// export default CategoryAdminMain;
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -436,7 +611,18 @@ const CategoryAdminMain = () => {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
-            setCategories(response.data);
+
+            // 부모와 자식 카테고리를 각각 displayOrder로 정렬
+            const sortedCategories = response.data;
+            const sortedParentCategories = sortedCategories
+                .filter(category => category.parentId === null)
+                .sort((a, b) => a.displayOrder - b.displayOrder); // 부모 카테고리 정렬
+
+            const sortedChildCategories = sortedCategories
+                .filter(category => category.parentId !== null)
+                .sort((a, b) => a.displayOrder - b.displayOrder); // 자식 카테고리 정렬
+
+            setCategories([...sortedParentCategories, ...sortedChildCategories]); // 정렬된 전체 리스트를 업데이트
         } catch (error) {
             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
             if (error.response && error.response.status === 401) {
@@ -446,7 +632,6 @@ const CategoryAdminMain = () => {
     };
 
     const deleteCategory = async (categoryId) => {
-        // 삭제하려는 카테고리의 하위 카테고리 확인
         const hasChildCategories = categories.some(category => category.parentId === categoryId);
 
         if (hasChildCategories) {
@@ -463,9 +648,9 @@ const CategoryAdminMain = () => {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            // 삭제 후 상태 업데이트
             setCategories(categories.filter(category => category.id !== categoryId));
             alert("카테고리가 삭제되었습니다.");
+            window.location.reload();
         } catch (error) {
             console.error('카테고리 삭제 중 오류가 발생했습니다.', error);
             if (error.response && error.response.status === 401) {
@@ -493,7 +678,7 @@ const CategoryAdminMain = () => {
 
     const handleParentCategoryClick = (parentId) => {
         setSelectedParentId(parentId === selectedParentId ? null : parentId);
-        setChildPage(1); // 부모 카테고리를 변경할 때 자식 카테고리 페이지를 초기화
+        setChildPage(1);
     };
 
     const paginatedCategories = (categories, page) => {

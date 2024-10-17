@@ -523,6 +523,7 @@ const CategoryCreate = () => {
         })
             .then(() => {
                 navigate('/admin/categories');
+                window.location.reload(); // 페이지 새로고침 추가
             })
             .catch(error => {
                 console.error('Error creating category:', error);

@@ -539,6 +539,7 @@ const CategoryUpdate = () => {
                 console.log('Category updated:', response.data);
                 alert('카테고리가 성공적으로 수정되었습니다.');
                 navigate('/admin/categories');
+                window.location.reload(); // 페이지 새로고침 추가
             })
             .catch(error => {
                 console.error('Error updating category:', error);
