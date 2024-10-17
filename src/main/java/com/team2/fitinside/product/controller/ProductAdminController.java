@@ -53,24 +53,34 @@ public class ProductAdminController {
     @ApiResponse(responseCode = "201", description = "상품 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
     @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "카테고리가 존재하지 않음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<ProductResponseDto> createProduct(
+//            @ModelAttribute("productData") ProductInsertDto productInsertDto) {
+//
+//        // 이미지 업로드 처리 (S3 업로드 후 URL 생성)
+//        List<String> imageUrls = new ArrayList<>();
+//        for (MultipartFile image : productInsertDto.getProductImgUrls()) {
+//            String imageUrl = s3ImageService.upload(image); // 인스턴스 메서드 호출
+//            imageUrls.add(imageUrl);
+//        }
+//
+//        // 매퍼를 사용하여 ProductInsertDto를 ProductCreateDto로 변환
+//        ProductCreateDto productCreateDto = ProductMapper.INSTANCE.toProductCreateDto(productInsertDto);
+//
+//        // 이미지 URL 추가
+//        productCreateDto.setProductImgUrls(imageUrls);
+//
+//        // 상품 등록 처리
+//        ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
+//        return ResponseEntity.status(201).body(createdProduct);
+//    }
     public ResponseEntity<ProductResponseDto> createProduct(
             @ModelAttribute("productData") ProductInsertDto productInsertDto) {
 
-        // 이미지 업로드 처리 (S3 업로드 후 URL 생성)
-        List<String> imageUrls = new ArrayList<>();
-        for (MultipartFile image : productInsertDto.getProductImgUrls()) {
-            String imageUrl = s3ImageService.upload(image); // 인스턴스 메서드 호출
-            imageUrls.add(imageUrl);
-        }
-
-        // 매퍼를 사용하여 ProductInsertDto를 ProductCreateDto로 변환
-        ProductCreateDto productCreateDto = ProductMapper.INSTANCE.toProductCreateDto(productInsertDto);
-
-        // 이미지 URL 추가
-        productCreateDto.setProductImgUrls(imageUrls);
-
-        // 상품 등록 처리
-        ProductResponseDto createdProduct = productService.createProduct(productCreateDto);
+        // 상품 등록 처리 (이미지 포함)
+        ProductResponseDto createdProduct = productService.createProduct(
+                ProductMapper.INSTANCE.toProductCreateDto(productInsertDto),
+                productInsertDto.getProductImgUrls()
+        );
         return ResponseEntity.status(201).body(createdProduct);
     }
 
@@ -92,28 +102,40 @@ public class ProductAdminController {
     @ApiResponse(responseCode = "200", description = "상품 수정 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
     @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<ProductResponseDto> updateProduct(
+//            @PathVariable Long id,
+//            @ModelAttribute ProductInsertDto productInsertDto) {
+//
+//        // 이미지 업로드 처리 (S3 업로드 후 URL 생성)
+//        List<String> imageUrls = new ArrayList<>();
+//        List<MultipartFile> productImgUrls = productInsertDto.getProductImgUrls();
+//
+//        // 매퍼를 사용하여 ProductInsertDto를 ProductUpdateDto로 변환
+//        ProductUpdateDto productUpdateDto = ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto);
+//
+//        if (productImgUrls != null && !productImgUrls.isEmpty()) {
+//            for (MultipartFile image : productImgUrls) {
+//                String imageUrl = s3ImageService.upload(image); // S3에 이미지 업로드
+//                imageUrls.add(imageUrl);
+//            }
+//            // 이미지 URL을 ProductUpdateDto에 설정
+//            productUpdateDto.setProductImgUrls(imageUrls);
+//        }
+//
+//        // 상품 수정 처리
+//        ProductResponseDto updatedProduct = productService.updateProduct(id, productUpdateDto);
+//        return ResponseEntity.ok(updatedProduct);
+//    }
     public ResponseEntity<ProductResponseDto> updateProduct(
             @PathVariable Long id,
             @ModelAttribute ProductInsertDto productInsertDto) {
 
-        // 이미지 업로드 처리 (S3 업로드 후 URL 생성)
-        List<String> imageUrls = new ArrayList<>();
-        List<MultipartFile> productImgUrls = productInsertDto.getProductImgUrls();
-
-        // 매퍼를 사용하여 ProductInsertDto를 ProductUpdateDto로 변환
-        ProductUpdateDto productUpdateDto = ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto);
-
-        if (productImgUrls != null && !productImgUrls.isEmpty()) {
-            for (MultipartFile image : productImgUrls) {
-                String imageUrl = s3ImageService.upload(image); // S3에 이미지 업로드
-                imageUrls.add(imageUrl);
-            }
-            // 이미지 URL을 ProductUpdateDto에 설정
-            productUpdateDto.setProductImgUrls(imageUrls);
-        }
-
-        // 상품 수정 처리
-        ProductResponseDto updatedProduct = productService.updateProduct(id, productUpdateDto);
+        // 상품 수정 처리 (이미지 포함)
+        ProductResponseDto updatedProduct = productService.updateProduct(
+                id,
+                ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto),
+                productInsertDto.getProductImgUrls()
+        );
         return ResponseEntity.ok(updatedProduct);
     }
 
