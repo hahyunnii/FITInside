@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.team2.fitinside.global.exception.CustomException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import static com.team2.fitinside.category.mapper.CategoryMapper.toCreateDTO;
 
@@ -273,76 +272,76 @@ import java.util.stream.Collectors;
 //    }
 //}
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class CategoryService {
-
-    private final CategoryRepository categoryRepository;
-    private final S3ImageService s3ImageService;
-
-    // 모든 카테고리 조회
-    public List<CategoryResponseDTO> getAllCategories() {
-        return categoryRepository.findAllByIsDeletedFalse()
-                .stream()
-                .map(CategoryMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    // 부모 카테고리 조회
-    public List<CategoryResponseDTO> getParentCategories() {
-        return categoryRepository.findAllByIsDeletedFalseAndParentIsNullOrderByDisplayOrder()
-                .stream()
-                .map(CategoryMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    // 특정 부모의 자식 카테고리 조회
-    public List<CategoryResponseDTO> getChildCategories(Long parentId) {
-        return categoryRepository.findAllByIsDeletedFalseAndParentIdOrderByDisplayOrder(parentId)
-                .stream()
-                .map(CategoryMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    // 특정 ID의 카테고리 조회
-    public CategoryResponseDTO getCategoryById(Long id) {
-        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-        return CategoryMapper.toResponseDTO(category);
-    }
-
-    // 메인 화면에 표시할 카테고리 조회 (mainDisplayOrder 기준)
-    public List<CategoryResponseDTO> getMainDisplayCategories() {
-        return categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder()
-                .stream()
-                .map(CategoryMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    // 카테고리 생성
-    public CategoryCreateRequestDTO createCategory(String name, Long displayOrder, Long mainDisplayOrder, Boolean isDeleted, Long parentId, MultipartFile imageFile) {
-        if (parentId == null) {
-            categoryRepository.incrementDisplayOrderForParentCategories(displayOrder, Long.MAX_VALUE);
-        } else {
-            categoryRepository.incrementDisplayOrderForChildCategories(displayOrder, Long.MAX_VALUE, parentId);
-        }
-
-        String imageUrl = uploadImageToS3(imageFile);
-        Category parentCategory = getParentCategory(parentId);
-
-        Category category = Category.builder()
-                .name(name)
-                .displayOrder(displayOrder)
-                .mainDisplayOrder(mainDisplayOrder)
-                .parent(parentCategory)
-                .isDeleted(isDeleted != null ? isDeleted : false)
-                .imageUrl(imageUrl)
-                .build();
-
-        return CategoryMapper.toCreateDTO(categoryRepository.save(category));
-    }
-
+//@Service
+//@RequiredArgsConstructor
+//@Transactional
+//public class CategoryService {
+//
+//    private final CategoryRepository categoryRepository;
+//    private final S3ImageService s3ImageService;
+//
+//    // 모든 카테고리 조회
+//    public List<CategoryResponseDTO> getAllCategories() {
+//        return categoryRepository.findAllByIsDeletedFalse()
+//                .stream()
+//                .map(CategoryMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 부모 카테고리 조회
+//    public List<CategoryResponseDTO> getParentCategories() {
+//        return categoryRepository.findAllByIsDeletedFalseAndParentIsNullOrderByDisplayOrder()
+//                .stream()
+//                .map(CategoryMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 특정 부모의 자식 카테고리 조회
+//    public List<CategoryResponseDTO> getChildCategories(Long parentId) {
+//        return categoryRepository.findAllByIsDeletedFalseAndParentIdOrderByDisplayOrder(parentId)
+//                .stream()
+//                .map(CategoryMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 특정 ID의 카테고리 조회
+//    public CategoryResponseDTO getCategoryById(Long id) {
+//        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//        return CategoryMapper.toResponseDTO(category);
+//    }
+//
+//    // 메인 화면에 표시할 카테고리 조회 (mainDisplayOrder 기준)
+//    public List<CategoryResponseDTO> getMainDisplayCategories() {
+//        return categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder()
+//                .stream()
+//                .map(CategoryMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 카테고리 생성
+//    public CategoryCreateRequestDTO createCategory(String name, Long displayOrder, Long mainDisplayOrder, Boolean isDeleted, Long parentId, MultipartFile imageFile) {
+//        if (parentId == null) {
+//            categoryRepository.incrementDisplayOrderForParentCategories(displayOrder, Long.MAX_VALUE);
+//        } else {
+//            categoryRepository.incrementDisplayOrderForChildCategories(displayOrder, Long.MAX_VALUE, parentId);
+//        }
+//
+//        String imageUrl = uploadImageToS3(imageFile);
+//        Category parentCategory = getParentCategory(parentId);
+//
+//        Category category = Category.builder()
+//                .name(name)
+//                .displayOrder(displayOrder)
+//                .mainDisplayOrder(mainDisplayOrder)
+//                .parent(parentCategory)
+//                .isDeleted(isDeleted != null ? isDeleted : false)
+//                .imageUrl(imageUrl)
+//                .build();
+//
+//        return CategoryMapper.toCreateDTO(categoryRepository.save(category));
+//    }
+//
 //    // 카테고리 수정
 //    public CategoryUpdateRequestDTO updateCategory(Long id, CategoryUpdateRequestDTO categoryDTO, MultipartFile imageFile) {
 //        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
@@ -360,18 +359,152 @@ public class CategoryService {
 //        }
 //
 //        String imageUrl = updateCategoryImage(category, imageFile);
-//        category.updateCategory(categoryDTO.getName(), newDisplayOrder, getParentCategory(categoryDTO.getParentId()), imageUrl);
+//
+//        // category.updateCategory 호출 시, mainDisplayOrder를 DTO에서 전달받은 값으로 업데이트하도록 합니다.
+//        category.updateCategory(categoryDTO.getName(),
+//                newDisplayOrder,
+//                getParentCategory(categoryDTO.getParentId()),
+//                imageUrl,
+//                categoryDTO.getMainDisplayOrder()); // mainDisplayOrder를 업데이트할 수 있도록 추가합니다.
 //
 //        return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
 //    }
+//
+//
+//    // 카테고리 삭제
+//    public void deleteCategory(Long id) {
+//        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//
+//        if (category.getParent() == null) {
+//            categoryRepository.decrementDisplayOrderForParentCategories(category.getDisplayOrder(), Long.MAX_VALUE);
+//        } else {
+//            categoryRepository.decrementDisplayOrderForChildCategories(category.getDisplayOrder(), Long.MAX_VALUE, category.getParent().getId());
+//        }
+//
+//        category.delete();
+//    }
+//
+//    // 부모 카테고리 displayOrder 조정
+//    private void adjustDisplayOrderForParentCategories(Long oldOrder, Long newOrder) {
+//        if (newOrder > oldOrder) {
+//            categoryRepository.decrementDisplayOrderForParentCategories(oldOrder + 1, newOrder);
+//        } else {
+//            categoryRepository.incrementDisplayOrderForParentCategories(newOrder, oldOrder - 1);
+//        }
+//    }
+//
+//    // 자식 카테고리 displayOrder 조정
+//    private void adjustDisplayOrderForChildCategories(Long oldOrder, Long newOrder, Long parentId) {
+//        if (newOrder > oldOrder) {
+//            categoryRepository.decrementDisplayOrderForChildCategories(oldOrder + 1, newOrder, parentId);
+//        } else {
+//            categoryRepository.incrementDisplayOrderForChildCategories(newOrder, oldOrder - 1, parentId);
+//        }
+//    }
+//
+//    // 부모 카테고리 조회
+//    private Category getParentCategory(Long parentId) {
+//        return (parentId != null) ? categoryRepository.findByIdAndIsDeletedFalse(parentId)
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)) : null;
+//    }
+//
+//    // 이미지 업로드
+//    private String uploadImageToS3(MultipartFile imageFile) {
+//        return (imageFile != null && !imageFile.isEmpty()) ? s3ImageService.upload(imageFile) : null;
+//    }
+//
+//    // 이미지 업데이트
+//    private String updateCategoryImage(Category category, MultipartFile imageFile) {
+//        String imageUrl = category.getImageUrl();
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            if (imageUrl != null) {
+//                s3ImageService.deleteImageFromS3(imageUrl);
+//            }
+//            imageUrl = s3ImageService.upload(imageFile);
+//        }
+//        return imageUrl;
+//    }
+//}
 
-    // 카테고리 수정
+
+// CategoryService.java
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class CategoryService {
+
+    private final CategoryRepository categoryRepository;
+    private final S3ImageService s3ImageService;
+
+    public List<CategoryResponseDTO> getAllCategories() {
+        return categoryRepository.findAllByIsDeletedFalse()
+                .stream()
+                .map(CategoryMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoryResponseDTO> getParentCategories() {
+        return categoryRepository.findAllByIsDeletedFalseAndParentIsNullOrderByDisplayOrder()
+                .stream()
+                .map(CategoryMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoryResponseDTO> getChildCategories(Long parentId) {
+        return categoryRepository.findAllByIsDeletedFalseAndParentIdOrderByDisplayOrder(parentId)
+                .stream()
+                .map(CategoryMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CategoryResponseDTO getCategoryById(Long id) {
+        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+        return CategoryMapper.toResponseDTO(category);
+    }
+
+    public List<CategoryResponseDTO> getMainDisplayCategories() {
+        return categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder()
+                .stream()
+                .map(CategoryMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CategoryCreateRequestDTO createCategory(String name, Long displayOrder, Long mainDisplayOrder, Boolean isDeleted, Long parentId, MultipartFile imageFile) {
+        if (parentId == null) {
+            categoryRepository.incrementDisplayOrderForParentCategories(displayOrder, Long.MAX_VALUE);
+        } else {
+            categoryRepository.incrementDisplayOrderForChildCategories(displayOrder, Long.MAX_VALUE, parentId);
+        }
+
+        if (mainDisplayOrder != null) {
+            adjustMainDisplayOrder(null, mainDisplayOrder);
+        }
+
+        String imageUrl = uploadImageToS3(imageFile);
+        Category parentCategory = getParentCategory(parentId);
+
+        Category category = Category.builder()
+                .name(name)
+                .displayOrder(displayOrder)
+                .mainDisplayOrder(mainDisplayOrder)
+                .parent(parentCategory)
+                .isDeleted(isDeleted != null ? isDeleted : false)
+                .imageUrl(imageUrl)
+                .build();
+
+        return CategoryMapper.toCreateDTO(categoryRepository.save(category));
+    }
+
     public CategoryUpdateRequestDTO updateCategory(Long id, CategoryUpdateRequestDTO categoryDTO, MultipartFile imageFile) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Long oldDisplayOrder = category.getDisplayOrder();
         Long newDisplayOrder = categoryDTO.getDisplayOrder();
+        Long oldMainDisplayOrder = category.getMainDisplayOrder();
+        Long newMainDisplayOrder = categoryDTO.getMainDisplayOrder();
 
         if (!oldDisplayOrder.equals(newDisplayOrder)) {
             if (category.getParent() == null) {
@@ -381,20 +514,31 @@ public class CategoryService {
             }
         }
 
+        if (!Objects.equals(oldMainDisplayOrder, newMainDisplayOrder)) {
+            adjustMainDisplayOrder(oldMainDisplayOrder, newMainDisplayOrder);
+        }
+
         String imageUrl = updateCategoryImage(category, imageFile);
 
-        // category.updateCategory 호출 시, mainDisplayOrder를 DTO에서 전달받은 값으로 업데이트하도록 합니다.
-        category.updateCategory(categoryDTO.getName(),
-                newDisplayOrder,
-                getParentCategory(categoryDTO.getParentId()),
-                imageUrl,
-                categoryDTO.getMainDisplayOrder()); // mainDisplayOrder를 업데이트할 수 있도록 추가합니다.
+        category.updateCategory(categoryDTO.getName(), newDisplayOrder, getParentCategory(categoryDTO.getParentId()), imageUrl, newMainDisplayOrder);
 
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
 
+    private void adjustMainDisplayOrder(Long oldOrder, Long newOrder) {
+        if (newOrder == null && oldOrder != null) {
+            categoryRepository.decrementMainDisplayOrder(oldOrder, Long.MAX_VALUE);
+        } else if (newOrder != null) {
+            if (oldOrder == null) {
+                categoryRepository.incrementMainDisplayOrder(newOrder, Long.MAX_VALUE);
+            } else if (newOrder > oldOrder) {
+                categoryRepository.decrementMainDisplayOrder(oldOrder + 1, newOrder);
+            } else {
+                categoryRepository.incrementMainDisplayOrder(newOrder, oldOrder - 1);
+            }
+        }
+    }
 
-    // 카테고리 삭제
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -405,10 +549,13 @@ public class CategoryService {
             categoryRepository.decrementDisplayOrderForChildCategories(category.getDisplayOrder(), Long.MAX_VALUE, category.getParent().getId());
         }
 
+        if (category.getMainDisplayOrder() != null) {
+            adjustMainDisplayOrder(category.getMainDisplayOrder(), null);
+        }
+
         category.delete();
     }
 
-    // 부모 카테고리 displayOrder 조정
     private void adjustDisplayOrderForParentCategories(Long oldOrder, Long newOrder) {
         if (newOrder > oldOrder) {
             categoryRepository.decrementDisplayOrderForParentCategories(oldOrder + 1, newOrder);
@@ -417,7 +564,6 @@ public class CategoryService {
         }
     }
 
-    // 자식 카테고리 displayOrder 조정
     private void adjustDisplayOrderForChildCategories(Long oldOrder, Long newOrder, Long parentId) {
         if (newOrder > oldOrder) {
             categoryRepository.decrementDisplayOrderForChildCategories(oldOrder + 1, newOrder, parentId);
@@ -426,18 +572,15 @@ public class CategoryService {
         }
     }
 
-    // 부모 카테고리 조회
     private Category getParentCategory(Long parentId) {
         return (parentId != null) ? categoryRepository.findByIdAndIsDeletedFalse(parentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)) : null;
     }
 
-    // 이미지 업로드
     private String uploadImageToS3(MultipartFile imageFile) {
         return (imageFile != null && !imageFile.isEmpty()) ? s3ImageService.upload(imageFile) : null;
     }
 
-    // 이미지 업데이트
     private String updateCategoryImage(Category category, MultipartFile imageFile) {
         String imageUrl = category.getImageUrl();
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -449,3 +592,4 @@ public class CategoryService {
         return imageUrl;
     }
 }
+
