@@ -8,6 +8,7 @@ const OrderCreate = () => {
     const [deliveryFee, setDeliveryFee] = useState(0); // 배송비
     const [totalOriginalPrice, setTotalOriginalPrice] = useState(0); // 할인 전 총 금액
     const [totalDiscountedPrice, setTotalDiscountedPrice] = useState(0); // 할인된 총 금액
+    const [productDetails, setProductDetails] = useState({}); // 상품 이미지
     const deliveryFormRef = useRef(null); // DeliveryForm을 참조
 
     // 장바구니 데이터와 배송비, 할인가격 로컬 스토리지에서 가져오기
@@ -24,6 +25,34 @@ const OrderCreate = () => {
 
         setTotalOriginalPrice(totalOriginal);
         setTotalDiscountedPrice(totalDiscounted);
+
+        // 각 상품의 이미지 정보 가져오기
+        const fetchProductDetails = async () => {
+            const details = {};
+
+            for (const item of storedOrderData) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/products/${item.productId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Authorization 헤더 추가
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const productData = await response.json();
+                    details[item.productId] = productData; // 상품 상세 정보를 저장
+                } catch (error) {
+                    console.error('상품 조회 실패', error);
+                }
+            }
+
+            setProductDetails(details); // 상태 업데이트
+        }
+
+        if (storedOrderData.length > 0) {
+            fetchProductDetails();
+        }
     }, []);
 
     const handleOrderSubmit = async () => {
@@ -34,12 +63,12 @@ const OrderCreate = () => {
             return;
         }
 
-        const { postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone } = deliveryData;  // deliveryData를 분리
+        const { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone } = deliveryData;  // deliveryData를 분리
 
-        submitOrder(postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone);  // 개별 필드를 전달
+        submitOrder(postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone);  // 개별 필드를 전달
     };
 
-    const submitOrder = async (postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone) => {
+    const submitOrder = async (postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone) => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:8080/api/order', {
@@ -52,6 +81,7 @@ const OrderCreate = () => {
                     postalCode,
                     deliveryAddress,
                     detailedAddress,
+                    deliveryMemo,
                     deliveryReceiver,
                     deliveryPhone,
                     orderItems,
@@ -91,10 +121,19 @@ const OrderCreate = () => {
                         {orderItems.map((item, index) => (
                             <tr key={index}>
                                 <td className="product-info">
-                                    <div>
-                                        <p className="product-name">{item.productName}</p>
-                                        <p className="product-quantity">수량: {item.quantity}</p>
-                                        {item.couponName && <p className="coupon-info">적용된 쿠폰 [{item.couponName}]</p>}
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {productDetails[item.productId] && productDetails[item.productId].productImgUrls && (
+                                            <img
+                                                style={{ width: '100px', height: '100px', marginRight: '10px' }}
+                                                src={productDetails[item.productId].productImgUrls[0]}
+                                                alt={item.productName}
+                                            />
+                                        )}
+                                        <div>
+                                            <p className="product-name">{item.productName}</p>
+                                            <p className="product-quantity">수량: {item.quantity}</p>
+                                            {item.couponName && <p className="coupon-info">적용된 쿠폰 [{item.couponName}]</p>}
+                                        </div>
                                     </div>
                                 </td>
                                 <td className="product-price">

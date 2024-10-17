@@ -68,6 +68,21 @@ const OrderList = () => {
         return <div>{error}</div>;
     }
 
+    const getStatusClass = (status) => {
+        switch (status) {
+            case 'ORDERED':
+                return 'status-ordered';
+            case 'SHIPPING':
+                return 'status-shipping';
+            case 'COMPLETED':
+                return 'status-completed';
+            case 'CANCELLED':
+                return 'status-cancelled';
+            default:
+                return '';
+        }
+    };
+
     return (
         <div className="orderList container my-4">
             <h2 className="text-center mb-4">주문 내역</h2>
@@ -103,13 +118,26 @@ const OrderList = () => {
                 {orders.map((order) => (
                     <div key={order.orderId} className="order-card card shadow-sm mb-4">
                         <div className="card-header">
+                            <span className={`status-circle ${getStatusClass(order.orderStatus)}`}></span>
                             {getStatusLabel(order.orderStatus)}
+                            <span className={`status-circle ${getStatusClass(order.orderStatus)}`}></span>
                         </div>
-                        <div className="card-body">
-                            <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
-                            <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
-                            <p className="card-text"><strong>결제 금액:</strong> {(order.discountedTotalPrice).toLocaleString()}원</p>
-                            <p className="card-text"><strong>주문 날짜:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                        <div className="card-body d-flex">
+                            {/* 대표 상품 이미지 추가 */}
+                            {order.productImgUrl && (
+                                <img
+                                    src={order.productImgUrl}
+                                    alt="주문 상품 대표 이미지"
+                                    // style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+                                    className="order-img"
+                                />
+                            )}
+                            <div className="order-info">
+                                <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
+                                <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
+                                <p className="card-text"><strong>결제 금액:</strong> {(order.discountedTotalPrice).toLocaleString()}원</p>
+                                <p className="card-text"><strong>주문 날짜:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
                         </div>
                         <div className="card-footer bg-light">
                             <p className="mb-1"><strong>배송 주소:</strong> {order.deliveryAddress}</p>
@@ -121,16 +149,37 @@ const OrderList = () => {
                 ))}
             </div>
 
-            <div className="pagination">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index}
-                        className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-                        onClick={() => handlePageChange(index + 1)}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
+            <div className="pagination justify-content-center">
+                <ul className="pagination">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            aria-label="Previous"
+                        >
+                            <span aria-hidden="true">&laquo;</span>
+                        </button>
+                    </li>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(index + 1)}
+                            >
+                                {index + 1}
+                            </button>
+                        </li>
+                    ))}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            aria-label="Next"
+                        >
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
     );
