@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Pagination, Button } from 'react-bootstrap'; // React-Bootstrap 사용
+import { Table, Pagination, Button } from 'react-bootstrap';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {useNavigate} from "react-router-dom"; // React-Bootstrap 사용
 
 const MemberList = () => {
+    const navigate = useNavigate(); // useNavigate 훅 사용
     const [members, setMembers] = useState([]); // 회원 목록을 저장할 상태
     const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수를 저장할 상태
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지를 저장할 상태
@@ -22,11 +25,25 @@ const MemberList = () => {
                 setMembers(response.data.memberList); // 회원 목록 저장
                 setTotalPages(response.data.totalPages); // 전체 페이지 수 저장
             } catch (error) {
-                console.error('API 요청 실패:', error.status);
-                if (error.status === 401) {
-                    setError('회원 목록을 불러오는 데 실패했습니다. - 권한 없음');
-                } else {
-                    setError('회원 목록을 불러오는 데 실패했습니다.');
+                try{
+                    await sendRefreshTokenAndStoreAccessToken();
+                    const token = localStorage.getItem('token'); // 토큰 가져오기
+                    const response = await axios.get(`http://localhost:8080/api/admin/member?page=${page}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
+                        },
+                    });
+
+                    setMembers(response.data.memberList); // 회원 목록 저장
+                    setTotalPages(response.data.totalPages); // 전체 페이지 수 저장
+
+                } catch (error) {
+                    console.error('API 요청 실패:', error.status);
+                    if (error.status === 401) {
+                        setError('회원 목록을 불러오는 데 실패했습니다. - 권한 없음');
+                    } else {
+                        setError('회원 목록을 불러오는 데 실패했습니다.');
+                    }
                 }
             }
         };
@@ -42,6 +59,11 @@ const MemberList = () => {
     // 회원 삭제 요청 처리 함수
     const handleDeleteMember = async (memberId) => {
         try {
+            const confirmDelete = window.confirm('회원탈퇴 시키시겠습니까?');
+            if (!confirmDelete) {
+                return;
+            }
+            
             const token = localStorage.getItem('token'); // 토큰 가져오기
             await axios.delete(`http://localhost:8080/api/admin/member/${memberId}`, {
                 headers: {
@@ -51,14 +73,43 @@ const MemberList = () => {
             // 삭제 후 회원 목록 갱신 (현재 페이지 다시 로드)
             setMembers(members.filter((member) => member.id !== memberId));
         } catch (error) {
-            setError('회원 삭제에 실패했습니다.');
-            console.error('회원 삭제 실패:', error);
+            try{ // 토큰 재발급
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token'); // 토큰 가져오기
+                await axios.delete(`http://localhost:8080/api/admin/member/${memberId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
+                    },
+                });
+                // 삭제 후 회원 목록 갱신 (현재 페이지 다시 로드)
+                setMembers(members.filter((member) => member.id !== memberId));
+            } catch (error) {
+                setError('회원 삭제에 실패했습니다.');
+                console.error('회원 삭제 실패:', error);
+            }
         }
+    };
+
+    const handleDeleteMembersClick = () => {
+        navigate('/admin/member/delete'); // 버튼 클릭 시 해당 경로로 이동
     };
 
     return (
         <div className="container mt-5">
-            <h2 className="text-center mb-4">회원 목록</h2>
+            <div className="container mt-5">
+                <h2 className="text-center mb-4">회원 목록</h2>
+            </div>
+            <div className="container mt-5 mb-2 d-flex justify-content-end">
+                <button
+                    className="btn btn-info"
+                    onClick={handleDeleteMembersClick}
+                >
+                    탈퇴회원목록
+                </button>
+            </div>
+
+
             {error && <p className="text-danger text-center">{error}</p>}
 
             {/* 회원 목록 표 */}
@@ -69,14 +120,16 @@ const MemberList = () => {
                     <th>이메일</th>
                     <th>이름</th>
                     <th>전화번호</th>
-                    <th>작업</th> {/* 작업 열 추가 */}
+                    <th>작업</th>
+                    {/* 작업 열 추가 */}
                 </tr>
                 </thead>
                 <tbody>
                 {members.length > 0 ? (
                     members.map((member, index) => (
                         <tr key={member.id}>
-                            <td>{member.id}</td> {/* 각 페이지에서 번호 계산 */}
+                            <td>{member.id}</td>
+                            {/* 각 페이지에서 번호 계산 */}
                             <td>{member.email}</td>
                             <td>{member.userName}</td>
                             <td>{member.phone}</td>
@@ -86,7 +139,7 @@ const MemberList = () => {
                                     variant="danger"
                                     onClick={() => handleDeleteMember(member.id)} // 삭제 클릭 시 함수 호출
                                 >
-                                    정지
+                                    탈퇴
                                 </Button>
                             </td>
                         </tr>
