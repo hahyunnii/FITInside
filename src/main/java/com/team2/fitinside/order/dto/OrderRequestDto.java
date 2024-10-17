@@ -24,6 +24,8 @@ public class OrderRequestDto { // 주문 생성, 수정 DTO
     @NotBlank(message = "전화번호를 입력해 주세요.")
     private String deliveryPhone;
 
+    private String deliveryMemo;
+
     private List<OrderCartRequestDto> orderItems;
     private int deliveryFee;
 

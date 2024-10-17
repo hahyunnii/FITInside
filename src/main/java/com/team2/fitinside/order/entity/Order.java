@@ -65,6 +65,9 @@ public class Order {
     @Column(name = "delivery_phone", nullable = false)
     private String deliveryPhone;
 
+    @Column(name = "delivery_memo")
+    private String deliveryMemo;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -112,6 +115,7 @@ public class Order {
         this.detailedAddress = request.getDetailedAddress();
         this.deliveryReceiver = request.getDeliveryReceiver();
         this.deliveryPhone = request.getDeliveryPhone();
+        this.deliveryMemo = request.getDeliveryMemo();
     }
 
 }
