@@ -11,6 +11,10 @@ import com.team2.fitinside.product.repository.ProductRepository;
 import com.team2.fitinside.category.repository.CategoryRepository;
 import com.team2.fitinside.category.entity.Category;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,19 +28,37 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    // 상품 전체 목록 조회 (카테고리 필터 없이 모든 상품 반환)
-    public List<ProductResponseDto> findAllProducts() {
-        return productRepository.findByIsDeletedFalse().stream()
-                .map(ProductMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+    // 페이지네이션, 정렬, 검색을 적용한 상품 전체 목록 조회
+    public Page<ProductResponseDto> getAllProducts(int page, int size, String sortField, String sortDir, String keyword) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (keyword != null && !keyword.isEmpty()) {
+            return productRepository.searchByKeywordAndIsDeletedFalse(keyword, pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        } else {
+            return productRepository.findByIsDeletedFalse(pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        }
     }
 
-    // 카테고리 필터를 적용한 상품 목록 조회
-    public List<ProductResponseDto> findAllProducts(Long categoryId) {
-        return productRepository.findByIsDeletedFalse().stream()
-                .filter(product -> categoryId == null || product.getCategory().getId().equals(categoryId))
-                .map(ProductMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+    // 페이지네이션, 정렬, 검색을 적용한 카테고리별 상품 목록 조회
+    public Page<ProductResponseDto> getProductsByCategory(Long categoryId, int page, int size, String sortField, String sortDir, String keyword) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        if (keyword != null && !keyword.isEmpty()) {
+            return productRepository.searchByKeywordAndCategoryAndIsDeletedFalse(category, keyword, pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        } else {
+            return productRepository.findByCategoryAndIsDeletedFalse(category, pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        }
     }
 
     // 상품 상세 조회

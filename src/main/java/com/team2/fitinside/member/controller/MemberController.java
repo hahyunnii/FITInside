@@ -5,7 +5,6 @@ import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +21,6 @@ public class MemberController {
         MemberResponseDto myInfoBySecurity = memberService.getMyInfoBySecurity();
         System.out.println(myInfoBySecurity.getUserName());
         return ResponseEntity.ok((myInfoBySecurity));
-        // return ResponseEntity.ok(memberService.getMyInfoBySecurity());
     }
 
     // 유저 이름 변경

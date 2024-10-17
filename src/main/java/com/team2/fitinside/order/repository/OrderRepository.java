@@ -17,14 +17,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByMemberId(Long memberId);
 
-    Page<Order> findByMemberIdAndIsDeletedFalse(Long memberId, Pageable pageable);
-
     @Query("SELECT o FROM Order o " +
             "JOIN o.orderProducts op " +
             "JOIN op.product p " +
             "WHERE o.member.id = :memberId " +
             "AND o.isDeleted = false " +
-            "AND p.productName LIKE %:productName%")
+            "AND (:productName IS NULL OR p.productName LIKE %:productName%)")
     Page<Order> findByMemberIdAndProductName(@Param("memberId") Long memberId,
                                              @Param("productName") String productName,
                                              Pageable pageable);
@@ -36,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE o.isDeleted = false " +
             "AND (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
             "AND (:startDate IS NULL OR o.createdAt >= :startDate) " +
-            "AND (:endDate IS NULL or o.createdAt <= :endDate)")
+            "AND (:endDate IS NULL OR o.createdAt <= :endDate)")
     Page<Order> findAllOrdersWithDetails(@Param("orderStatus") OrderStatus orderStatus,
                                          @Param("startDate") LocalDateTime startDate,
                                          @Param("endDate") LocalDateTime endDate,

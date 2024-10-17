@@ -43,38 +43,14 @@ public class OrderService {
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long orderId) {
 
-        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
-
-        if (!findOrder.getMember().getId().equals(loginMemberId)) {
-            throw new CustomException(USER_NOT_AUTHORIZED);
-        }
+        checkAuthorization(findOrder);
 
         return orderMapper.toOrderDetailResponseDto(findOrder);
     }
 
     // 전체 주문 조회 (회원)
     public OrderUserResponseWrapperDto findAllOrders(int page, String productName) {
-
-        Long loginMemberId = securityUtil.getCurrentMemberId();
-
-        Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
-        Page<Order> ordersPage;
-
-        if(productName != null && !productName.isEmpty()){
-            ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
-        } else {
-            ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
-        }
-
-        List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
-
-        return new OrderUserResponseWrapperDto(orders, ordersPage.getTotalPages());
-
-    }
-
-    // 전체 주문 중 상품 이름으로 검색
-    public OrderUserResponseWrapperDto findAllOrdersByProductName(String productName, int page) {
 
         Long loginMemberId = securityUtil.getCurrentMemberId();
 
@@ -109,6 +85,7 @@ public class OrderService {
                 .detailedAddress(request.getDetailedAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
                 .deliveryPhone(request.getDeliveryPhone())
+                .deliveryMemo(request.getDeliveryMemo())
                 .build();
 
         // 장바구니의 각 상품 -> OrderProduct 변환 후 주문에 추가
@@ -117,6 +94,8 @@ public class OrderService {
             if (product.getStock() < cart.getQuantity()) {
                 throw new CustomException(OUT_OF_STOCK);
             }
+
+            product.sold(cart.getQuantity()); // 재고 차감
 
             // 장바구니 상품ID와 일치하는 상품ID를 갖고 있는 OrderCartRequestDto 조회
             OrderCartRequestDto orderCartRequestDto = request.getOrderItems().stream()
@@ -159,12 +138,8 @@ public class OrderService {
     @Transactional
     public OrderDetailResponseDto updateOrder(Long orderId, OrderRequestDto request) {
 
-        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
-
-        if (!order.getMember().getId().equals(loginMemberId)) {
-            throw new CustomException(USER_NOT_AUTHORIZED);
-        }
+        checkAuthorization(order);
 
         if (order.getOrderStatus() != OrderStatus.ORDERED) {
             throw new CustomException(ORDER_MODIFICATION_NOT_ALLOWED);
@@ -179,19 +154,21 @@ public class OrderService {
     @Transactional
     public void cancelOrder(Long orderId) {
 
-        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
-
-        if (!findOrder.getMember().getId().equals(loginMemberId)) {
-            throw new CustomException(USER_NOT_AUTHORIZED);
-        }
+        checkAuthorization(findOrder);
 
         if (findOrder.getOrderStatus() != OrderStatus.ORDERED) {
             throw new CustomException(ORDER_MODIFICATION_NOT_ALLOWED);
         }
 
         findOrder.cancelOrder();
+    }
 
+    private void checkAuthorization(Order order) {
+        Long loginMemberId = securityUtil.getCurrentMemberId();
+        if (!loginMemberId.equals(order.getMember().getId())) {
+            throw new CustomException(USER_NOT_AUTHORIZED);
+        }
     }
 
 }
