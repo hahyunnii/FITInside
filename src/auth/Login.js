@@ -46,7 +46,7 @@ const Login = () => {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{width: '25rem'}}>
+            <div className="card p-4" style={{width: '25rem', height: 'fit-content'}}>
                 <h2 className="text-center mb-4">로그인</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">

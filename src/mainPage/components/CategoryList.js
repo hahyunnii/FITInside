@@ -121,7 +121,6 @@
 //
 // export default CategoryList;
 
-// CategoryList.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -163,7 +162,7 @@ const CategoryList = ({ userRole }) => {
                         category={{
                             id: category.id,
                             name: category.name,
-                            link: `/categories/${category.id}`,
+                            link: `/products/category/${category.id}`,
                             imageUrl: category.imageUrl // 이미지 URL 추가
                         }}
                     />
