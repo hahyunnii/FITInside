@@ -44,7 +44,7 @@ const Signup = () => {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{width: '35rem'}}>
+            <div className="card p-4" style={{width: '35rem', height: 'fit-content'}}>
                 <h2 className="text-center mb-4">회원가입</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
