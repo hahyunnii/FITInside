@@ -278,12 +278,15 @@ const Cart = () => {
                                         {productDetails[item.id] ? (
                                             <div>
                                                 <div className="d-flex justify-content-start">
-                                                    <img
-                                                        style={{ width: '100px', height: '100px', marginRight: '10px'}}
-                                                        src={productDetails[item.id].productImgUrls.length > 0
-                                                            ? productDetails[item.id].productImgUrls[0]
-                                                            : 'https://dummyimage.com/100x100'} // 여기에 더미 이미지 경로를 추가하세요
-                                                    />                                                    <div>
+                                                    {/*<img*/}
+                                                    {/*    style={{ width: '100px', height: '100px', marginRight: '10px'}}*/}
+                                                    {/*    src={productDetails[item.id].productImgUrls.length > 0*/}
+                                                    {/*        ? productDetails[item.id].productImgUrls[0]*/}
+                                                    {/*        : 'https://dummyimage.com/100x100'} // 여기에 더미 이미지 경로를 추가하세요*/}
+                                                    {/*/>*/}
+                                                    <img style={{width: '100px', height: '100px', marginRight: '10px'}}
+                                                         src={productDetails[item.id].productImgUrls[0]}/>
+                                                    <div>
                                                         <p style={{margin: `0`}}>{productDetails[item.id].manufacturer}</p>
                                                         <p style={{fontWeight: 'bold'}}>
                                                             <Link to={`/product/${item.id}`}
