@@ -2,6 +2,7 @@ package com.team2.fitinside.order.common;
 
 public enum OrderStatus {
     ORDERED("주문 완료"),
+    SHIPPING("배송 중"),
     COMPLETED("배송 완료"),
     CANCELLED("주문 취소");
 

@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
 
@@ -15,6 +17,8 @@ public interface MemberMapper {
     Member requestToMember(MemberRequestDto memberRequestDto);
 
     MemberResponseDto memberToResponse(Member member);
+
+    List<MemberResponseDto> toDtoList(List<Member> members);
 
     @Named("encryptPassword") // 2
     default String encryptPassword(String password) {

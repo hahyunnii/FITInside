@@ -1,13 +1,13 @@
 package com.team2.fitinside.member.oath.controller;
 
-import com.team2.fitinside.member.oath.dto.CreateAccessTokenRequest;
 import com.team2.fitinside.member.oath.dto.CreateAccessTokenResponse;
 import com.team2.fitinside.member.oath.service.TokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -17,8 +17,17 @@ public class TokenApiController {
     private final TokenService tokenService;
 
     @PostMapping("/api/auth/token")
-    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(@RequestBody CreateAccessTokenRequest request) {
-        String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
+    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = "";
+        for (Cookie cookie : cookies) {
+            if ("refreshToken".equals(cookie.getName())) {
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
+
+        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CreateAccessTokenResponse(newAccessToken));

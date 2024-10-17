@@ -37,6 +37,8 @@ public class CouponAdminService {
     private final CouponMemberRepository couponMemberRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
+    private final SecurityUtil securityUtil;
+    private final CouponEmailService couponEmailService;
 
     // 매일 쿠폰의 유효기간 확인 및 비활성화
     @Transactional
@@ -127,11 +129,52 @@ public class CouponAdminService {
         coupon.deActive();
     }
 
+    // 쿠폰 이메일 전송 메서드
+    public void sendEmail(CouponEmailRequestDto couponEmailRequestDto) {
+
+        checkAdmin();
+
+        // 쿠폰이 존재하지 않는 경우
+        Coupon foundCoupon = couponRepository.findById(couponEmailRequestDto.getCouponId()).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 쿠폰이 유효하지 않은 경우
+        if(!foundCoupon.isActive()) throw new CustomException(ErrorCode.INVALID_COUPON_DATA);
+
+        couponEmailService.sendEmail(couponEmailRequestDto);
+    }
+
+
+    public CouponMemberResponseWrapperDto findMembersWithOutCoupons(Long couponId) {
+
+        checkAdmin();
+
+        // 쿠폰이 존재하지 않는 경우
+        couponRepository.findById(couponId).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 전체 회원 목록
+        List<Member> members = memberRepository.findAll();
+
+        List<CouponMemberResponseDto> dtos = new ArrayList<>();
+        for (Member member : members) {
+
+            // 쿠폰 보유 현황에 존재하지 않는 경우에만 리스트에 추가
+            if(!couponMemberRepository.existsByMember_IdAndCoupon_Id(member.getId(), couponId)) {
+
+                dtos.add(CouponMemberResponseDto.builder()
+                        .userName(member.getUserName())
+                        .email(member.getEmail())
+                        .build());
+            }
+        }
+
+        return new CouponMemberResponseWrapperDto("쿠폰 미보유 회원 목록을 조회했습니다!", dtos, 1);
+    }
+
 
     // 관리자 권한이 없는 경우 예외 던지는 메서드
     private void checkAdmin() {
 
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Long currentMemberId = securityUtil.getCurrentMemberId();
 
         Member member = memberRepository.findById(currentMemberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 

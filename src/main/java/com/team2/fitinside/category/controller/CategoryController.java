@@ -1,5 +1,6 @@
 package com.team2.fitinside.category.controller;
 
+//import com.team2.fitinside.category.dto.CategoryImageResponseDTO;
 import com.team2.fitinside.category.dto.CategoryResponseDTO;
 import com.team2.fitinside.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,9 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         List<CategoryResponseDTO> categories = categoryService.getAllCategories();
+//        if (categories.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
         return ResponseEntity.ok(categories);
     }
 
@@ -29,6 +33,4 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 }
-
-
 
