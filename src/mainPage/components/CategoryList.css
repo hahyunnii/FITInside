@@ -5,7 +5,7 @@
     flex-wrap: wrap; /* 줄 바꿈 허용 */
     gap: 20px; /* 카테고리 사이의 간격 */
     padding: 20px 0;
-    background-color: #f9f9f9; /* 배경색 (선택사항) */
+    /*background-color: #f9f9f9; !* 배경색 (선택사항) *!*/
 }
 
 .category-item {
