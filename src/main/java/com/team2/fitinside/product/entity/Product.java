@@ -90,4 +90,10 @@ public class Product {
     public void setProductImgUrls(List<String> productImgUrls) {
         this.productImgUrls = productImgUrls;
     }
+
+    // 주문 시 재고 변동
+    public void sold(int count){
+        this.stock -= count;
+    }
+
 }

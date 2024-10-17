@@ -98,4 +98,27 @@ public class MemberService {
 
         return new MemberListResponse(members, totalPages);
     }
+
+    @Transactional
+    public void deleteMemberByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        memberRepository.delete(member);
+    }
+
+    public MemberListResponse getisDeleteMembers(int page) {
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
+
+        Page<Member> memberList = memberRepository.findAllByIsDeleteTrue(pageRequest);
+
+        List<MemberResponseDto> members = new ArrayList<>();
+
+        for(Member member : memberList) {
+            members.add(memberMapper.memberToResponse(member));
+        }
+        // 총 페이지 수
+        int totalPages = (memberList.getTotalPages()==0 ? 1 : memberList.getTotalPages());
+
+        return new MemberListResponse(members, totalPages);
+    }
 }
