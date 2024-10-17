@@ -40,12 +40,15 @@ public class Product {
     @Column(name = "info", length = 500)
     private String info;
 
+    //재고수량
     @Column(name = "product_stock", nullable = false)
     private int stock;
 
+    // 제조사
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 
+    // 이미지 ID 목록을 저장하는 필드
     @ElementCollection
     @CollectionTable(name = "product_img_urls", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "product_img_url")
