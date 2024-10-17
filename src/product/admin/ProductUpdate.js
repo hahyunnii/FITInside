@@ -1,348 +1,179 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// 상품 수정 및 삭제 컴포넌트
-const ProductManagement = () => {
-    const [products, setProducts] = useState([]);
-    const [editProduct, setEditProduct] = useState(null);
-    const [formData, setFormData] = useState({
-        isDeleted: false,
+const ProductUpdate = () => {
+    const { id } = useParams(); // URL에서 상품 ID를 가져옴
+    const navigate = useNavigate();
+
+    // 상품 정보 상태
+    const [product, setProduct] = useState({
         categoryId: '',
         productName: '',
         price: '',
         info: '',
         stock: '',
         manufacturer: '',
-        productImgUrls: [], // 기존 이미지 URL 배열
+        productImgUrls: [],
     });
-    const [selectedImages, setSelectedImages] = useState([]); // 새로 업로드할 이미지 파일들 저장
+    const [newImages, setNewImages] = useState([]); // 새로운 이미지 파일
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true); // 로딩 상태
 
-    // 상품 목록 가져오기
+    // 상품 정보 불러오기
     useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/api/products?page=0&size=9');
-            const data = await response.json();
-            console.log('받아온 데이터:', data); // 데이터 구조 확인
-
-            // 페이지네이션된 데이터의 content 배열만 사용
-            if (data && Array.isArray(data.content)) {
-                setProducts(data.content); // 상품 목록 저장
-            } else {
-                console.error('받아온 데이터가 올바른 형식이 아닙니다:', data);
-                setProducts([]); // 데이터가 비정상인 경우 빈 배열 설정
+        const fetchProduct = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/products/${id}`);
+                // console.log('불러온 상품 데이터:', response.data); // 데이터를 콘솔에 출력
+                setProduct(response.data); // 기존 상품 정보 설정
+                setLoading(false);
+            } catch (err) {
+                console.error('상품 정보를 불러오는 중 오류 발생:', err);
+                setError('상품 정보를 불러오는 중 오류가 발생했습니다.');
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('상품 목록을 불러오는 중 오류 발생:', error);
-            setProducts([]); // 오류 발생 시 빈 배열로 설정
-        }
-    };
+        };
+        fetchProduct();
+    }, [id]);
 
-
-//////////////////////////////////////////////////
-
-    // 상품 삭제
-    const handleDeleteClick = async (productId) => {
-        // 삭제 확인 경고문 표시
-        const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
-
-        if (!confirmDelete) {
-            // 사용자가 삭제를 취소한 경우
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, { method: 'DELETE' });
-            if (response.ok) {
-                // 상품 목록에서 해당 상품을 바로 제거
-                setProducts((prevProducts) =>
-                    prevProducts.filter((product) => product.id !== productId)
-                );
-            } else {
-                console.error('상품 삭제 실패');
-            }
-        } catch (error) {
-            console.error('상품 삭제 중 오류 발생:', error);
-        }
-    };
-
-//////////////////////////////////////////////////
-
-    // 수정할 상품 선택
-    const handleEditClick = (product) => {
-        setEditProduct(product);
-        setFormData({
-            isDeleted: product.isDeleted,
-            categoryId: product.categoryId,
-            productName: product.productName,
-            price: product.price,
-            info: product.info || '',
-            stock: product.stock,
-            manufacturer: product.manufacturer || '',
-            productImgUrls: product.productImgUrls, // 기존 이미지 URLs
-        });
-        setSelectedImages([]); // 새 이미지 초기화
-    };
-
-//////////////////////////////////////////////////
-
-    // 상품 수정 폼 제출
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        const data = new FormData();
-
-        // 텍스트 데이터 추가
-        data.append('isDeleted', formData.isDeleted);
-        data.append('categoryId', formData.categoryId);
-        data.append('productName', formData.productName);
-        data.append('price', formData.price);
-        data.append('info', formData.info);
-        data.append('stock', formData.stock);
-        data.append('manufacturer', formData.manufacturer);
-
-        // 기존 이미지 URLs 추가
-        formData.productImgUrls.forEach((url) => {
-            data.append('existingProductImgUrls', url);
-        });
-
-        // 새로 업로드할 이미지 파일 추가
-        selectedImages.forEach((image) => {
-            data.append('newProductImgUrls', image);
-        });
-
-        try {
-            const response = await fetch(`http://localhost:8080/api/admin/products/${editProduct.id}`, {
-                method: 'PUT',
-                body: data, // FormData 사용
-            });
-
-            if (response.ok) {
-                fetchProducts();
-                setEditProduct(null); // 수정 완료 후 초기화
-            } else {
-                console.error('상품 수정 실패');
-            }
-        } catch (error) {
-            console.error('상품 수정 중 오류 발생:', error);
-        }
-    };
-
-//////////////////////////////////////////////////
-
-    // 입력 값 변경 핸들러
+    // 입력 값 변경 처리
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setProduct((prevProduct) => ({
+            ...prevProduct,
+            [name]: value,
+        }));
     };
 
-//////////////////////////////////////////////////
-
-    // 이미지 선택 핸들러
-    const handleImageChange = (e) => {
-        setSelectedImages([...e.target.files]); // 새로 선택한 이미지 파일들 저장
+    // 이미지 파일 선택 처리
+    const handleFileChange = (e) => {
+        setNewImages(e.target.files);
     };
 
-    // 기존 이미지 삭제 핸들러
-    const handleDeleteExistingImage = (imageUrl) => {
-        setFormData({
-            ...formData,
-            productImgUrls: formData.productImgUrls.filter((url) => url !== imageUrl), // 삭제한 이미지 URL 제거
-        });
+    // 상품 수정 요청 처리
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // 상품 수정 데이터 준비
+        const formData = new FormData();
+        formData.append('categoryId', product.categoryId);
+        formData.append('productName', product.productName);
+        formData.append('price', product.price);
+        formData.append('info', product.info);
+        formData.append('stock', product.stock);
+        formData.append('manufacturer', product.manufacturer);
+
+        // 새로운 이미지 파일 추가
+        for (let i = 0; i < newImages.length; i++) {
+            formData.append('productImgUrls', newImages[i]);
+        }
+
+        try {
+            await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            navigate('/admin/products'); // 수정 완료 후 상품 목록 페이지로 이동
+        } catch (err) {
+            console.error('상품 수정 중 오류 발생:', err);
+            setError('상품 수정에 실패했습니다.');
+        }
     };
 
-//////////////////////////////////////////////////
+    if (loading) {
+        return <p>로딩 중...</p>;
+    }
 
+    if (error) {
+        return <p className="text-danger">{error}</p>;
+    }
 
     return (
         <div className="container mt-5">
-            <h1>상품 관리</h1>
-
-            {/* 상품 목록 테이블 */}
-            <table className="table table-bordered">
-                <thead>
-                <tr>
-                    <th>수정</th>
-                    <th>삭제</th>
-                    <th>삭제 여부</th>
-                    <th>상품 아이디</th>
-                    <th>카테고리 아이디</th>
-                    <th>상품 이름</th>
-                    <th>가격</th>
-                    <th>상품 정보</th>
-                    <th>상품 재고</th>
-                    <th>제조사</th>
-                    <th>상품 이미지</th>
-                    <th>생성일</th>
-                    <th>수정일</th>
-                </tr>
-                </thead>
-                <tbody>
-                {products.map((product) => (
-                    <tr key={product.id}>
-                        <td>
-                            <button className="btn btn-primary" onClick={() => handleEditClick(product)}>
-                                ✏️
-                            </button>
-                        </td>
-                        <td>
-                            <button className="btn btn-danger" onClick={() => handleDeleteClick(product.id)}>
-                                ❌
-                            </button>
-                        </td>
-                        <td>{product.isDeleted ? '삭제됨' : '정상'}</td>
-                        <td>{product.id}</td>
-                        <td>{product.categoryId}</td>
-                        <td>{product.productName}</td>
-                        <td>{product.price}</td>
-                        <td>{product.info || '없음'}</td>
-                        <td>{product.stock}</td>
-                        <td>{product.manufacturer}</td>
-                        <td>
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                {product.productImgUrls.map((image, index) => (
-                                    <div key={index} style={{ width: '100px', margin: '5px' }}>
-                                        <img
-                                            className="img-fluid"
-                                            src={image}
-                                            alt={`Product image ${index + 1}`}
-                                            style={{ objectFit: 'cover', width: '100%', height: '100px' }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </td>
-                        <td>{product.createdAt}</td>
-                        <td>{product.updatedAt || '없음'}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-            {/* 수정 폼 */}
-            {editProduct && (
-                <div>
-                    <h2>{editProduct.productName} 수정</h2>
-                    <form onSubmit={handleFormSubmit} encType="multipart/form-data">
-                        <div className="form-group">
-                            <label>삭제 여부</label>
-                            <select
-                                name="isDeleted"
-                                value={formData.isDeleted}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            >
-                                <option value={false}>정상</option>
-                                <option value={true}>삭제됨</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label>카테고리 아이디</label>
-                            <input
-                                type="number"
-                                name="categoryId"
-                                value={formData.categoryId}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>상품명</label>
-                            <input
-                                type="text"
-                                name="productName"
-                                value={formData.productName}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>가격</label>
-                            <input
-                                type="number"
-                                name="price"
-                                value={formData.price}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>상품 정보</label>
-                            <textarea
-                                name="info"
-                                value={formData.info}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>상품 재고</label>
-                            <input
-                                type="number"
-                                name="stock"
-                                value={formData.stock}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>제조사</label>
-                            <input
-                                type="text"
-                                name="manufacturer"
-                                value={formData.manufacturer}
-                                onChange={handleInputChange}
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>기존 상품 이미지</label>
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                {formData.productImgUrls.map((url, index) => (
-                                    <div key={index} style={{ width: '100px', margin: '5px', position: 'relative' }}>
-                                        <img
-                                            className="img-fluid"
-                                            src={url}
-                                            alt={`Existing image ${index + 1}`}
-                                            style={{ objectFit: 'cover', width: '100%', height: '100px' }}
-                                        />
-                                        <button
-                                            type="button"
-                                            style={{
-                                                position: 'absolute',
-                                                top: '0',
-                                                right: '0',
-                                                backgroundColor: 'red',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '2px 5px',
-                                            }}
-                                            onClick={() => handleDeleteExistingImage(url)}
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label>새 상품 이미지 업로드</label>
-                            <input
-                                type="file"
-                                name="productImgUrls"
-                                onChange={handleImageChange}
-                                className="form-control"
-                                multiple
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-success">저장</button>
-                        <button onClick={() => setEditProduct(null)} className="btn btn-secondary">취소</button>
-                    </form>
+            <h2>상품 수정</h2>
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+                <div className="form-group">
+                    <label>카테고리 ID</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        name="categoryId"
+                        value={product.categoryId}
+                        onChange={handleInputChange}
+                        required
+                    />
                 </div>
-            )}
+                <div className="form-group">
+                    <label>상품명</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="productName"
+                        value={product.productName}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>가격</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        name="price"
+                        value={product.price}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>상품 설명</label>
+                    <textarea
+                        className="form-control"
+                        name="info"
+                        value={product.info}
+                        onChange={handleInputChange}
+                        required
+                    ></textarea>
+                </div>
+                <div className="form-group">
+                    <label>재고</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        name="stock"
+                        value={product.stock}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>제조사</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="manufacturer"
+                        value={product.manufacturer}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>이미지 추가</label>
+                    <input
+                        type="file"
+                        className="form-control"
+                        name="productImgUrls"
+                        onChange={handleFileChange}
+                        multiple
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary mt-3">
+                    수정하기
+                </button>
+            </form>
         </div>
     );
 };
 
-export default ProductManagement;
+export default ProductUpdate;
