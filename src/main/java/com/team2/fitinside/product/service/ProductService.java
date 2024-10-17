@@ -30,6 +30,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
+    private final String DEFAULT_IMAGE_URL = "https://dummyimage.com/100x100";
 
     // 페이지네이션, 정렬, 검색을 적용한 상품 전체 목록 조회
     public Page<ProductResponseDto> getAllProducts(int page, int size, String sortField, String sortDir, String keyword) {
@@ -73,6 +74,22 @@ public class ProductService {
     }
 
     // 상품 등록 (이미지 업로드 포함)
+//    @Transactional
+//    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
+//        Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
+//
+//        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//        product.setCategory(category);
+//
+//        // S3 이미지 업로드 처리
+//        List<String> imageUrls = uploadImages(images);
+//        product.setProductImgUrls(imageUrls);
+//
+//        Product savedProduct = productRepository.save(product);
+//        return ProductMapper.INSTANCE.toDto(savedProduct);
+//    }
+
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
@@ -81,15 +98,43 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
-        // S3 이미지 업로드 처리
+        // S3 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
         List<String> imageUrls = uploadImages(images);
-        product.setProductImgUrls(imageUrls);
 
+        // 이미지가 없을 경우 기본 더미 이미지 추가
+        if (imageUrls.isEmpty()) {
+            imageUrls.add(DEFAULT_IMAGE_URL);
+        }
+
+        product.setProductImgUrls(imageUrls);
         Product savedProduct = productRepository.save(product);
+
         return ProductMapper.INSTANCE.toDto(savedProduct);
     }
 
+
     // 상품 수정 (이미지 업로드 포함)
+//    @Transactional
+//    public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto, List<MultipartFile> images) {
+//        Product existingProduct = productRepository.findById(id)
+//                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+//
+//        Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
+//
+//        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//        updatedProduct.setCategory(category);
+//
+//        // S3 이미지 업데이트 처리
+//        if (images != null && !images.isEmpty()) {
+//            List<String> imageUrls = uploadImages(images);
+//            updatedProduct.setProductImgUrls(imageUrls);
+//        }
+//
+//        productRepository.save(updatedProduct);
+//        return ProductMapper.INSTANCE.toDto(updatedProduct);
+//    }
+
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto, List<MultipartFile> images) {
         Product existingProduct = productRepository.findById(id)
@@ -102,22 +147,42 @@ public class ProductService {
         updatedProduct.setCategory(category);
 
         // S3 이미지 업데이트 처리
-        if (images != null && !images.isEmpty()) {
-            List<String> imageUrls = uploadImages(images);
-            updatedProduct.setProductImgUrls(imageUrls);
+        List<String> imageUrls = uploadImages(images);
+
+        // 이미지가 없을 경우 기본 더미 이미지 추가
+        if (imageUrls.isEmpty()) {
+            imageUrls.add(DEFAULT_IMAGE_URL);
         }
 
+        updatedProduct.setProductImgUrls(imageUrls);
         productRepository.save(updatedProduct);
+
         return ProductMapper.INSTANCE.toDto(updatedProduct);
     }
 
+
+
     // 이미지 업로드 처리 메서드 (S3 업로드)
+//    private List<String> uploadImages(List<MultipartFile> images) {
+//        List<String> imageUrls = new ArrayList<>();
+//        for (MultipartFile image : images) {
+//            String imageUrl = s3ImageService.upload(image);
+//            imageUrls.add(imageUrl);
+//        }
+//        return imageUrls;
+//    }
+
     private List<String> uploadImages(List<MultipartFile> images) {
         List<String> imageUrls = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String imageUrl = s3ImageService.upload(image);
-            imageUrls.add(imageUrl);
+
+        // images가 null이 아니고 빈 값이 아닌 경우에만 처리
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile image : images) {
+                String imageUrl = s3ImageService.upload(image); // S3에 업로드하고 URL 받기
+                imageUrls.add(imageUrl);
+            }
         }
+
         return imageUrls;
     }
 
