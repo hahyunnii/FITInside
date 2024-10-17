@@ -1,6 +1,5 @@
 package com.team2.fitinside.order.controller;
 
-import com.team2.fitinside.cart.dto.CartProductResponseWrapperDto;
 import com.team2.fitinside.order.dto.OrderDetailResponseDto;
 import com.team2.fitinside.order.dto.OrderRequestDto;
 import com.team2.fitinside.order.dto.OrderUserResponseDto;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,17 +38,13 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    @Operation(summary = "로그인한 회원의 전체 주문 조회", description = "전체 주문 조회")
-    @ApiResponse(responseCode = "200", description = "전체 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderUserResponseDto.class))))
-    public ResponseEntity<?> findAllOrders(@RequestParam(required = false, value = "page", defaultValue = "1") int page) {
-        OrderUserResponseWrapperDto response = orderService.findAllOrders(page);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+    @Operation(summary = "로그인한 회원의 전체 주문 조회(+상품 이름 검색)", description = "전체 주문 조회(+상품 이름 검색)")
+    @ApiResponse(responseCode = "200", description = "전체(검색) 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderUserResponseDto.class))))
+    public ResponseEntity<?> findAllOrders(
+            @RequestParam(required = false, value = "page", defaultValue = "1") int page,
+            @RequestParam(required = false, value = "productName") String productName) {
 
-    // 주문 생성 페이지에서 보여줘야할 정보
-    @GetMapping("/order")
-    public ResponseEntity<?> findOrderCreateData(){
-        CartProductResponseWrapperDto response = orderService.findOrderCreateData();
+        OrderUserResponseWrapperDto response = orderService.findAllOrders(page, productName);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -57,7 +53,7 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "주문 생성 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderDetailResponseDto.class)))
     @ApiResponse(responseCode = "400", description = "품절된 상품", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "비어있는 장바구니", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDto request) {
+    public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequestDto request) {
         OrderDetailResponseDto response = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -69,7 +65,7 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
     public ResponseEntity<?> updateOrder(
             @PathVariable("order_id") Long orderId,
-            @RequestBody OrderRequestDto request) {
+            @Valid @RequestBody OrderRequestDto request) {
 
         OrderDetailResponseDto response = orderService.updateOrder(orderId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);

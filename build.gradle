@@ -32,11 +32,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	compileOnly 'org.projectlombok:lombok'
+
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
-	compileOnly 'org.projectlombok:lombok'
 
 	// lombok, mapstruct 충돌 방지
 	implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
@@ -60,6 +61,9 @@ dependencies {
 
 	// AWS S3 SDK
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// mail 설정
+	implementation "org.springframework.boot:spring-boot-starter-mail"
 }
 
 tasks.named('test') {

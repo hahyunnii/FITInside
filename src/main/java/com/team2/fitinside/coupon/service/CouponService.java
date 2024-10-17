@@ -38,6 +38,7 @@ public class CouponService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final SecurityUtil securityUtil;
 
     // 보유 쿠폰 모두 조회
     public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
@@ -89,6 +90,9 @@ public class CouponService {
 
             // 상품 가격이 최소 주문 금액보다 적은 경우
             if(couponMember.getCoupon().getMinValue() > product.getPrice()) continue;
+
+            // 상품을 이미 사용한 경우
+            if(couponMember.isUsed()) continue;
 
             AvailableCouponResponseDto availableCouponResponseDto = CouponMapper.INSTANCE.toAvailableCouponResponseDto(couponMember.getCoupon());
             availableCouponResponseDto.setCouponMemberId(couponMember.getId());
@@ -180,7 +184,7 @@ public class CouponService {
 
     private Long getAuthenticatedMemberId()  {
         try {
-            return SecurityUtil.getCurrentMemberId();
+            return securityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }

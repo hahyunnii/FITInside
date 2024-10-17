@@ -1,9 +1,7 @@
 package com.team2.fitinside.order.service;
 
-import com.team2.fitinside.cart.dto.CartProductResponseWrapperDto;
 import com.team2.fitinside.cart.entity.Cart;
 import com.team2.fitinside.cart.repository.CartRepository;
-import com.team2.fitinside.cart.service.CartService;
 import com.team2.fitinside.config.SecurityUtil;
 import com.team2.fitinside.coupon.entity.CouponMember;
 import com.team2.fitinside.coupon.repository.CouponMemberRepository;
@@ -38,14 +36,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
-    private final CartService cartService;
     private final CouponService couponService;
     private final CouponMemberRepository couponMemberRepository;
+    private final SecurityUtil securityUtil;
 
     // 주문 조회 (회원)
     public OrderDetailResponseDto findOrder(Long orderId) {
 
-        Long loginMemberId = SecurityUtil.getCurrentMemberId();
+        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!findOrder.getMember().getId().equals(loginMemberId)) {
@@ -56,30 +54,24 @@ public class OrderService {
     }
 
     // 전체 주문 조회 (회원)
-    public OrderUserResponseWrapperDto findAllOrders(int page) {
+    public OrderUserResponseWrapperDto findAllOrders(int page, String productName) {
 
-        Long loginMemberId = SecurityUtil.getCurrentMemberId();
+        Long loginMemberId = securityUtil.getCurrentMemberId();
 
         Pageable pageable = PageRequest.of(page - 1, 5, Sort.by("createdAt").descending());
-        Page<Order> ordersPage = orderRepository.findByMemberIdAndIsDeletedFalse(loginMemberId, pageable);
+        Page<Order> ordersPage = orderRepository.findByMemberIdAndProductName(loginMemberId, productName, pageable);
 
         List<OrderUserResponseDto> orders = orderMapper.toOrderUserResponseDtoList(ordersPage.getContent());
 
-
         return new OrderUserResponseWrapperDto(orders, ordersPage.getTotalPages());
 
-    }
-
-    // 장바구니 정보 조회
-    public CartProductResponseWrapperDto findOrderCreateData() {
-        return cartService.getCartProducts();
     }
 
     // 주문 생성
     @Transactional
     public OrderDetailResponseDto createOrder(OrderRequestDto request) {
 
-        Long loginMemberId = SecurityUtil.getCurrentMemberId();
+        Long loginMemberId = securityUtil.getCurrentMemberId();
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(USER_NOT_AUTHORIZED));
 
@@ -92,7 +84,9 @@ public class OrderService {
         Order order = Order.builder()
                 .member(findMember)
                 .deliveryFee(request.getDeliveryFee())
+                .postalCode(request.getPostalCode())
                 .deliveryAddress(request.getDeliveryAddress())
+                .detailedAddress(request.getDetailedAddress())
                 .deliveryReceiver(request.getDeliveryReceiver())
                 .deliveryPhone(request.getDeliveryPhone())
                 .build();
@@ -127,7 +121,7 @@ public class OrderService {
                     .build();
 
             // 쿠폰 사용
-            if(orderCartRequestDto.getCouponMemberId() != null){
+            if (orderCartRequestDto.getCouponMemberId() != null) {
                 couponService.redeemCoupon(orderCartRequestDto.getCouponMemberId());
             }
 
@@ -145,7 +139,7 @@ public class OrderService {
     @Transactional
     public OrderDetailResponseDto updateOrder(Long orderId, OrderRequestDto request) {
 
-        Long loginMemberId = SecurityUtil.getCurrentMemberId();
+        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!order.getMember().getId().equals(loginMemberId)) {
@@ -165,7 +159,7 @@ public class OrderService {
     @Transactional
     public void cancelOrder(Long orderId) {
 
-        Long loginMemberId = SecurityUtil.getCurrentMemberId();
+        Long loginMemberId = securityUtil.getCurrentMemberId();
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         if (!findOrder.getMember().getId().equals(loginMemberId)) {
