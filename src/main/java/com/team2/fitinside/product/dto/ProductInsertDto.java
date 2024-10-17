@@ -21,13 +21,12 @@ public class ProductInsertDto {
     @NotNull(message = "가격은 필수 입력 값입니다.")
     private Integer price;
 
-    @NotBlank(message = "상품 설명은 필수 입력 값입니다.")
+//    @NotBlank(message = "상품 설명은 필수 입력 값입니다.")
     private String info;
 
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stock;
 
-    @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 
     @NotNull(message = "이미지 URL 목록은 필수 입력 값입니다.")
