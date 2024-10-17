@@ -464,10 +464,10 @@ import './categoryCreate.css';
 const CategoryUpdate = () => {
     const [name, setName] = useState('');
     const [displayOrder, setDisplayOrder] = useState('');
+    const [mainDisplayOrder, setMainDisplayOrder] = useState(''); // 메인 화면 표시 순서 추가
     const [parentId, setParentId] = useState(null);
     const [parentCategories, setParentCategories] = useState([]);
     const [image, setImage] = useState(null);
-    const [existingImageUrl, setExistingImageUrl] = useState(''); // 기존 이미지 URL 상태
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -475,7 +475,6 @@ const CategoryUpdate = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // 부모 카테고리 목록 가져오기
         axios.get('http://localhost:8080/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -492,7 +491,6 @@ const CategoryUpdate = () => {
                 }
             });
 
-        // 수정할 카테고리 데이터 가져오기
         axios.get(`http://localhost:8080/api/categories/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -502,8 +500,8 @@ const CategoryUpdate = () => {
                 const category = response.data;
                 setName(category.name);
                 setDisplayOrder(category.displayOrder);
+                setMainDisplayOrder(category.mainDisplayOrder || ''); // 메인 표시 순서 초기값 설정
                 setParentId(category.parentId || null);
-                setExistingImageUrl(category.imageUrl); // 기존 이미지 URL 설정
                 setLoading(false);
             })
             .catch(error => {
@@ -526,6 +524,10 @@ const CategoryUpdate = () => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+        // mainDisplayOrder가 빈칸이 아닐 때만 추가
+        if (mainDisplayOrder !== '') {
+            formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+        }
         if (parentId) formData.append('parentId', parentId);
         if (image) formData.append('imageFile', image);
 
@@ -539,7 +541,6 @@ const CategoryUpdate = () => {
                 console.log('Category updated:', response.data);
                 alert('카테고리가 성공적으로 수정되었습니다.');
                 navigate('/admin/categories');
-                window.location.reload(); // 페이지 새로고침 추가
             })
             .catch(error => {
                 console.error('Error updating category:', error);
@@ -580,6 +581,14 @@ const CategoryUpdate = () => {
                     />
                 </div>
                 <div className="form-group">
+                    <label>메인 카테고리 정렬 순서:</label>
+                    <input
+                        type="number"
+                        value={mainDisplayOrder}
+                        onChange={(e) => setMainDisplayOrder(e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
                     <label>부모 카테고리 선택:</label>
                     <select
                         value={parentId || ''}
@@ -594,12 +603,7 @@ const CategoryUpdate = () => {
                     </select>
                 </div>
                 <div className="form-group">
-                    <label>기존 카테고리 이미지:</label>
-                    {existingImageUrl && (
-                        <div className="existing-image-preview">
-                            <img src={existingImageUrl} alt="Existing Category" style={{ maxWidth: '100px', marginBottom: '10px' }} />
-                        </div>
-                    )}
+                    <label>카테고리 이미지:</label>
                     <input
                         type="file"
                         accept="image/*"
@@ -613,4 +617,6 @@ const CategoryUpdate = () => {
 };
 
 export default CategoryUpdate;
+
+
 
