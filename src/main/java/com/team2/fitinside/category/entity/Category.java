@@ -56,7 +56,6 @@ public class Category {
         this.mainDisplayOrder = mainDisplayOrder; // null일 경우에도 업데이트되도록 설정
     }
 
-
     // 하위 카테고리를 추가하는 메서드
     public void addChildCategory(Category child) {
         child.parent = this;
