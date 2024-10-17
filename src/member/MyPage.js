@@ -76,6 +76,10 @@ const MyPage = () => {
         }
     };
 
+    const handleOrderManagementClick = () => {
+        navigate('/orders'); // 주문 목록 페이지로 이동
+    };
+
 
     const handleSavePhone = async () => {
         try {
@@ -214,6 +218,15 @@ const MyPage = () => {
                         <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
                                 onClick={handleCouponManagementClick}>
                             쿠폰 관리하기
+                        </button>
+                    </div>
+
+                    {/* 내 주문 확인 */}
+                    <div className="mb-3" style={{border: '1px solid #ddd', borderRadius: '8px', padding: '10px'}}>
+                        <h5>주문</h5>
+                        <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
+                                onClick={handleOrderManagementClick}>
+                            주문 확인하기
                         </button>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './coupon.css';
 import CouponSearchModal from './CouponSearchModal';
 import { useNavigate } from 'react-router-dom';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const CouponList = () => {
     const [coupons, setCoupons] = useState([]);
@@ -45,7 +46,12 @@ const CouponList = () => {
             console.log(data.coupons);
             setTotalPages(data.totalPages); // 총 페이지 수 설정
         } catch (error) {
-            console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            }
         }
     };
 
@@ -65,7 +71,12 @@ const CouponList = () => {
             const data = await response.json();
             setCategories(data);
         } catch (error) {
-            console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            }
         }
     };
 

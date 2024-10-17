@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
 
 const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => {
     const [newCoupon, setNewCoupon] = useState({
@@ -60,7 +61,12 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
 
             onRequestClose(); // 모달 닫기
         } catch (error) {
-            alert('유효하지 않은 입력입니다!');
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                alert('유효하지 않은 입력입니다!');
+            }
         }
     };
 

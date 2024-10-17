@@ -7,6 +7,7 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
     const [deliveryAddress, setDeliveryAddress] = useState(initialValues.deliveryAddress || '');
     const [detailedAddress, setDetailedAddress] = useState(initialValues.detailedAddress || '');
     const [deliveryReceiver, setDeliveryReceiver] = useState(initialValues.deliveryReceiver || '');
+    const [deliveryMemo, setDeliveryMemo] = useState(initialValues.deliveryMemo || '');
     const [phoneFirst, setPhoneFirst] = useState('010');
     const [phoneMiddle, setPhoneMiddle] = useState('');
     const [phoneLast, setPhoneLast] = useState('');
@@ -18,6 +19,7 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
             setDeliveryAddress(initialValues.deliveryAddress || '');
             setDetailedAddress(initialValues.detailedAddress || '');
             setDeliveryReceiver(initialValues.deliveryReceiver || '');
+            setDeliveryMemo(initialValues.deliveryMemo || '');
 
             // 전화번호를 '-'로 분리하여 각 필드에 할당
             if (initialValues.deliveryPhone) {
@@ -39,10 +41,11 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
                 postalCode,
                 deliveryAddress,
                 detailedAddress,
+                deliveryMemo,
                 deliveryReceiver,
                 deliveryPhone
             });
-            return { postalCode, deliveryAddress, detailedAddress, deliveryReceiver, deliveryPhone };
+            return { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone };
         }
     }));
 
@@ -123,7 +126,16 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
                                 type="text"
                                 value={detailedAddress}
                                 onChange={(e) => setDetailedAddress(e.target.value)}
-                                required
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>배송 메모</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={deliveryMemo}
+                                onChange={(e) => setDeliveryMemo(e.target.value)}
                             />
                         </td>
                     </tr>

@@ -23,42 +23,25 @@ const ProductManagement = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/products');
+            const response = await fetch('http://localhost:8080/api/products?page=0&size=9');
             const data = await response.json();
-            setProducts(data);
+            console.log('받아온 데이터:', data); // 데이터 구조 확인
+
+            // 페이지네이션된 데이터의 content 배열만 사용
+            if (data && Array.isArray(data.content)) {
+                setProducts(data.content); // 상품 목록 저장
+            } else {
+                console.error('받아온 데이터가 올바른 형식이 아닙니다:', data);
+                setProducts([]); // 데이터가 비정상인 경우 빈 배열 설정
+            }
         } catch (error) {
             console.error('상품 목록을 불러오는 중 오류 발생:', error);
+            setProducts([]); // 오류 발생 시 빈 배열로 설정
         }
     };
 
-    // 수정할 상품 선택
-    const handleEditClick = (product) => {
-        setEditProduct(product);
-        setFormData({
-            isDeleted: product.isDeleted,
-            categoryId: product.categoryId,
-            productName: product.productName,
-            price: product.price,
-            info: product.info || '',
-            stock: product.stock,
-            manufacturer: product.manufacturer || '',
-            productImgUrls: product.productImgUrls, // 기존 이미지 URLs
-        });
-        setSelectedImages([]); // 새 이미지 초기화
-    };
 
-    // 이미지 선택 핸들러
-    const handleImageChange = (e) => {
-        setSelectedImages([...e.target.files]); // 새로 선택한 이미지 파일들 저장
-    };
-
-    // 기존 이미지 삭제 핸들러
-    const handleDeleteExistingImage = (imageUrl) => {
-        setFormData({
-            ...formData,
-            productImgUrls: formData.productImgUrls.filter((url) => url !== imageUrl), // 삭제한 이미지 URL 제거
-        });
-    };
+//////////////////////////////////////////////////
 
     // 상품 삭제
     const handleDeleteClick = async (productId) => {
@@ -85,9 +68,25 @@ const ProductManagement = () => {
         }
     };
 
+//////////////////////////////////////////////////
 
+    // 수정할 상품 선택
+    const handleEditClick = (product) => {
+        setEditProduct(product);
+        setFormData({
+            isDeleted: product.isDeleted,
+            categoryId: product.categoryId,
+            productName: product.productName,
+            price: product.price,
+            info: product.info || '',
+            stock: product.stock,
+            manufacturer: product.manufacturer || '',
+            productImgUrls: product.productImgUrls, // 기존 이미지 URLs
+        });
+        setSelectedImages([]); // 새 이미지 초기화
+    };
 
-
+//////////////////////////////////////////////////
 
     // 상품 수정 폼 제출
     const handleFormSubmit = async (e) => {
@@ -130,11 +129,31 @@ const ProductManagement = () => {
         }
     };
 
+//////////////////////////////////////////////////
+
     // 입력 값 변경 핸들러
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
+//////////////////////////////////////////////////
+
+    // 이미지 선택 핸들러
+    const handleImageChange = (e) => {
+        setSelectedImages([...e.target.files]); // 새로 선택한 이미지 파일들 저장
+    };
+
+    // 기존 이미지 삭제 핸들러
+    const handleDeleteExistingImage = (imageUrl) => {
+        setFormData({
+            ...formData,
+            productImgUrls: formData.productImgUrls.filter((url) => url !== imageUrl), // 삭제한 이미지 URL 제거
+        });
+    };
+
+//////////////////////////////////////////////////
+
 
     return (
         <div className="container mt-5">
