@@ -31,3 +31,45 @@
 .orderList .btn-primary:hover {
     background-color: #555;
 }
+
+.order-card .card-body {
+    display: flex;
+    align-items: flex-start; /* 이미지와 텍스트를 위쪽으로 정렬 */
+}
+
+.order-card .order-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover; /* 이미지 비율 유지하며 잘리도록 */
+    margin-right: 20px; /* 이미지와 텍스트 사이 간격 */
+}
+
+.order-card .order-info {
+    flex: 1; /* 나머지 정보가 이미지 옆에 위치하도록 */
+}
+
+.status-circle {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px; /* 텍스트와의 간격 */
+    margin-left: 8px;
+    vertical-align: middle; /* 텍스트와 가운데 정렬 */
+}
+
+.status-ordered {
+    background-color: #007bff; /* 파란색 - 주문 완료 */
+}
+
+.status-shipping {
+    background-color: #28a745; /* 초록색 - 배송 중 */
+}
+
+.status-completed {
+    background-color: #000; /* 기본 색상 - 배송 완료 */
+}
+
+.status-cancelled {
+    background-color: #dc3545; /* 빨간색 - 주문 취소 */
+}

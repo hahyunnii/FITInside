@@ -41,6 +41,7 @@ const OrderDetail = () => {
                     postalCode: response.data.postalCode,
                     deliveryAddress: response.data.deliveryAddress,
                     detailedAddress: response.data.detailedAddress,
+                    deliveryMemo: response.data.deliveryMemo,
                     deliveryReceiver: response.data.deliveryReceiver,
                     deliveryPhone: response.data.deliveryPhone,
                 });
@@ -59,6 +60,7 @@ const OrderDetail = () => {
             postalCode: orderDetail.postalCode,
             deliveryAddress: orderDetail.deliveryAddress,
             detailedAddress: orderDetail.detailedAddress,
+            deliveryMemo: orderDetail.deliveryMemo,
             deliveryReceiver: orderDetail.deliveryReceiver,
             deliveryPhone: orderDetail.deliveryPhone,
         });
@@ -83,6 +85,7 @@ const OrderDetail = () => {
                 postalCode: response.data.postalCode,
                 deliveryAddress: response.data.deliveryAddress,
                 detailedAddress: response.data.detailedAddress,
+                deliveryMemo : response.data.deliveryMemo,
                 deliveryReceiver: response.data.deliveryReceiver,
                 deliveryPhone: response.data.deliveryPhone,
             }); // 업데이트된 데이터를 deliveryData에 반영
@@ -159,7 +162,21 @@ const OrderDetail = () => {
                 <tbody>
                     {orderDetail.orderProducts && orderDetail.orderProducts.map((product, index) => (
                         <tr key={product.productId}>
-                            <td>{product.orderProductName}</td>
+                            <td>
+                                {/* 상품 이미지 및 정보 */}
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    {product.productImgUrl && (
+                                        <img
+                                            style={{ width: '100px', height: '100px', marginRight: '10px' }}
+                                            src={product.productImgUrl}
+                                            alt={product.orderProductName}
+                                        />
+                                    )}
+                                    <div>
+                                        <p>{product.orderProductName}</p>
+                                    </div>
+                                </div>
+                            </td>
                             <td>{product.count}</td>
                             <td>{(product.orderProductPrice * product.count).toLocaleString()}원</td>
                             <td>{product.discountedPrice !== product.orderProductPrice * product.count ? `${(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원` : '-'}</td>
@@ -234,14 +251,16 @@ const OrderDetail = () => {
             ) : (
                 <table className="delivery-info-table">
                     <tbody>
-                    <tr>
-                        <th>받으시는 분</th>
-                        <td className="receiver-info">
-                            {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
-                            <br />
-                            ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
-                        </td>
-                    </tr>
+                        <tr>
+                            <th>받으시는 분</th>
+                            <td className="receiver-info">
+                                {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
+                                <br />
+                                ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
+                                <br />
+                                배송 메모 : {orderDetail.deliveryMemo}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             )}
@@ -249,41 +268,41 @@ const OrderDetail = () => {
             <h3 className="order-section-header">결제금액</h3>
             <table className="payment-info-table">
                 <tbody>
-                <tr>
-                    <th>주문금액</th>
-                    <td>
-                        <span>
-                            {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
-                        </span>
-                        <div style={{ color: '#888', marginTop: '5px' }}>
-                            상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
-                            배송비: {orderDetail.deliveryFee.toLocaleString()}원
-                        </div>
-                    </td>
+                    <tr>
+                        <th>주문금액</th>
+                        <td>
+                            <span>
+                                {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                            </span>
+                            <div style={{ color: '#888', marginTop: '5px' }}>
+                                상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
+                                배송비: {orderDetail.deliveryFee.toLocaleString()}원
+                            </div>
+                        </td>
 
-                </tr>
-                <tr>
-                    <th>할인금액</th>
-                    <td>
-                        <span>
-                            -{(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
-                        </span>
-                        <div style={{ color: '#888', marginTop: '5px' }}>
-                            {/* 사용한 쿠폰 리스트 */}
-                            {orderDetail.orderProducts.map(product => (
-                                product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
-                                    <div key={product.productId}>
-                                        {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
-                                    </div>
-                                ) : null
-                            ))}
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>총 결제금액</th>
-                    <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
-                </tr>
+                    </tr>
+                    <tr>
+                        <th>할인금액</th>
+                        <td>
+                            <span>
+                                -{(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
+                            </span>
+                            <div style={{ color: '#888', marginTop: '5px' }}>
+                                {/* 사용한 쿠폰 리스트 */}
+                                {orderDetail.orderProducts.map(product => (
+                                    product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
+                                        <div key={product.productId}>
+                                            {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
+                                        </div>
+                                    ) : null
+                                ))}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>총 결제금액</th>
+                        <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
