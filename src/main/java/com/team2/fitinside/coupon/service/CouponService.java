@@ -132,7 +132,7 @@ public class CouponService {
     }
 
     @Transactional
-    public void enterCouponCode(String code) {
+    public Long enterCouponCode(String code) {
 
         Long loginMemberId = getAuthenticatedMemberId();
 
@@ -153,7 +153,8 @@ public class CouponService {
 
         couponMember.setCouponAndMember(foundCoupon, foundMember);
 
-        couponMemberRepository.save(couponMember);
+        CouponMember savedCouponMember = couponMemberRepository.save(couponMember);
+        return savedCouponMember.getId();
     }
 
     @Transactional

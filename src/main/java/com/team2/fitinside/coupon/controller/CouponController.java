@@ -68,14 +68,14 @@ public class CouponController {
 
     @PostMapping
     @Operation(summary = "쿠폰 다운로드", description = "쿠폰 코드를 입력하여 쿠폰 다운로드")
-    @ApiResponse(responseCode = "201", description = "쿠폰이 다운로드되었습니다!")
+    @ApiResponse(responseCode = "201", description = "쿠폰이 다운로드되었습니다! couponMemberId: ")
     @ApiResponse(responseCode = "400", description = "쿠폰 정보가 유효하지 않습니다.")
     @ApiResponse(responseCode = "404", description = "해당하는 정보의 사용자를 찾을 수 없습니다.")
     @ApiResponse(responseCode = "409", description = "쿠폰 등록 이력이 존재합니다.")
     public ResponseEntity<String> enterCouponCode(@RequestBody String code) {
 
-        couponService.enterCouponCode(code);
-        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 다운로드되었습니다!");
+        Long savedCouponMemberId = couponService.enterCouponCode(code);
+        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 다운로드되었습니다! couponMemberId: " + savedCouponMemberId);
     }
 
     @PostMapping("/{couponMemberId}")
@@ -85,7 +85,7 @@ public class CouponController {
     public ResponseEntity<String> redeemCoupon(@PathVariable("couponMemberId") Long couponMemberId) {
 
         couponService.redeemCoupon(couponMemberId);
-        return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 사용되었습니다!");
+        return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 사용되었습니다! couponMemberId: " + couponMemberId);
     }
 
     // 쿠폰을 적용한 주문 조회
