@@ -165,6 +165,16 @@ const ProductList = () => {
                     {/* Pagination */}
                     <nav aria-label="Page navigation example">
                         <ul className="pagination justify-content-center">
+                            {/* 맨앞으로 가기 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(0)}
+                                    aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </button>
+                            </li>
+
                             {/* Previous 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
                                 <button
@@ -196,6 +206,16 @@ const ProductList = () => {
                                     onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
                                     aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 맨뒤로 가기 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(totalPages - 1)}
+                                    aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
                                 </button>
                             </li>
                         </ul>
