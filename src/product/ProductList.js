@@ -8,11 +8,13 @@ const ProductList = () => {
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(0); // 페이지네이션을 위한 페이지 상태
+    const [page, setPage] = useState(0); // 현재 페이지 상태
     const [size, setSize] = useState(9); // 페이지당 아이템 수
     const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
+    const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
+    const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
 
     useEffect(() => {
         // 상품 목록을 백엔드에서 가져오는 함수
@@ -29,10 +31,12 @@ const ProductList = () => {
                     }
                 });
 
-                // 응답이 배열인지 확인하고, 배열이 아닐 경우 빈 배열로 처리
-                const productData = Array.isArray(response.data) ? response.data : response.data.content || [];
+                // 응답에서 데이터와 전체 페이지 수 추출
+                const productData = Array.isArray(response.data.content) ? response.data.content : [];
+                const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
 
                 setProducts(productData);
+                setTotalPages(totalPages);
             } catch (err) {
                 setError('상품 목록을 불러오는 데 실패했습니다.');
             } finally {
@@ -42,6 +46,21 @@ const ProductList = () => {
 
         fetchProducts();
     }, [categoryId, page, size, sortField, sortDir, keyword]);
+
+    // 페이지 클릭 핸들러
+    const handlePageClick = (pageNumber) => {
+        setPage(pageNumber);
+    };
+
+    // 중앙에 페이지 버튼이 오도록 시작 페이지와 끝 페이지 계산
+    const middleIndex = Math.floor(pagesPerGroup / 2); // 중앙 인덱스
+    let startPage = Math.max(page - middleIndex, 0);
+    let endPage = Math.min(startPage + pagesPerGroup, totalPages);
+
+    // 총 페이지 수보다 startPage와 endPage 범위가 크면 startPage를 다시 조정
+    if (endPage - startPage < pagesPerGroup) {
+        startPage = Math.max(0, endPage - pagesPerGroup);
+    }
 
     if (loading) {
         return <p>Loading...</p>;
@@ -144,19 +163,63 @@ const ProductList = () => {
                     </div>
 
                     {/* Pagination */}
-                    <div className="d-flex justify-content-center">
-                        <button
-                            className="btn btn-outline-primary"
-                            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                            disabled={page === 0}>
-                            이전
-                        </button>
-                        <button
-                            className="btn btn-outline-primary ms-2"
-                            onClick={() => setPage((prev) => prev + 1)}>
-                            다음
-                        </button>
-                    </div>
+                    <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                            {/* 맨앞으로 가기 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(0)}
+                                    aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </button>
+                            </li>
+
+                            {/* Previous 페이지 그룹 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 페이지 번호 버튼 */}
+                            {Array.from({ length: endPage - startPage }, (_, index) => {
+                                const pageNumber = startPage + index;
+                                return (
+                                    <li key={pageNumber} className={`page-item ${page === pageNumber ? 'active' : ''}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageClick(pageNumber)}>
+                                            {pageNumber + 1}
+                                        </button>
+                                    </li>
+                                );
+                            })}
+
+                            {/* Next 페이지 그룹 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 맨뒤로 가기 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(totalPages - 1)}
+                                    aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </section>
         </>
