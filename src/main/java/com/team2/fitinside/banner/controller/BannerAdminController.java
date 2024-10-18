@@ -26,16 +26,28 @@ public class BannerAdminController {
         return ResponseEntity.ok(responseDTO);
     }
 
+//    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<BannerResponseDTO> updateBanner(
+//            @PathVariable Long id,
+//            @RequestParam("title") String title,
+//            @RequestParam("displayOrder") Integer displayOrder,
+//            @RequestParam("image") MultipartFile image) {
+//
+//        BannerResponseDTO responseDTO = bannerService.updateBanner(id, title, displayOrder, image);
+//        return ResponseEntity.ok(responseDTO);
+//    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BannerResponseDTO> updateBanner(
             @PathVariable Long id,
             @RequestParam("title") String title,
             @RequestParam("displayOrder") Integer displayOrder,
-            @RequestParam("image") MultipartFile image) {
+            @RequestParam(value = "image", required = false) MultipartFile image) { // required=false로 설정
 
         BannerResponseDTO responseDTO = bannerService.updateBanner(id, title, displayOrder, image);
         return ResponseEntity.ok(responseDTO);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBanner(@PathVariable Long id) {
