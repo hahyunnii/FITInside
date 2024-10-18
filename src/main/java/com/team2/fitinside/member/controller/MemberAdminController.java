@@ -26,7 +26,7 @@ public class MemberAdminController {
     @GetMapping("/delete")
     public ResponseEntity<MemberListResponse> getDeleteMember(
             @RequestParam(required = false, value = "page", defaultValue = "1") int page) {
-        MemberListResponse memberList = memberService.getisDeleteMembers(page);
+        MemberListResponse memberList = memberService.getIsDeleteMembers(page);
 
         return ResponseEntity.ok(memberList);
     }
