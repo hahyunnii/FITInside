@@ -106,7 +106,7 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    public MemberListResponse getisDeleteMembers(int page) {
+    public MemberListResponse getIsDeleteMembers(int page) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
         Page<Member> memberList = memberRepository.findAllByIsDeleteTrue(pageRequest);

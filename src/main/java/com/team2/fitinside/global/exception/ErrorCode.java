@@ -48,6 +48,7 @@ public enum ErrorCode {
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
     DUPLICATE_COUPON(HttpStatus.CONFLICT, "쿠폰 등록 이력이 존재합니다."),
     EXCEEDED_MAX_ADDRESS_LIMIT(HttpStatus.CONFLICT, "배송지 최대 저장 개수를 초과했습니다."),
+    DUPLICATE_ADDRESS(HttpStatus.CONFLICT, "배송지가 이미 존재합니다."),
 
 
     /* 410 : GONE : 리소스가 더 이상 유효하지 않음 */

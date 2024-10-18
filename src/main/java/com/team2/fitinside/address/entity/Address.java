@@ -31,10 +31,10 @@ public class Address {
     private Member member;
 
     @Column(name = "receiver", nullable = false)
-    private String receiver;
+    private String deliveryReceiver;
 
     @Column(name = "phone", nullable = false)
-    private String phone;
+    private String deliveryPhone;
 
     @Column(name = "postal_code", nullable = false)
     private String postalCode;
@@ -46,8 +46,7 @@ public class Address {
     private String detailedAddress;
 
     @Column(name = "memo")
-    @Builder.Default
-    private String memo = "조심히 와주세요";
+    private String deliveryMemo;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -69,12 +68,12 @@ public class Address {
     }
 
     public void updateAddress(AddressRequestDto request){
-        this.receiver = request.getReceiver();
-        this.phone = request.getPhone();
+        this.deliveryReceiver = request.getDeliveryReceiver();
+        this.deliveryPhone = request.getDeliveryPhone();
         this.postalCode = request.getPostalCode();
         this.deliveryAddress = request.getDeliveryAddress();
         this.detailedAddress = request.getDetailedAddress();
-        this.memo = request.getMemo();
+        this.deliveryMemo = request.getDeliveryMemo();
     }
 
 }
