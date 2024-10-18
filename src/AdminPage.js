@@ -15,7 +15,7 @@ const AdminPage = () => {
                 <Link to='/admin/categories' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>
                     카테고리 관리
                 </Link>
-                <Link to='/admin/adverts' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>
+                <Link to='/admin/banners' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>
                     메인 화면 광고 관리
                 </Link>
                 <Link to='/admin/orders' className="btn btn-light text-dark mb-4" style={{ border: '1px solid #ced4da', width: '30%' }}>

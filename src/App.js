@@ -14,7 +14,7 @@ import { CouponAdmin, CouponList, WelcomeCouponList } from "./coupon";
 import AdminPage from "./AdminPage";
 import { CategoryAdminMain, CategoryCreate, CategoryUpdate } from "./category";
 import { ProductAdmin, ProductCreate, ProductUpdate, ProductDelete } from './product/admin';
-
+import { BannerAdminMain, BannerCreate, BannerUpdate } from "./banner";
 
 const App = () => {
     return (
@@ -49,6 +49,11 @@ const App = () => {
                         <Route path="/admin/categories" element={<CategoryAdminMain />} />
                         <Route path="/category-create" element={<CategoryCreate />} />
                         <Route path="/category-update/:id" element={<CategoryUpdate />} />
+
+                        <Route path="/admin/banners" element={<BannerAdminMain />} /> {/* 배너 관리자 화면 */}
+                        <Route path="/admin/banner/create" element={<BannerCreate />} /> {/* 배너 생성 화면 */}
+                        <Route path="/admin/banner/update/:id" element={<BannerUpdate />} /> {/* 배너 수정 화면 */}
+
 
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/products/category/:categoryId" element={<ProductList />} />
