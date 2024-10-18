@@ -12,12 +12,10 @@ public interface BannerMapper {
     BannerMapper INSTANCE = Mappers.getMapper(BannerMapper.class);
 
     // DTO -> Entity 변환
-    @Mapping(target = "targetUrl", source = "targetUrl") // URL 필드 추가
+    @Mapping(target = "isDeleted", ignore = true)  // isDeleted 필드를 무시
+    @Mapping(target = "id", ignore = true)         // id 필드를 무시
     Banner toEntity(BannerRequestDTO requestDTO);
 
     // Entity -> ResponseDTO 변환
-    @Mapping(target = "targetUrl", source = "targetUrl") // URL 필드 추가
-    BannerResponseDTO toDto(Banner banner);
+//    BannerResponseDTO toDto(Banner banner);
 }
-
-

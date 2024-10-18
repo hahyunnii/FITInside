@@ -26,7 +26,8 @@ public class Banner {
     // 광고 URL 필드 추가
     private String targetUrl;
 
-    @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
     // 배너의 정보를 업데이트하는 메서드
