@@ -14,6 +14,7 @@ import { CouponAdmin, CouponList, WelcomeCouponList } from "./coupon";
 import AdminPage from "./AdminPage";
 import { CategoryAdminMain, CategoryCreate, CategoryUpdate } from "./category";
 import { ProductAdmin, ProductCreate, ProductUpdate, ProductDelete } from './product/admin';
+import { AddressList } from "./address";
 
 
 const App = () => {
@@ -56,6 +57,8 @@ const App = () => {
                         <Route path="/admin/products/create" element={<ProductCreate />} />
                         <Route path="/admin/products/update/:id" element={<ProductUpdate />} />
                         <Route path="/admin/products/delete" element={<ProductDelete />} />
+
+                        <Route path="/addresses" element={<AddressList />} /> {/*배송지 목록 화면*/}
                     </Routes>
                 </main>
                 <Footer />

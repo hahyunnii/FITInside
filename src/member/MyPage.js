@@ -80,6 +80,10 @@ const MyPage = () => {
         navigate('/orders'); // 주문 목록 페이지로 이동
     };
 
+    const handleAddressManagementClick = () => {
+        navigate('/addresses'); // 주문 목록 페이지로 이동
+    };
+
 
     const handleSavePhone = async () => {
         try {
@@ -229,6 +233,16 @@ const MyPage = () => {
                             주문 확인하기
                         </button>
                     </div>
+
+                    {/* 내 배송지 확인 */}
+                    <div className="mb-3" style={{border: '1px solid #ddd', borderRadius: '8px', padding: '10px'}}>
+                        <h5>배송지</h5>
+                        <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
+                                onClick={handleAddressManagementClick}>
+                            배송지 관리하기
+                        </button>
+                    </div>
+
                 </div>
             ) : (
                 <p className="text-center">로딩 중...</p>
