@@ -9,10 +9,10 @@ import lombok.Setter;
 public class AddressRequestDto {
 
     @NotBlank(message = "수령인을 입력해 주세요.")
-    private String receiver;
+    private String deliveryReceiver;
 
     @NotBlank(message = "전화번호를 입력해 주세요.")
-    private String phone;
+    private String deliveryPhone;
 
     @NotBlank(message = "배송지(우편번호)를 입력해 주세요.")
     private String postalCode;
@@ -22,6 +22,6 @@ public class AddressRequestDto {
 
     private String detailedAddress;
 
-    private String memo;
+    private String deliveryMemo;
 
 }
