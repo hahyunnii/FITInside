@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
-        categoryId: '',
+        categoryName: '', // 선택된 카테고리명을 저장
         productName: '',
         price: '',
         info: '',
         manufacturer: '',
         stock: '',
-        condition: '',
         productImgUrls: []
     });
 
+    const [categories, setCategories] = useState([]); // 카테고리 목록 저장
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const navigate = useNavigate();
 
+    // 카테고리 목록을 서버에서 가져오는 useEffect
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/categories'); // 카테고리 목록을 가져오는 API 호출
+                const data = await response.json();
+
+                // parentId가 null인 항목을 제외하고 필터링
+                const filteredCategories = data.filter(category => category.parentId !== null);
+                setCategories(filteredCategories);
+            } catch (error) {
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -36,13 +53,12 @@ const ProductCreate = () => {
         e.preventDefault();
 
         const data = new FormData();
-        data.append('categoryId', formData.categoryId);
+        data.append('categoryName', formData.categoryName); // 선택된 카테고리명 추가
         data.append('productName', formData.productName);
         data.append('price', formData.price);
         data.append('info', formData.info);
         data.append('manufacturer', formData.manufacturer);
         data.append('stock', formData.stock);
-        data.append('condition', formData.condition);
 
         // 이미지를 FormData에 추가
         images.forEach((image) => {
@@ -68,17 +84,24 @@ const ProductCreate = () => {
         <div className="container mt-5">
             <h1 className="display-4 mb-4">상품 등록</h1>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
+                {/* 카테고리 선택 */}
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">카테고리 ID</label>
+                    <label className="col-sm-2 col-form-label">카테고리 선택</label>
                     <div className="col-sm-3">
-                        <input
-                            type="text"
-                            name="categoryId"
-                            value={formData.categoryId}
+                        <select
+                            name="categoryName"
+                            value={formData.categoryName}
                             onChange={handleChange}
                             className="form-control"
                             required
-                        />
+                        >
+                            <option value="">카테고리 선택</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.name}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
                 <div className="form-group row">
