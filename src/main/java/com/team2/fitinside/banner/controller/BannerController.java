@@ -21,5 +21,12 @@ public class BannerController {
         List<BannerResponseDTO> responses = bannerService.getAllBanners();
         return ResponseEntity.ok(responses);
     }
+
+    // ID로 배너 하나를 가져오는 메서드
+    @GetMapping("/{id}")
+    public ResponseEntity<BannerResponseDTO> getBannerById(@PathVariable Long id) {
+        BannerResponseDTO response = bannerService.getBannerById(id);
+        return ResponseEntity.ok(response);
+    }
 }
 

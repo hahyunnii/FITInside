@@ -24,6 +24,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder();
 
+    Optional<Category> findByName(String name);
+
     List<Category> findByMainDisplayOrderNotNullOrderByMainDisplayOrderAsc();
 
     @Modifying

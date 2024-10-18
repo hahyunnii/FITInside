@@ -10,3 +10,4 @@ public class BannerRequestDTO {
     private String imageUrl;
     private Integer displayOrder;
 }
+
