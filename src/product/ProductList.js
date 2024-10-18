@@ -8,12 +8,14 @@ const ProductList = () => {
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(0); // 페이지네이션을 위한 페이지 상태
+    const [page, setPage] = useState(0); // 현재 페이지 상태
     const [size, setSize] = useState(9); // 페이지당 아이템 수
     const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
     const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
+    const [pageGroup, setPageGroup] = useState(0); // 현재 페이지 그룹 상태
+    const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
 
     useEffect(() => {
         // 상품 목록을 백엔드에서 가져오는 함수
@@ -46,9 +48,14 @@ const ProductList = () => {
         fetchProducts();
     }, [categoryId, page, size, sortField, sortDir, keyword]);
 
+    // 페이지 클릭 핸들러
     const handlePageClick = (pageNumber) => {
         setPage(pageNumber);
     };
+
+    // 페이지 그룹에 따른 시작 페이지와 끝 페이지 계산
+    const startPage = pageGroup * pagesPerGroup;
+    const endPage = Math.min(startPage + pagesPerGroup, totalPages);
 
     if (loading) {
         return <p>Loading...</p>;
@@ -153,33 +160,36 @@ const ProductList = () => {
                     {/* Pagination */}
                     <nav aria-label="Page navigation example">
                         <ul className="pagination justify-content-center">
-                            {/* Previous 버튼 */}
-                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                            {/* Previous 페이지 그룹 버튼 */}
+                            <li className={`page-item ${pageGroup === 0 ? 'disabled' : ''}`}>
                                 <button
                                     className="page-link"
-                                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                                    aria-label="Previous">
+                                    onClick={() => setPageGroup((prev) => Math.max(prev - 1, 0))}
+                                    aria-label="Previous Group">
                                     <span aria-hidden="true">&laquo;</span>
                                 </button>
                             </li>
 
                             {/* 페이지 번호 버튼 */}
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
-                                    <button
-                                        className="page-link"
-                                        onClick={() => handlePageClick(index)}>
-                                        {index + 1}
-                                    </button>
-                                </li>
-                            ))}
+                            {Array.from({ length: endPage - startPage }, (_, index) => {
+                                const pageNumber = startPage + index;
+                                return (
+                                    <li key={pageNumber} className={`page-item ${page === pageNumber ? 'active' : ''}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageClick(pageNumber)}>
+                                            {pageNumber + 1}
+                                        </button>
+                                    </li>
+                                );
+                            })}
 
-                            {/* Next 버튼 */}
-                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                            {/* Next 페이지 그룹 버튼 */}
+                            <li className={`page-item ${pageGroup === Math.ceil(totalPages / pagesPerGroup) - 1 ? 'disabled' : ''}`}>
                                 <button
                                     className="page-link"
-                                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
-                                    aria-label="Next">
+                                    onClick={() => setPageGroup((prev) => Math.min(prev + 1, Math.ceil(totalPages / pagesPerGroup) - 1))}
+                                    aria-label="Next Group">
                                     <span aria-hidden="true">&raquo;</span>
                                 </button>
                             </li>
