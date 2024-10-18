@@ -9,5 +9,6 @@ public class BannerRequestDTO {
     private String title;
     private String imageUrl;
     private Integer displayOrder;
+    private String targetUrl; // URL 필드 추가
 }
 
