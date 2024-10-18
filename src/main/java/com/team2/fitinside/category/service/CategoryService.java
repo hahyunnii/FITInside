@@ -151,22 +151,6 @@ public class CategoryService {
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
 
-    //================================================================
-
-    private void adjustMainDisplayOrder(Long oldOrder, Long newOrder) {
-        if (newOrder == null && oldOrder != null) {
-            categoryRepository.decrementMainDisplayOrder(oldOrder, Long.MAX_VALUE);
-        } else if (newOrder != null) {
-            if (oldOrder == null) {
-                categoryRepository.incrementMainDisplayOrder(newOrder, Long.MAX_VALUE);
-            } else if (newOrder > oldOrder) {
-                categoryRepository.decrementMainDisplayOrder(oldOrder + 1, newOrder);
-            } else {
-                categoryRepository.incrementMainDisplayOrder(newOrder, oldOrder - 1);
-            }
-        }
-    }
-
     //=================================================================
     // 카테고리 삭제
     public void deleteCategory(Long id) {
@@ -200,6 +184,22 @@ public class CategoryService {
             categoryRepository.decrementDisplayOrderForChildCategories(oldOrder + 1, newOrder, parentId);
         } else {
             categoryRepository.incrementDisplayOrderForChildCategories(newOrder, oldOrder - 1, parentId);
+        }
+    }
+
+    //================================================================
+
+    private void adjustMainDisplayOrder(Long oldOrder, Long newOrder) {
+        if (newOrder == null && oldOrder != null) {
+            categoryRepository.decrementMainDisplayOrder(oldOrder, Long.MAX_VALUE);
+        } else if (newOrder != null) {
+            if (oldOrder == null) {
+                categoryRepository.incrementMainDisplayOrder(newOrder, Long.MAX_VALUE);
+            } else if (newOrder > oldOrder) {
+                categoryRepository.decrementMainDisplayOrder(oldOrder + 1, newOrder);
+            } else {
+                categoryRepository.incrementMainDisplayOrder(newOrder, oldOrder - 1);
+            }
         }
     }
 
