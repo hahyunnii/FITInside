@@ -126,6 +126,8 @@ public class CouponAdminService {
     @Transactional
     public Long deActiveCoupon(Long couponId) {
 
+        checkAdmin();
+
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
         coupon.deActive();
 
@@ -149,6 +151,7 @@ public class CouponAdminService {
     }
 
 
+    // 쿠폰 미보유 회원 목록 조회
     public CouponMemberResponseWrapperDto findMembersWithOutCoupons(Long couponId) {
 
         checkAdmin();
