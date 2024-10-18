@@ -10,7 +10,8 @@ import java.util.List;
 public class ProductResponseDto {
 
     private Long id;                 // 상품 ID
-    private Long categoryId;         // 카테고리 ID
+    private Long categoryId;
+    private String categoryName; // 카테고리 ID
     private String productName;      // 상품명
     private int price;               // 가격
     private String info;             // 상품 설명

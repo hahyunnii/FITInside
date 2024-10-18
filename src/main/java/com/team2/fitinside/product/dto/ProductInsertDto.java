@@ -11,8 +11,11 @@ import java.util.List;
 @Setter
 public class ProductInsertDto {
 
-    @NotNull(message = "카테고리 ID는 필수 입력 값입니다.")
-    private Long categoryId;
+//    @NotNull(message = "카테고리 ID는 필수 입력 값입니다.")
+//    private Long categoryId;
+
+    @NotBlank(message = "카테고리 이름은 필수 입력 값입니다.")
+    private String categoryName;
 
     @NotBlank(message = "상품명은 필수 입력 값입니다.")
     private String productName;
