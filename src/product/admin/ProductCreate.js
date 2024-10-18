@@ -23,7 +23,10 @@ const ProductCreate = () => {
             try {
                 const response = await fetch('http://localhost:8080/api/categories'); // 카테고리 목록을 가져오는 API 호출
                 const data = await response.json();
-                setCategories(data);
+
+                // parentId가 null인 항목을 제외하고 필터링
+                const filteredCategories = data.filter(category => category.parentId !== null);
+                setCategories(filteredCategories);
             } catch (error) {
                 console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
             }
