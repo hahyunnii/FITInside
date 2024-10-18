@@ -40,7 +40,7 @@ public class ProductController {
     @Operation(summary = "카테고리별 상품 목록 조회", description = "특정 카테고리의 상품 목록을 페이지네이션, 정렬, 검색 기능과 함께 반환합니다.")
     @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
     public ResponseEntity<Page<ProductResponseDto>> getProductsByCategory(
-            @PathVariable Long categoryId,
+            @PathVariable("categoryId") Long categoryId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "9") int size,
             @RequestParam(value = "sortField", defaultValue = "createdAt") String sortField,
