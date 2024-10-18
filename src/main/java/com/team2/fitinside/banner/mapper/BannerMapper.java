@@ -6,17 +6,6 @@ import com.team2.fitinside.banner.entity.Banner;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import org.springframework.stereotype.Component;
-
-//@Mapper
-//public interface BannerMapper {
-//    BannerMapper INSTANCE = Mappers.getMapper(BannerMapper.class);
-//
-//    Banner toEntity(BannerRequestDTO requestDTO);
-//
-//    BannerResponseDTO toDto(Banner banner);
-//}
-
 
 @Mapper
 public interface BannerMapper {
