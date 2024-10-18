@@ -23,14 +23,18 @@ public class Banner {
 
     private String title;
 
+    // 광고 URL 필드 추가
+    private String targetUrl;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     // 배너의 정보를 업데이트하는 메서드
-    public Banner updateDetails(String title, String imageUrl, Integer displayOrder) {
+    public Banner updateDetails(String title, String imageUrl, Integer displayOrder, String targetUrl) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.displayOrder = displayOrder;
+        this.targetUrl = targetUrl; // URL 필드 업데이트
         return this;
     }
 
