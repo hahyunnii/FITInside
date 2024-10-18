@@ -7,7 +7,6 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,9 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "category_name", nullable = false)
+    private String categoryName;
+
     @Column(name = "product_name", length = 100, nullable = false)
     private String productName;
 
@@ -49,25 +51,11 @@ public class Product {
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 
-//    // 판매자 아이디
-//    @Column(name = "user_id", nullable = false)
-//    private Long userId;
-
-
     // 이미지 ID 목록을 저장하는 필드
     @ElementCollection
     @CollectionTable(name = "product_img_urls", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "product_img_url")
     private List<String> productImgUrls = new ArrayList<>();
-
-
-//    @ElementCollection
-//    @CollectionTable(name = "product_imgUrls", joinColumns = @JoinColumn(name = "product_id")) // 컬렉션 저장 테이블
-//    @Column(name = "product_imgUrl") // 컬렉션의 요소 저장 테이블
-//    private List<String> productImgUrls = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<ProductImg> productImgs;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -79,7 +67,6 @@ public class Product {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
-
 
     @PrePersist
     public void prePersist() {
@@ -95,11 +82,17 @@ public class Product {
     // 카테고리를 설정하는 메서드
     public void setCategory(Category category) {
         this.category = category;
+        this.categoryName = category.getName();  // 카테고리 설정 시 카테고리 이름도 함께 설정
     }
 
     // 삭제 상태 설정 메서드
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    // 이미지 URL 설정 메서드
+    public void setProductImgUrls(List<String> productImgUrls) {
+        this.productImgUrls = productImgUrls;
     }
 
     // 주문 시 재고 변동

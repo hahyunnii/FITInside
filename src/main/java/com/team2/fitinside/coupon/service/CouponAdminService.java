@@ -102,7 +102,7 @@ public class CouponAdminService {
     }
 
     @Transactional
-    public void createCoupon(CouponCreateRequestDto couponCreateRequestDto) {
+    public Long createCoupon(CouponCreateRequestDto couponCreateRequestDto) {
 
         checkAdmin();
 
@@ -119,18 +119,23 @@ public class CouponAdminService {
             coupon.setCategory(category);
         }
 
-        couponRepository.save(coupon);
+        Coupon createdCoupon = couponRepository.save(coupon);
+        return createdCoupon.getId();
     }
 
     @Transactional
-    public void deActiveCoupon(Long couponId) {
+    public Long deActiveCoupon(Long couponId) {
+
+        checkAdmin();
 
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
         coupon.deActive();
+
+        return couponId;
     }
 
     // 쿠폰 이메일 전송 메서드
-    public void sendEmail(CouponEmailRequestDto couponEmailRequestDto) {
+    public String sendEmail(CouponEmailRequestDto couponEmailRequestDto) {
 
         checkAdmin();
 
@@ -141,9 +146,12 @@ public class CouponAdminService {
         if(!foundCoupon.isActive()) throw new CustomException(ErrorCode.INVALID_COUPON_DATA);
 
         couponEmailService.sendEmail(couponEmailRequestDto);
+
+        return couponEmailRequestDto.getAddress();
     }
 
 
+    // 쿠폰 미보유 회원 목록 조회
     public CouponMemberResponseWrapperDto findMembersWithOutCoupons(Long couponId) {
 
         checkAdmin();

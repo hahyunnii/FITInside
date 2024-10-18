@@ -56,8 +56,8 @@ public class CouponAdminController {
     @ApiResponse(responseCode = "404", description = "해당 카테고리를 찾을 수 없습니다.")
     public ResponseEntity<String> createCoupon(@RequestBody CouponCreateRequestDto couponCreateRequestDto) {
 
-        couponAdminService.createCoupon(couponCreateRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 생성되었습니다!");
+        Long createdCouponId = couponAdminService.createCoupon(couponCreateRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("쿠폰이 생성되었습니다! couponId: " + createdCouponId);
     }
 
     @DeleteMapping("/{couponId}")
@@ -66,8 +66,8 @@ public class CouponAdminController {
     @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
     public ResponseEntity<String> deActiveCoupon(@PathVariable("couponId") Long couponId) {
 
-        couponAdminService.deActiveCoupon(couponId);
-        return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 비활성화 되었습니다!");
+        Long deActivatedCouponId = couponAdminService.deActiveCoupon(couponId);
+        return ResponseEntity.status(HttpStatus.OK).body("쿠폰이 비활성화 되었습니다! couponId: " + deActivatedCouponId);
     }
 
     @PostMapping("/email")
@@ -78,8 +78,8 @@ public class CouponAdminController {
     @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
     public ResponseEntity<String> sendCouponEmails(@RequestBody CouponEmailRequestDto couponEmailRequestDto) {
 
-        couponAdminService.sendEmail(couponEmailRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body("쿠폰 이메일 전송을 완료했습니다!");
+        String emailAddress = couponAdminService.sendEmail(couponEmailRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("쿠폰 이메일 전송을 완료했습니다! email: " + emailAddress);
     }
 
     @GetMapping("/{couponId}/members")
