@@ -14,3 +14,4 @@ public class BannerResponseDTO {
     private Integer displayOrder;
     private Boolean isDeleted;
 }
+
