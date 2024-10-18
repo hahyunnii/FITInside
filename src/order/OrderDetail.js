@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import DeliveryForm from './DeliveryForm';
+import AddressModal from '../address/AddressModal';
 import './orderDetail.css';
 
 const statusOptions = [
@@ -23,6 +24,7 @@ const OrderDetail = () => {
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [deliveryData, setDeliveryData] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
     const formRef = useRef(null); // DeliveryForm을 참조할 수 있도록 설정
 
     useEffect(() => {
@@ -52,6 +54,7 @@ const OrderDetail = () => {
         };
 
         fetchOrderDetail();
+        localStorage.removeItem('deliveryFormData');
     }, [orderId]);
 
     const handleEditClick = () => {
@@ -101,11 +104,17 @@ const OrderDetail = () => {
         setIsEditing(false); // 편집 모드 종료
     };
 
+    // 모달에서 선택한 주소를 폼에 반영
+    const handleAddressSelect = (address) => {
+        setIsModalOpen(false); // 모달 닫기
+        if (formRef.current) {
+            formRef.current.setFormData(address); // 선택한 주소를 폼에 반영
+        }
+    };
+
     const handleCancelClick = async () => {
         const confirmCancel = window.confirm('주문을 취소하시겠습니까?');
-        if (!confirmCancel) {
-            return;
-        }
+        if (!confirmCancel) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -240,13 +249,17 @@ const OrderDetail = () => {
                 <div className="edit-delivery-section">
                     <DeliveryForm
                         ref={formRef}
-                        onSubmit={(data) => setDeliveryData(data)}
                         initialValues={deliveryData} // 기존 배송 정보 전달
+                        // onSubmit={(data) => setDeliveryData(data)}
+                        onAddressSelect={() => setIsModalOpen(true)}
                     />
                     <div className="order-actions">
                         <button className="btn-custom" onClick={handleCancelEditClick}>취소</button>
                         <button className="btn-custom" onClick={handleSaveClick}>수정완료</button>
                     </div>
+
+                    {/* 기본 배송지 선택 모달 */}
+                    <AddressModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelect={handleAddressSelect} />
                 </div>
             ) : (
                 <table className="delivery-info-table">
