@@ -13,6 +13,7 @@ const ProductList = () => {
     const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
+    const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
 
     useEffect(() => {
         // 상품 목록을 백엔드에서 가져오는 함수
@@ -29,10 +30,12 @@ const ProductList = () => {
                     }
                 });
 
-                // 응답이 배열인지 확인하고, 배열이 아닐 경우 빈 배열로 처리
-                const productData = Array.isArray(response.data) ? response.data : response.data.content || [];
+                // 응답에서 데이터와 전체 페이지 수 추출
+                const productData = Array.isArray(response.data.content) ? response.data.content : [];
+                const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
 
                 setProducts(productData);
+                setTotalPages(totalPages);
             } catch (err) {
                 setError('상품 목록을 불러오는 데 실패했습니다.');
             } finally {
@@ -42,6 +45,10 @@ const ProductList = () => {
 
         fetchProducts();
     }, [categoryId, page, size, sortField, sortDir, keyword]);
+
+    const handlePageClick = (pageNumber) => {
+        setPage(pageNumber);
+    };
 
     if (loading) {
         return <p>Loading...</p>;
@@ -144,19 +151,40 @@ const ProductList = () => {
                     </div>
 
                     {/* Pagination */}
-                    <div className="d-flex justify-content-center">
-                        <button
-                            className="btn btn-outline-primary"
-                            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                            disabled={page === 0}>
-                            이전
-                        </button>
-                        <button
-                            className="btn btn-outline-primary ms-2"
-                            onClick={() => setPage((prev) => prev + 1)}>
-                            다음
-                        </button>
-                    </div>
+                    <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                            {/* Previous 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 페이지 번호 버튼 */}
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
+                                    <button
+                                        className="page-link"
+                                        onClick={() => handlePageClick(index)}>
+                                        {index + 1}
+                                    </button>
+                                </li>
+                            ))}
+
+                            {/* Next 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </section>
         </>
