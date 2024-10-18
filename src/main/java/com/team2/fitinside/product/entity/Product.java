@@ -31,6 +31,9 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "category_name", nullable = false)
+    private String categoryName;
+
     @Column(name = "product_name", length = 100, nullable = false)
     private String productName;
 
@@ -79,6 +82,7 @@ public class Product {
     // 카테고리를 설정하는 메서드
     public void setCategory(Category category) {
         this.category = category;
+        this.categoryName = category.getName();  // 카테고리 설정 시 카테고리 이름도 함께 설정
     }
 
     // 삭제 상태 설정 메서드

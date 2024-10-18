@@ -53,7 +53,7 @@ public class ProductAdminController {
     @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
     public ResponseEntity<ProductResponseDto> updateProduct(
-            @PathVariable("categoryId") Long id,
+            @PathVariable Long id,
             @ModelAttribute ProductInsertDto productInsertDto) {
 
         // 상품 수정 처리 (이미지 포함)

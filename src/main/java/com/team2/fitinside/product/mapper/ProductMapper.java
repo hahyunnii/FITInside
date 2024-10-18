@@ -17,6 +17,7 @@ public interface ProductMapper {
     Product toEntity(Long id, ProductUpdateDto productUpdateDto);
 
     @Mapping(source = "category.id", target = "categoryId") // category의 ID를 categoryId로 매핑
+    @Mapping(source = "category.name", target = "categoryName")  // category의 이름을 categoryName으로 매핑
     ProductResponseDto toDto(Product product);
 
     @Mapping(target = "productImgUrls", ignore = true)

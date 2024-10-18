@@ -78,7 +78,12 @@ public class ProductService {
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
 
-        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
+//        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//        product.setCategory(category);
+
+        // categoryName을 통해 categoryId를 조회하는 로직
+        Category category = categoryRepository.findByName(productCreateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
@@ -105,7 +110,11 @@ public class ProductService {
 
         Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
 
-        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+//        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
+//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+//        updatedProduct.setCategory(category);
+
+        Category category = categoryRepository.findByName(productUpdateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         updatedProduct.setCategory(category);
 
