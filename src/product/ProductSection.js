@@ -6,8 +6,6 @@ const ProductSection = () => {
     const { id: productId } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [selectedColor, setSelectedColor] = useState('');
-    const [selectedSize, setSelectedSize] = useState('');
     const [selectedImage, setSelectedImage] = useState('');
     const navigate = useNavigate();
 
@@ -36,8 +34,6 @@ const ProductSection = () => {
             const cartItem = {
                 id: product.id,
                 quantity,
-                color: selectedColor,
-                size: selectedSize,
             };
 
             const result = await addToCart(cartItem);
@@ -129,34 +125,6 @@ const ProductSection = () => {
                         <h1 className="display-5 fw-bolder">{product.productName}</h1>
                         <div className="fs-5 mb-5">
                             <span>{product.price.toLocaleString()}원</span>
-                        </div>
-                        {/* 색상 선택 섹션 */}
-                        <div className="mb-3">
-                            <label className="form-label">색상</label>
-                            <select
-                                className="form-select"
-                                value={selectedColor}
-                                onChange={(e) => setSelectedColor(e.target.value)}
-                            >
-                                <option value="">색상을 선택하세요</option>
-                                {product.colors && product.colors.map((color, index) => (
-                                    <option key={index} value={color}>{color}</option>
-                                ))}
-                            </select>
-                        </div>
-                        {/* 사이즈 선택 섹션 */}
-                        <div className="mb-3">
-                            <label className="form-label">사이즈</label>
-                            <select
-                                className="form-select"
-                                value={selectedSize}
-                                onChange={(e) => setSelectedSize(e.target.value)}
-                            >
-                                <option value="">사이즈를 선택하세요</option>
-                                {product.sizes && product.sizes.map((size, index) => (
-                                    <option key={index} value={size}>{size}</option>
-                                ))}
-                            </select>
                         </div>
                         {/* 수량 입력 및 장바구니 버튼 */}
                         <div className="d-flex mb-3">
