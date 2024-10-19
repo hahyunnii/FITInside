@@ -86,10 +86,10 @@ public class ProductService {
         // S3 상품 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
         List<String> productImageUrls = uploadImages(productImages);
 
-        // 상품 이미지가 없을 경우 기본 더미 이미지 추가
-        if (productImageUrls.isEmpty()) {
-            productImageUrls.add(DEFAULT_IMAGE_URL);
-        }
+//        // 상품 이미지가 없을 경우 기본 더미 이미지 추가
+//        if (productImageUrls.isEmpty()) {
+//            productImageUrls.add(DEFAULT_IMAGE_URL);
+//        }
 
         // 상품 설명 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
         List<String> productDescImageUrls = uploadImages(productDescImages);
@@ -195,8 +195,8 @@ public class ProductService {
         // S3 상품 이미지 업데이트 처리 (기존 이미지 유지하면서 새로운 이미지 추가)
         List<String> productImageUrls = new ArrayList<>(existingProduct.getProductImgUrls()); // 기존 이미지 복사
 
-        // 기존 이미지에 dummy 이미지가 있는지 확인하고 제거
-        productImageUrls.removeIf(imageUrl -> imageUrl.equals(DEFAULT_IMAGE_URL)); // 기본 더미 이미지가 있으면 제거
+//        // 기존 이미지에 dummy 이미지가 있는지 확인하고 제거
+//        productImageUrls.removeIf(imageUrl -> imageUrl.equals(DEFAULT_IMAGE_URL)); // 기본 더미 이미지가 있으면 제거
 
         List<String> newProductImageUrls = uploadImages(productImages); // 새로운 이미지 업로드
         if (!newProductImageUrls.isEmpty()) {
