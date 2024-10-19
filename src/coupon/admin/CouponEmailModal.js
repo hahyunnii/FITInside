@@ -125,47 +125,51 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
                     maxWidth: `70%`,
                     maxHeight: `80%`,
                     margin: 'auto',
-                    padding: '40px',
+                    padding: '0 40px 40px 40px',
                     borderRadius: '10px'
                 },
                 overlay: {
                     backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    zIndex: '100'
                 }
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2 className="text-center mb-4">쿠폰 미보유 회원 목록</h2>
-                <button onClick={handleCloseModal} style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    marginTop: '-30px'
-                }}>&times;</button>
-            </div>
-            {loading && <p>로딩 중...</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div className="d-flex justify-content-between" style={{ margin: '20px 0' }}>
-                <div className="d-flex justify-content-start">
-                    <button onClick={selectAllEmails} className="btn btn-light text-dark"
-                            style={{ border: '1px solid #ced4da', marginRight: `10px` }}>
-                        전체 선택
-                    </button>
-                    <button onClick={deselectAllEmails} className="btn btn-danger">
-                        전체 선택 해제
-                    </button>
+            <div className="modal-header flex-column">
+                <div className="d-flex flex-row justify-content-between align-items-center" style={{width: '100%'}}>
+                    <h2 className="mb-4">쿠폰 미보유 회원 목록</h2>
+                    <button onClick={handleCloseModal} style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: '24px',
+                        cursor: 'pointer',
+                        marginTop: '-30px'
+                    }}>&times;</button>
                 </div>
 
-                <button onClick={sendCouponEmails} disabled={selectedEmails.length === 0 || sending}
-                        className="btn btn-light text-dark"
-                        style={{ border: '1px solid #ced4da', marginRight: `10px` }}>
-                    이메일 전송
-                </button>
-            </div>
+                <div className="d-flex justify-content-between" style={{width: '100%'}}>
+                    <div className="d-flex justify-content-start">
+                        <button onClick={selectAllEmails} className="btn btn-light text-dark"
+                                style={{border: '1px solid #ced4da', marginRight: `10px`}}>
+                            전체 선택
+                        </button>
+                        <button onClick={deselectAllEmails} className="btn btn-danger">
+                            전체 선택 해제
+                        </button>
+                    </div>
 
-            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                    <button onClick={sendCouponEmails} disabled={selectedEmails.length === 0 || sending}
+                            className="btn btn-light text-dark"
+                            style={{border: '1px solid #ced4da', marginRight: `10px`}}>
+                        이메일 전송
+                    </button>
+                </div>
+            </div>
+            {loading && <p>로딩 중...</p>}
+            {error && <p style={{color: 'red'}}>{error}</p>}
+
+            <ul style={{listStyleType: 'none', padding: 0, marginTop: '30px'}}>
                 {members.map(member => (
-                    <li key={member.email} style={{ marginBottom: '10px' }}>
+                    <li key={member.email} style={{marginBottom: '10px'}}>
                         <label className="d-flex justify-content-start">
                             <input
                                 type="checkbox" className="form-check me-1"
@@ -179,7 +183,7 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
             </ul>
 
             {sending && (
-                <div style={{ marginTop: '20px' }}>
+                <div style={{marginTop: '20px'}}>
                     <p>이메일 전송 중... {progress.toFixed(0)}%</p>
                     <div style={{ width: '100%', backgroundColor: '#f3f3f3', borderRadius: '5px' }}>
                         <div style={{
