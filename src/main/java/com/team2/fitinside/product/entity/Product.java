@@ -57,6 +57,13 @@ public class Product {
     @Column(name = "product_img_url")
     private List<String> productImgUrls = new ArrayList<>();
 
+    // 상품 설명 이미지 URL 목록을 저장하는 필드
+    @ElementCollection
+    @CollectionTable(name = "product_desc_img_urls", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "product_desc_img_url")
+    private List<String> productDescImgUrls = new ArrayList<>();
+
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -98,6 +105,11 @@ public class Product {
     // 주문 시 재고 변동
     public void sold(int count){
         this.stock -= count;
+    }
+
+    // 상품 설명 이미지 URL 설정 메서드
+    public void setProductDescImgUrls(List<String> productDescImgUrls) {
+        this.productDescImgUrls = productDescImgUrls;
     }
 
 }
