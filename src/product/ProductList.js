@@ -5,6 +5,7 @@ import './ProductList.css'; // Import CSS file for custom styles
 
 const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
+    const [categoryName, setCategoryName] = useState(''); // 카테고리 이름 상태
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,52 +16,62 @@ const ProductList = () => {
     const [keyword, setKeyword] = useState(''); // 검색어
     const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
     const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
+    const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
+    // 카테고리 이름을 가져오는 함수
+    const fetchCategoryName = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
+            setCategoryName(response.data.name); // 응답에서 카테고리 이름 설정
+        } catch (err) {
+            setError('카테고리 정보를 불러오는 데 실패했습니다.');
+        }
+    };
+
+    // 상품 목록을 백엔드에서 가져오는 함수
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
+                params: {
+                    page,
+                    size,
+                    sortField,
+                    sortDir,
+                    keyword: searchKeyword // 엔터로 입력한 키워드로 검색
+                }
+            });
+
+            // 응답에서 데이터와 전체 페이지 수 추출
+            const productData = Array.isArray(response.data.content) ? response.data.content : [];
+            const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
+
+            setProducts(productData);
+            setTotalPages(totalPages);
+        } catch (err) {
+            setError('상품 목록을 불러오는 데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 카테고리 이름과 상품 목록을 가져오는 useEffect 훅
     useEffect(() => {
-        // 상품 목록을 백엔드에서 가져오는 함수
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
-                    params: {
-                        page,
-                        size,
-                        sortField,
-                        sortDir,
-                        keyword
-                    }
-                });
-
-                // 응답에서 데이터와 전체 페이지 수 추출
-                const productData = Array.isArray(response.data.content) ? response.data.content : [];
-                const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
-
-                setProducts(productData);
-                setTotalPages(totalPages);
-            } catch (err) {
-                setError('상품 목록을 불러오는 데 실패했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, [categoryId, page, size, sortField, sortDir, keyword]);
+        fetchCategoryName(); // 카테고리 이름 가져오기
+        fetchProducts(); // 상품 목록 가져오기
+    }, [categoryId, page, size, sortField, sortDir, searchKeyword]);
 
     // 페이지 클릭 핸들러
     const handlePageClick = (pageNumber) => {
         setPage(pageNumber);
     };
 
-    // 중앙에 페이지 버튼이 오도록 시작 페이지와 끝 페이지 계산
-    const middleIndex = Math.floor(pagesPerGroup / 2); // 중앙 인덱스
-    let startPage = Math.max(page - middleIndex, 0);
-    let endPage = Math.min(startPage + pagesPerGroup, totalPages);
-
-    // 총 페이지 수보다 startPage와 endPage 범위가 크면 startPage를 다시 조정
-    if (endPage - startPage < pagesPerGroup) {
-        startPage = Math.max(0, endPage - pagesPerGroup);
-    }
+    // 검색어 입력 필드에서 엔터키 눌렀을 때 동작
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(keyword); // 엔터키를 눌렀을 때만 키워드를 검색어로 설정
+        }
+    };
 
     if (loading) {
         return <p>Loading...</p>;
@@ -80,8 +91,8 @@ const ProductList = () => {
             <header className="bg-dark py-5">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="text-center text-white">
-                        <h1 className="display-4 fw-bolder">Shop in style</h1>
-                        <p className="lead fw-normal text-white-50 mb-0">With this shop homepage template</p>
+                        <h1 className="display-4 fw-bolder">{categoryName} </h1> {/* 카테고리 이름 표시 */}
+                        <p className="lead fw-normal text-white-50 mb-0">Explore the best products in the {categoryName} category</p>
                     </div>
                 </div>
             </header>
@@ -94,7 +105,8 @@ const ProductList = () => {
                             type="text"
                             placeholder="검색어를 입력하세요"
                             value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
+                            onChange={(e) => setKeyword(e.target.value)} // 검색어 상태 변경
+                            onKeyPress={handleKeyPress} // 엔터키 입력 시 검색어 적용
                             className="form-control"
                         />
                     </div>
@@ -114,7 +126,7 @@ const ProductList = () => {
                 </div>
             </div>
 
-            {/* Section */}
+            {/* 상품 목록 */}
             <section className="py-5">
                 <div className="container px-4 px-lg-5 mt-5">
                     <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -186,18 +198,13 @@ const ProductList = () => {
                             </li>
 
                             {/* 페이지 번호 버튼 */}
-                            {Array.from({ length: endPage - startPage }, (_, index) => {
-                                const pageNumber = startPage + index;
-                                return (
-                                    <li key={pageNumber} className={`page-item ${page === pageNumber ? 'active' : ''}`}>
-                                        <button
-                                            className="page-link"
-                                            onClick={() => handlePageClick(pageNumber)}>
-                                            {pageNumber + 1}
-                                        </button>
-                                    </li>
-                                );
-                            })}
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageClick(index)}>
+                                        {index + 1}
+                                    </button>
+                                </li>
+                            ))}
 
                             {/* Next 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
