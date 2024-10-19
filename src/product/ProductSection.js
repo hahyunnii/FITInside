@@ -64,6 +64,10 @@ const ProductSection = () => {
         ? product.productImgUrls
         : ['https://dummyimage.com/450x300/dee2e6/6c757d.jpg'];
 
+    const productDescImages = product.productDescImgUrls?.length > 0
+        ? product.productDescImgUrls
+        : []; // 설명 이미지가 없을 경우 비워둠
+
     // 장바구니 담기 => 상품 재고 수량과 비교
     const handleQuantityChange = (e) => {
         const newQuantity = parseInt(e.target.value, 10);
@@ -189,6 +193,21 @@ const ProductSection = () => {
                     <div className="tab-content" id="productDetailsTabsContent">
                         <div className="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
                             <p>{product.info}</p>
+                            {/* 상품 설명 이미지 추가 */}
+                            <div className="description-images mt-3">
+                                {productDescImages.length > 0 ? (
+                                    productDescImages.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image}
+                                            alt={`Description image ${index + 1}`}
+                                            className="img-fluid mb-3"
+                                        />
+                                    ))
+                                ) : (
+                                    <p>설명 이미지가 없습니다.</p>
+                                )}
+                            </div>
                         </div>
                         <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
                             <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
