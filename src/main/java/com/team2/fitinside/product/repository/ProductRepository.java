@@ -19,8 +19,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 삭제되지 않은 상품들만 조회 (페이지네이션 적용)
     Page<Product> findByIsDeletedFalse(Pageable pageable);
 
-    // 삭제되지 않은 상품 중 이름 또는 설명에 키워드가 포함된 상품 검색
-    @Query("SELECT p FROM Product p WHERE (p.isDeleted = false) AND (p.productName LIKE %:keyword% OR p.info LIKE %:keyword%)")
+//    // 삭제되지 않은 상품 중 이름 또는 설명에 키워드가 포함된 상품 검색
+//    @Query("SELECT p FROM Product p WHERE (p.isDeleted = false) AND (p.productName LIKE %:keyword% OR p.info LIKE %:keyword%)")
+//    Page<Product> searchByKeywordAndIsDeletedFalse(@Param("keyword") String keyword, Pageable pageable);
+
+    // 삭제되지 않은 상품 중 이름에 키워드가 포함된 상품 검색
+    @Query("SELECT p FROM Product p WHERE (p.isDeleted = false) AND (p.productName LIKE %:keyword% )")
     Page<Product> searchByKeywordAndIsDeletedFalse(@Param("keyword") String keyword, Pageable pageable);
 
     // 삭제되지 않은 특정 카테고리의 상품 중 이름 또는 설명에 키워드가 포함된 상품 검색
