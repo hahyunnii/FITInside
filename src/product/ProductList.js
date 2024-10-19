@@ -15,6 +15,7 @@ const ProductList = () => {
     const [keyword, setKeyword] = useState(''); // 검색어
     const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
     const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
+    const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
     useEffect(() => {
         // 상품 목록을 백엔드에서 가져오는 함수
@@ -27,7 +28,7 @@ const ProductList = () => {
                         size,
                         sortField,
                         sortDir,
-                        keyword
+                        keyword: searchKeyword // 엔터로 입력한 키워드로 검색
                     }
                 });
 
@@ -45,22 +46,19 @@ const ProductList = () => {
         };
 
         fetchProducts();
-    }, [categoryId, page, size, sortField, sortDir, keyword]);
+    }, [categoryId, page, size, sortField, sortDir, searchKeyword]); // searchKeyword를 사용하여 검색 요청
 
     // 페이지 클릭 핸들러
     const handlePageClick = (pageNumber) => {
         setPage(pageNumber);
     };
 
-    // 중앙에 페이지 버튼이 오도록 시작 페이지와 끝 페이지 계산
-    const middleIndex = Math.floor(pagesPerGroup / 2); // 중앙 인덱스
-    let startPage = Math.max(page - middleIndex, 0);
-    let endPage = Math.min(startPage + pagesPerGroup, totalPages);
-
-    // 총 페이지 수보다 startPage와 endPage 범위가 크면 startPage를 다시 조정
-    if (endPage - startPage < pagesPerGroup) {
-        startPage = Math.max(0, endPage - pagesPerGroup);
-    }
+    // 검색어 입력 필드에서 엔터키 눌렀을 때 동작
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(keyword); // 엔터키를 눌렀을 때만 키워드를 검색어로 설정
+        }
+    };
 
     if (loading) {
         return <p>Loading...</p>;
@@ -94,7 +92,8 @@ const ProductList = () => {
                             type="text"
                             placeholder="검색어를 입력하세요"
                             value={keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
+                            onChange={(e) => setKeyword(e.target.value)} // 검색어 상태 변경
+                            onKeyPress={handleKeyPress} // 엔터키 입력 시 검색어 적용
                             className="form-control"
                         />
                     </div>
@@ -114,7 +113,7 @@ const ProductList = () => {
                 </div>
             </div>
 
-            {/* Section */}
+            {/* 상품 목록 */}
             <section className="py-5">
                 <div className="container px-4 px-lg-5 mt-5">
                     <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -186,18 +185,13 @@ const ProductList = () => {
                             </li>
 
                             {/* 페이지 번호 버튼 */}
-                            {Array.from({ length: endPage - startPage }, (_, index) => {
-                                const pageNumber = startPage + index;
-                                return (
-                                    <li key={pageNumber} className={`page-item ${page === pageNumber ? 'active' : ''}`}>
-                                        <button
-                                            className="page-link"
-                                            onClick={() => handlePageClick(pageNumber)}>
-                                            {pageNumber + 1}
-                                        </button>
-                                    </li>
-                                );
-                            })}
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageClick(index)}>
+                                        {index + 1}
+                                    </button>
+                                </li>
+                            ))}
 
                             {/* Next 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
