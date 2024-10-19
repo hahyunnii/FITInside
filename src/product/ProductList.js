@@ -5,6 +5,7 @@ import './ProductList.css'; // Import CSS file for custom styles
 
 const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
+    const [categoryName, setCategoryName] = useState(''); // 카테고리 이름 상태
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,36 +18,48 @@ const ProductList = () => {
     const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
     const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
+    // 카테고리 이름을 가져오는 함수
+    const fetchCategoryName = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
+            setCategoryName(response.data.name); // 응답에서 카테고리 이름 설정
+        } catch (err) {
+            setError('카테고리 정보를 불러오는 데 실패했습니다.');
+        }
+    };
+
+    // 상품 목록을 백엔드에서 가져오는 함수
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
+                params: {
+                    page,
+                    size,
+                    sortField,
+                    sortDir,
+                    keyword: searchKeyword // 엔터로 입력한 키워드로 검색
+                }
+            });
+
+            // 응답에서 데이터와 전체 페이지 수 추출
+            const productData = Array.isArray(response.data.content) ? response.data.content : [];
+            const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
+
+            setProducts(productData);
+            setTotalPages(totalPages);
+        } catch (err) {
+            setError('상품 목록을 불러오는 데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 카테고리 이름과 상품 목록을 가져오는 useEffect 훅
     useEffect(() => {
-        // 상품 목록을 백엔드에서 가져오는 함수
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
-                    params: {
-                        page,
-                        size,
-                        sortField,
-                        sortDir,
-                        keyword: searchKeyword // 엔터로 입력한 키워드로 검색
-                    }
-                });
-
-                // 응답에서 데이터와 전체 페이지 수 추출
-                const productData = Array.isArray(response.data.content) ? response.data.content : [];
-                const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
-
-                setProducts(productData);
-                setTotalPages(totalPages);
-            } catch (err) {
-                setError('상품 목록을 불러오는 데 실패했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, [categoryId, page, size, sortField, sortDir, searchKeyword]); // searchKeyword를 사용하여 검색 요청
+        fetchCategoryName(); // 카테고리 이름 가져오기
+        fetchProducts(); // 상품 목록 가져오기
+    }, [categoryId, page, size, sortField, sortDir, searchKeyword]);
 
     // 페이지 클릭 핸들러
     const handlePageClick = (pageNumber) => {
@@ -78,8 +91,8 @@ const ProductList = () => {
             <header className="bg-dark py-5">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="text-center text-white">
-                        <h1 className="display-4 fw-bolder">Shop in style</h1>
-                        <p className="lead fw-normal text-white-50 mb-0">With this shop homepage template</p>
+                        <h1 className="display-4 fw-bolder">{categoryName} </h1> {/* 카테고리 이름 표시 */}
+                        <p className="lead fw-normal text-white-50 mb-0">Explore the best products in the {categoryName} category</p>
                     </div>
                 </div>
             </header>
