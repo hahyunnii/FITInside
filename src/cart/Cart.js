@@ -244,9 +244,10 @@ const Cart = () => {
     const shippingCost = calculateShippingCost(); // 배송비 변수로 관리
 
     return (
-        <div className="cart-container my-5">
-            <h2>쇼핑백</h2>
-            <br/>
+        <div className="cart-container">
+            <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop:'20px'}}>
+                <h2>쇼핑백</h2>
+            </div>
             <div className="both-container">
                 <div className="left-container">
                     <div className="d-flex justify-content-between">
@@ -386,7 +387,7 @@ const Cart = () => {
                     )}
                 </div>
 
-                <div className="right-container">
+                <div className="right-container-c">
                     <div className="order-container">
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <p>상품 금액 ({selectedItems.size})</p>
@@ -460,16 +461,17 @@ const Cart = () => {
                             쇼핑하기</a>
                         <a
                             className="btn btn-custom p-3"
-                            onClick={handleOrder}
-                            href={cartCount > 0 ? "/order" : "/cart"} // cartCount가 0일 때 링크를 비활성화
+                            onClick={cartCount > 0 && selectedItems.size > 0 ? handleOrder : undefined} // 클릭 핸들러를 조건적으로 설정
+                            href={cartCount > 0 && selectedItems.size > 0 ? "/order" : "/cart"}
                             style={{
-                                pointerEvents: cartCount === 0 ? 'none' : 'auto',
-                                opacity: cartCount === 0 ? 0.5 : 1
+                                pointerEvents: (cartCount === 0 || selectedItems.size === 0) ? 'none' : 'auto',
+                                opacity: (cartCount === 0 || selectedItems.size === 0) ? 0.5 : 1,
+                                cursor: (cartCount === 0 || selectedItems.size === 0) ? 'not-allowed' : 'pointer' // 금지 아이콘 표시
+
                             }} // 비활성화 스타일
                         >
                             주문하기
                         </a>
-
                     </div>
                 </div>
             </div>
