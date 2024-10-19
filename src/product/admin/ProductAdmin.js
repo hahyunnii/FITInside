@@ -14,6 +14,10 @@ const ProductAdmin = () => {
     const [sortField, setSortField] = useState('createdAt'); // 기본 정렬 필드: 생성일
     const [sortDir, setSortDir] = useState('desc'); // 기본 정렬 방향: 내림차순
 
+    // 검색 관련 상태
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
+    const [searchType, setSearchType] = useState('productName'); // 검색 타입 상태 (상품명 또는 카테고리명)
+
     const navigate = useNavigate();
 
     // 상품 목록 가져오기
@@ -24,14 +28,20 @@ const ProductAdmin = () => {
     const fetchProducts = async (pageNumber) => {
         try {
             setLoading(true); // 로딩 시작
-            const response = await axios.get(`http://localhost:8080/api/products`, {
+
+            // 검색 타입에 따라 다른 엔드포인트 호출
+            const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory';
+
+            const response = await axios.get(`http://localhost:8080${endpoint}`, {
                 params: {
                     page: pageNumber,
                     size: pageSize,
                     sortField: sortField,  // 사용자가 선택한 정렬 기준
                     sortDir: sortDir,      // 사용자가 선택한 정렬 방향
+                    keyword: searchTerm,   // 검색어 (상품 이름 또는 카테고리 이름)
                 },
             });
+
             const data = response.data;
             console.log('받아온 데이터:', data);
 
@@ -86,6 +96,23 @@ const ProductAdmin = () => {
         navigate(`/admin/products/update/${id}`);
     };
 
+    // 검색어 입력 처리 핸들러
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // 검색어 입력 후 Enter 키 입력 시 검색 실행
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            fetchProducts(0); // 검색 시 페이지를 처음으로 초기화
+        }
+    };
+
+    // 검색 타입 선택 처리 핸들러
+    const handleSearchTypeChange = (e) => {
+        setSearchType(e.target.value);
+    };
+
     if (loading) {
         return <p>로딩 중...</p>;
     }
@@ -98,6 +125,25 @@ const ProductAdmin = () => {
         <div className="container mt-5">
             <h2>상품 관리</h2>
             <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
+
+            {/* 검색 입력 필드 및 검색 타입 선택 추가 */}
+            <div className="form-group mb-3">
+                <label>검색</label>
+                <div className="d-flex">
+                    <select value={searchType} onChange={handleSearchTypeChange} className="form-control w-25">
+                        <option value="productName">상품명</option>
+                        <option value="categoryName">카테고리명</option>
+                    </select>
+                    <input
+                        type="text"
+                        className="form-control ml-2"
+                        placeholder="검색어를 입력하세요"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        onKeyPress={handleKeyPress} // Enter 키로 검색
+                    />
+                </div>
+            </div>
 
             {/* 정렬 기준과 방향 선택 */}
             <div className="sorting-controls mb-3">
@@ -131,7 +177,7 @@ const ProductAdmin = () => {
                     <th>제조사</th>
                     <th>생성일</th>
                     <th>수정일</th>
-                    <th>상품 설명 이미지</th> {/* 상품 설명 이미지 추가 */}
+                    <th>상품 설명 이미지</th>
                 </tr>
                 </thead>
                 <tbody>
