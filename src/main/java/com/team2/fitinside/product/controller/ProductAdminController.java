@@ -36,7 +36,7 @@ public class ProductAdminController {
     public ResponseEntity<ProductResponseDto> createProduct(
             @ModelAttribute("productData") ProductInsertDto productInsertDto) {
 
-        // 상품 등록 처리 (이미지 포함)
+        // 상품 등록 처리 (이미지 포함, 상품 설명 이미지 추가))
         ProductResponseDto createdProduct = productService.createProduct(
                 ProductMapper.INSTANCE.toProductCreateDto(productInsertDto),
                 productInsertDto.getProductImgUrls(),
@@ -48,6 +48,25 @@ public class ProductAdminController {
 
 
     // 상품 수정 (관리자 전용)
+//    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(summary = "상품 수정", description = "기존 상품의 정보를 수정합니다. 이미지를 함께 수정할 수 있습니다.")
+//    @ApiResponse(responseCode = "200", description = "상품 수정 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
+//    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
+//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<ProductResponseDto> updateProduct(
+//            @PathVariable Long id,
+//            @ModelAttribute ProductInsertDto productInsertDto) {
+//
+//        // 상품 수정 처리 (이미지 포함)
+//        ProductResponseDto updatedProduct = productService.updateProduct(
+//                id,
+//                ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto),
+//                productInsertDto.getProductImgUrls()
+//        );
+//        return ResponseEntity.ok(updatedProduct);
+//    }
+
+    // 상품 수정 (관리자 전용)
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "상품 수정", description = "기존 상품의 정보를 수정합니다. 이미지를 함께 수정할 수 있습니다.")
     @ApiResponse(responseCode = "200", description = "상품 수정 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
@@ -57,15 +76,16 @@ public class ProductAdminController {
             @PathVariable Long id,
             @ModelAttribute ProductInsertDto productInsertDto) {
 
-        // 상품 수정 처리 (이미지 포함)
+        // 상품 수정 처리 (이미지 포함, 상품 설명 이미지 추가)
         ProductResponseDto updatedProduct = productService.updateProduct(
                 id,
                 ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto),
-                productInsertDto.getProductImgUrls()
+                productInsertDto.getProductImgUrls(),  // 상품 이미지
+                productInsertDto.getProductDescImgUrls()  // 상품 설명 이미지
         );
+
         return ResponseEntity.ok(updatedProduct);
     }
-
 
 
 
