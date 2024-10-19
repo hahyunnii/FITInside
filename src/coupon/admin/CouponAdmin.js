@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import '../coupon.css';
 import CouponCreateModal from "./CouponCreateModal";
 import CouponMemberModal from "./CouponMemberModal";
@@ -144,29 +144,35 @@ const CouponAdmin = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-4">쿠폰 관리</h2>
-            <div className="d-flex flex-row justify-content-between">
-                <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
-                        onClick={handleCreateCoupon}>
-                    쿠폰 추가
-                </button>
+        <div className="container" style={{marginTop: '86px'}}>
+            <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop: '20px', top:'86px'}}>
+                <h2>쿠폰 관리</h2>
+                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                    <div>
+                        <button className="btn btn-light text-dark mb-4"
+                                style={{border: '1px solid #ced4da'}}
+                                onClick={handleCreateCoupon}>
+                            쿠폰 추가
+                        </button>
+                    </div>
 
-                {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
-                <div className="mb-4">
-                    <select
-                        className="form-select"
-                        value={includeInactiveCoupons ? 'true' : 'false'}
-                        onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
-                    >
-                        <option value="false">활성화 쿠폰만 보기</option>
-                        <option value="true">전체 쿠폰 보기</option>
-                    </select>
+
+                    {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
+                    <div style={{width: '20%'}}>
+                        <select
+                            className="form-select"
+                            value={includeInactiveCoupons ? 'true' : 'false'}
+                            onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
+                        >
+                            <option value="false">활성화 쿠폰만 보기</option>
+                            <option value="true">전체 쿠폰 보기</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
 
-            <div className="row">
+            <div className="row" style={{marginTop: '230px'}}>
                 {coupons.map((coupon) => (
                     <div className="couponWrap" key={coupon.id}>
                         <div
@@ -193,19 +199,20 @@ const CouponAdmin = () => {
                             </div>
                         </div>
 
-                        <div className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
-                            <h1 className="m-0" style={{ color: "white" }}>관리자</h1>
+                        <div
+                            className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
+                            <h1 className="m-0" style={{color: "white"}}>관리자</h1>
                             <div className="mt-4 d-flex flex-column justify-content-center align-items-center">
                                 {coupon.active && (
-                                <button className="btn btn-light mb-2" style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    height: '40px',
-                                    width: '40px'
-                                }} onClick={() => handleEmailButtonClick(coupon)}>
-                                    <span className="material-icons">email</span>
-                                </button>)}
+                                    <button className="btn btn-light mb-2" style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        height: '40px',
+                                        width: '40px'
+                                    }} onClick={() => handleEmailButtonClick(coupon)}>
+                                        <span className="material-icons">email</span>
+                                    </button>)}
                                 <button className="btn btn-light mb-2"
                                         onClick={() => handleMemberButtonClick(coupon.id, coupon.code)} style={{
                                     display: 'flex',
@@ -261,7 +268,8 @@ const CouponAdmin = () => {
                     이전
                 </button>
                 <span>{currentPage} / {totalPages}</span>
-                <button className="btn btn-secondary ms-2" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                <button className="btn btn-secondary ms-2" onClick={handleNextPage}
+                        disabled={currentPage === totalPages}>
                     다음
                 </button>
             </div>

@@ -100,15 +100,16 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     maxWidth: `70%`,
                     maxHeight: `80%`,
                     margin: 'auto',
-                    padding: '40px',
+                    padding: '0 40px 40px 40px',
                     borderRadius: '10px'
                 },
                 overlay: {
                     backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    zIndex: '100'
                 }
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="modal-header d-flex justify-content-between align-items-center">
                 <h2 className="text-center mb-4">쿠폰 검색</h2>
                 <button onClick={handleCloseModal} style={{
                     background: 'none',

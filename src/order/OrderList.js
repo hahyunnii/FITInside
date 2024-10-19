@@ -128,7 +128,6 @@ const OrderList = () => {
                                 <img
                                     src={order.productImgUrl}
                                     alt="주문 상품 대표 이미지"
-                                    // style={{ width: '100px', height: '100px', marginBottom: '10px' }}
                                     className="order-img"
                                 />
                             )}

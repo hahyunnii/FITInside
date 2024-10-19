@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import './deliveryForm.css';
 import PostcodeSearch from "./PostcodeSearch";
 
-const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
+const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, showDefaultSelect = true }, ref) => {
     const [postalCode, setPostalCode] = useState(initialValues.postalCode || '');
     const [deliveryAddress, setDeliveryAddress] = useState(initialValues.deliveryAddress || '');
     const [detailedAddress, setDetailedAddress] = useState(initialValues.detailedAddress || '');
@@ -46,12 +46,43 @@ const DeliveryForm = forwardRef(({ initialValues = {} }, ref) => {
                 deliveryPhone
             });
             return { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone };
+        },
+        setFormData: (address) => {
+            setPostalCode(address.postalCode || '');
+            setDeliveryAddress(address.deliveryAddress || '');
+            setDetailedAddress(address.detailedAddress || '');
+            setDeliveryReceiver(address.deliveryReceiver || '');
+            setDeliveryMemo(address.deliveryMemo || '');
+
+            const deliveryPhone = address.deliveryPhone || '';
+            const phoneParts = deliveryPhone.split('-');
+            if (phoneParts.length === 3) {
+                setPhoneFirst(phoneParts[0] || '010');
+                setPhoneMiddle(phoneParts[1] || '');
+                setPhoneLast(phoneParts[2] || '');
+            } else {
+                // 기본값 설정
+                setPhoneFirst('010');
+                setPhoneMiddle('');
+                setPhoneLast('');
+            }
         }
     }));
 
     return (
         <div className="delivery-form">
-            <h4>배송 정보</h4>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: 80 }}>
+                <h4 style={{ margin: 0, lineHeight: '1.5', paddingTop: 0 }}>배송 정보</h4>
+                {showDefaultSelect && (
+                    <button
+                        className="btn btn-outline-primary"
+                        style={{ marginLeft: '20px', padding: '8px 16px', height: '40px' }}
+                        onClick={onAddressSelect}
+                    >
+                        기본 배송지 선택
+                    </button>
+                )}
+            </div>
             <table className="delivery-table">
                 <tbody>
                     <tr>

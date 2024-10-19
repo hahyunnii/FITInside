@@ -125,10 +125,6 @@ const Cart = () => {
         setCurrentProduct(null);
     };
 
-    useEffect(() => {
-        console.log('현재 totalDiscount:', totalDiscount);
-    }, [totalDiscount]);
-
     const handleApplyCoupon = (coupon) => {
         const currentPrice = productDetails[currentProduct.id]?.price || 0; // 현재 상품 가격
         const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (currentPrice * coupon.percentage) / 100; // 현재 쿠폰 할인 금액
@@ -157,6 +153,13 @@ const Cart = () => {
         updatedCoupons.push({...coupon, productId: currentProduct.id}); // 새로운 쿠폰 추가
         setAppliedCoupons(updatedCoupons); // 상태 업데이트
 
+        // 선택된 상품에 현재 상품 추가
+        setSelectedItems(prevSelectedItems => {
+            const newSelectedItems = new Set(prevSelectedItems);
+            newSelectedItems.add(currentProduct.id); // 현재 상품 ID 추가
+            return newSelectedItems;
+        });
+
         // 총 할인 금액 재계산
         const newTotalDiscount = updatedCoupons.reduce((total, c) => {
             const price = productDetails[c.productId]?.price || 0;
@@ -166,53 +169,73 @@ const Cart = () => {
 
         setTotalDiscount(newTotalDiscount); // 재계산된 할인 금액 설정
 
-        console.log(`쿠폰 ${coupon.name}이 상품 ${currentProduct.id}에 적용되었습니다. 할인 금액: ${discountAmount}`);
-        console.log('적용된 쿠폰들 ', updatedCoupons);
         handleCloseCouponModal();
     };
 
+    const handleRemoveCoupon = (coupon) => {
+        // 쿠폰 제거 로직
+        const updatedCoupons = appliedCoupons.filter(c => c.couponMemberId !== coupon.couponMemberId);
+        setAppliedCoupons(updatedCoupons);
+
+        // 총 할인 금액 재계산
+        const newTotalDiscount = updatedCoupons.reduce((total, c) => {
+            const price = productDetails[c.productId]?.price || 0;
+            const discount = c.type === 'AMOUNT' ? c.value : (price * c.percentage) / 100;
+            return total + discount;
+        }, 0);
+        setTotalDiscount(newTotalDiscount);
+    };
 
     const getTotalPrice = () => {
         const subtotal = cart.reduce((total, item) => {
-            const price = productDetails[item.id]?.price || 0;
-            return total + price * item.quantity;
+            // 선택된 아이템만 계산
+            if (selectedItems.has(item.id)) {
+                const price = productDetails[item.id]?.price || 0;
+                return total + price * item.quantity;
+            }
+            return total;
         }, 0);
 
-        return subtotal - totalDiscount ; // 할인 적용 후 최종 금액
+        return subtotal - totalDiscount; // 할인 적용 후 최종 금액
     };
 
-    // 주문하기 버튼 클릭 시 쿠폰 사용 정보 (주문 정보)를 로컬 스토리지에 저장
     const handleOrder = () => {
-        const orderData = cart.map(item => {
-            const productDetail = productDetails[item.id]; // 상품 세부 정보 가져오기
-            const appliedCoupon = appliedCoupons.find(coupon => coupon.productId === item.id); // 해당 상품에 적용된 쿠폰 찾기
+        const orderData = cart
+            .filter(item => selectedItems.has(item.id)) // 선택된 상품만 필터링
+            .map(item => {
+                const productDetail = productDetails[item.id]; // 상품 세부 정보 가져오기
+                const appliedCoupon = appliedCoupons.find(coupon => coupon.productId === item.id); // 해당 상품에 적용된 쿠폰 찾기
 
-            // 할인 금액 계산
-            const itemPrice = productDetail.price;  // 상품 기존 1개 값
-            const discountAmount = appliedCoupon ? (appliedCoupon.type === 'AMOUNT' ? appliedCoupon.value : (itemPrice * appliedCoupon.percentage) / 100) : 0;
-            const originalTotalPrice = itemPrice * item.quantity;
-            const discountedTotalPrice = originalTotalPrice - discountAmount;
+                // 할인 금액 계산
+                const itemPrice = productDetail.price;  // 상품 기존 1개 값
+                const discountAmount = appliedCoupon ?
+                    (appliedCoupon.type === 'AMOUNT' ? appliedCoupon.value : (itemPrice * appliedCoupon.percentage) / 100)
+                    : 0;
 
-            return {
-                productId: item.id,
-                productName: productDetail.productName, // 상품 이름
-                quantity: item.quantity, // 수량
-                itemPrice, // 상품 1개 가격
-                originalTotalPrice, // 원래 총 가격
-                discountedTotalPrice, // 할인된 총 가격
-                couponName: appliedCoupon ? appliedCoupon.name : null, // 적용된 쿠폰 이름
-                couponMemberId: appliedCoupon ? appliedCoupon.couponMemberId : null, // 적용된 쿠폰 ID
-            };
-        });
+                const originalTotalPrice = itemPrice * item.quantity;
+                const discountedTotalPrice = originalTotalPrice - discountAmount;
+
+                return {
+                    productId: item.id,
+                    productName: productDetail.productName, // 상품 이름
+                    quantity: item.quantity, // 수량
+                    itemPrice, // 상품 1개 가격
+                    originalTotalPrice, // 원래 총 가격
+                    discountedTotalPrice, // 할인된 총 가격
+                    couponName: appliedCoupon ? appliedCoupon.name : null, // 적용된 쿠폰 이름
+                    couponMemberId: appliedCoupon ? appliedCoupon.couponMemberId : null, // 적용된 쿠폰 ID
+                };
+            });
 
         // 로컬 스토리지에 저장
         localStorage.setItem('orderData', JSON.stringify(orderData));
         localStorage.setItem('shippingCost', JSON.stringify(shippingCost));
     };
 
+
     const calculateShippingCost = () => {
         const totalPrice = getTotalPrice() + totalDiscount;
-        if (cartCount === 0) {
+        if (selectedItems.size === 0) {
             return 0;
         }
         return totalPrice < 20000 ? 2500 : 0;
@@ -222,8 +245,9 @@ const Cart = () => {
 
     return (
         <div className="cart-container">
-            <h2>쇼핑백</h2>
-            <br/>
+            <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop:'20px'}}>
+                <h2>쇼핑백</h2>
+            </div>
             <div className="both-container">
                 <div className="left-container">
                     <div className="d-flex justify-content-between">
@@ -276,14 +300,8 @@ const Cart = () => {
                                     </td>
                                     <td>
                                         {productDetails[item.id] ? (
-                                            <div>
+                                            <div key={item.id}>
                                                 <div className="d-flex justify-content-start">
-                                                    {/*<img*/}
-                                                    {/*    style={{ width: '100px', height: '100px', marginRight: '10px'}}*/}
-                                                    {/*    src={productDetails[item.id].productImgUrls.length > 0*/}
-                                                    {/*        ? productDetails[item.id].productImgUrls[0]*/}
-                                                    {/*        : 'https://dummyimage.com/100x100'} // 여기에 더미 이미지 경로를 추가하세요*/}
-                                                    {/*/>*/}
                                                     <img style={{width: '100px', height: '100px', marginRight: '10px'}}
                                                          src={productDetails[item.id].productImgUrls[0]}/>
                                                     <div>
@@ -318,9 +336,21 @@ const Cart = () => {
                                                 {appliedCoupons.filter(coupon => coupon.productId === item.id).map((coupon, index) => {
                                                     const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (productDetails[item.id].price * coupon.percentage) / 100;
                                                     return (
-                                                        <p key={index} style={{margin: '0', color: '#629a72'}}>
-                                                            적용된 쿠폰: {coupon.name} (-{discountAmount.toLocaleString()} 원)
-                                                        </p>
+                                                        <div className="d-flex justify-content-start align-items-center">
+                                                            <button  style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                marginRight: '5px'
+                                                            }}
+                                                                    onClick={() => handleRemoveCoupon(coupon)}>&times;</button>
+                                                            <p key={index}
+                                                               style={{margin: '0', color: '#629a72'}}>
+                                                                적용된
+                                                                쿠폰: {coupon.name} (-{discountAmount.toLocaleString()} 원)
+                                                            </p>
+
+                                                        </div>
                                                     );
                                                 })}
                                             </div>
@@ -357,10 +387,10 @@ const Cart = () => {
                     )}
                 </div>
 
-                <div className="right-container">
+                <div className="right-container-c">
                     <div className="order-container">
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <p>상품 금액 ({cartCount})</p>
+                            <p>상품 금액 ({selectedItems.size})</p>
                             {totalDiscount > 0 ? (
                                 <span>
             <p style={{textDecoration: 'line-through', marginRight: '8px'}}>
@@ -378,7 +408,7 @@ const Cart = () => {
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
 
                             <p>배송비</p>
-                            {cartCount === 0 ? (
+                            {selectedItems.size === 0 ? (
                                 <p>0 원</p>
                             ) : shippingCost > 0 ? (
                                 <p>{shippingCost.toLocaleString()} 원</p>
@@ -431,16 +461,17 @@ const Cart = () => {
                             쇼핑하기</a>
                         <a
                             className="btn btn-custom p-3"
-                            onClick={handleOrder}
-                            href={cartCount > 0 ? "/order" : "/cart"} // cartCount가 0일 때 링크를 비활성화
+                            onClick={cartCount > 0 && selectedItems.size > 0 ? handleOrder : undefined} // 클릭 핸들러를 조건적으로 설정
+                            href={cartCount > 0 && selectedItems.size > 0 ? "/order" : "/cart"}
                             style={{
-                                pointerEvents: cartCount === 0 ? 'none' : 'auto',
-                                opacity: cartCount === 0 ? 0.5 : 1
+                                pointerEvents: (cartCount === 0 || selectedItems.size === 0) ? 'none' : 'auto',
+                                opacity: (cartCount === 0 || selectedItems.size === 0) ? 0.5 : 1,
+                                cursor: (cartCount === 0 || selectedItems.size === 0) ? 'not-allowed' : 'pointer' // 금지 아이콘 표시
+
                             }} // 비활성화 스타일
                         >
-                            전체 주문하기
+                            주문하기
                         </a>
-
                     </div>
                 </div>
             </div>
