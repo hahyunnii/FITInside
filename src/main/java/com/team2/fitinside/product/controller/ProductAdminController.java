@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/admin/products")
 public class ProductAdminController {
@@ -85,6 +87,75 @@ public class ProductAdminController {
         );
 
         return ResponseEntity.ok(updatedProduct);
+    }
+
+
+//    // 상품 이미지 삭제 (특정 이미지 삭제)
+//    @DeleteMapping("/{id}/images")
+//    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
+//    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<?> deleteProductImages(
+//            @PathVariable Long id,
+//            @RequestParam List<String> imageUrlsToDelete,  // 삭제할 이미지 URL 리스트
+//            @RequestParam List<String> descImageUrlsToDelete // 삭제할 설명 이미지 URL 리스트
+//    ) {
+//        // 상품 이미지 삭제 처리
+//        productService.deleteProductImages(id, imageUrlsToDelete, descImageUrlsToDelete);
+//
+//        return ResponseEntity.ok("이미지가 성공적으로 삭제되었습니다.");
+//    }
+
+    // 상품 이미지 삭제 (특정 이미지 삭제)
+//    @DeleteMapping("/{id}/images")
+//    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
+//    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+//    public ResponseEntity<?> deleteProductImages(
+//            @PathVariable Long id,
+//            @RequestParam(required = false) List<String> imageUrlsToDelete,  // 삭제할 이미지 URL 리스트 (선택적 입력)
+//            @RequestParam(required = false) List<String> descImageUrlsToDelete // 삭제할 설명 이미지 URL 리스트 (선택적 입력)
+//    ) {
+//        // 둘 중 하나라도 값이 들어오면 삭제 처리 진행
+//        if ((imageUrlsToDelete == null || imageUrlsToDelete.isEmpty()) &&
+//                (descImageUrlsToDelete == null || descImageUrlsToDelete.isEmpty())) {
+//            return ResponseEntity.badRequest().body("삭제할 이미지 URL을 입력하세요.");
+//        }
+//
+//        // 상품 이미지 삭제 처리
+//        productService.deleteProductImages(id, imageUrlsToDelete, descImageUrlsToDelete);
+//
+//        return ResponseEntity.ok("이미지가 성공적으로 삭제되었습니다.");
+//    }
+
+    // 상품 이미지 삭제 (특정 이미지 삭제)
+    @DeleteMapping("/{id}/images")
+    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<?> deleteProductImages(
+            @PathVariable Long id,
+            @RequestParam List<String> imageUrlsToDelete  // 삭제할 상품 이미지 URL 리스트
+    ) {
+        // 상품 이미지 삭제 처리
+        productService.deleteProductImages(id, imageUrlsToDelete);
+
+        return ResponseEntity.ok("상품 이미지가 성공적으로 삭제되었습니다.");
+    }
+
+    // 상품 설명 이미지 삭제 (특정 설명 이미지 삭제)
+    @DeleteMapping("/{id}/description-images")
+    @Operation(summary = "상품 설명 이미지 삭제", description = "특정 상품의 설명 이미지를 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "설명 이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<?> deleteProductDescriptionImages(
+            @PathVariable Long id,
+            @RequestParam List<String> descImageUrlsToDelete  // 삭제할 설명 이미지 URL 리스트
+    ) {
+        // 상품 설명 이미지 삭제 처리
+        productService.deleteProductDescriptionImages(id, descImageUrlsToDelete);
+
+        return ResponseEntity.ok("상품 설명 이미지가 성공적으로 삭제되었습니다.");
     }
 
 
