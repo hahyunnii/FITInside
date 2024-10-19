@@ -16,6 +16,9 @@ import { CategoryAdminMain, CategoryCreate, CategoryUpdate } from "./category";
 import { ProductAdmin, ProductCreate, ProductUpdate, ProductDelete } from './product/admin';
 import { AddressList } from "./address";
 import { BannerAdminMain, BannerCreate, BannerUpdate } from "./banner";
+import ProtectedRoute from "./ProtectedRoute";
+import ProtectedAdminRoute from "./ProtectedAdminRoute";
+import AccessDeniedPage from "./AccessDeniedPage";
 
 
 const App = () => {
@@ -27,43 +30,43 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<Home />} /> {/* 홈 화면 */}
 
-                        <Route path="/admin" element={<AdminPage/>} /> {/*관리자 화면*/}
+                        <Route path="/admin" element={<ProtectedAdminRoute><AdminPage/></ProtectedAdminRoute>} /> {/*관리자 화면*/}
+                        <Route path="/access-denied" element={<AccessDeniedPage />}></Route>    {/*관리자 권한이 없을 때의 페이지*/}
 
                         <Route path="/login" element={<Login />} /> {/* login 화면 */}
                         <Route path="/signup" element={<Signup />} /> {/* login 화면 */}
                         <Route path="/tokenCheck" element={<GoogleTokenCheck />} /> {/* Google로그인 후 토큰 저장 */}
-                        <Route path="/me" element={<MyPage />} /> {/* mypage 화면 */}
-                        <Route path="/admin/member" element={<AdminMemberPage />} /> {/* 회원 관리 화면 */}
-                        <Route path="/admin/member/delete" element={<AdminDeleteMemberPage />} /> {/* 탈퇴 회원 관리 화면 */}
+                        <Route path="/me" element={<ProtectedRoute><MyPage /></ProtectedRoute>} /> {/* mypage 화면 */}
+                        <Route path="/admin/member" element={<ProtectedAdminRoute><AdminMemberPage /></ProtectedAdminRoute>} /> {/* 회원 관리 화면 */}
+                        <Route path="/admin/member/delete" element={<ProtectedAdminRoute><AdminDeleteMemberPage /></ProtectedAdminRoute>} /> {/* 탈퇴 회원 관리 화면 */}
 
-                        <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/cart" element={<Cart />} /> {/* 장바구니 화면 */}
 
-                        <Route path="/order" element={<OrderCreate />} /> {/* 주문서 작성 화면 */}
-                        <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* 상세 주문 화면*/}
-                        <Route path="/orders" element={<OrderList />} /> {/* 주문 목록 화면 */}
-                        <Route path="/admin/orders" element={<OrderAdminList />}/> {/*관리자 주문 목록 화면*/}
+                        <Route path="/order" element={<ProtectedRoute><OrderCreate /></ProtectedRoute>} /> {/* 주문서 작성 화면 */}
+                        <Route path="/orders/:orderId" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} /> {/* 상세 주문 화면*/}
+                        <Route path="/orders" element={<ProtectedRoute><OrderList /></ProtectedRoute>} /> {/* 주문 목록 화면 */}
+                        <Route path="/admin/orders" element={<ProtectedAdminRoute><OrderAdminList /></ProtectedAdminRoute>}/> {/*관리자 주문 목록 화면*/}
 
-                        <Route path="/admin/coupons" element={<CouponAdmin />} /> {/*쿠폰 관리자 화면*/}
-                        <Route path="/coupons" element={<CouponList />} /> {/*쿠폰 회원 화면*/}
-                        <Route path="/coupons/welcome" element={<WelcomeCouponList />} /> {/*웰컴 쿠폰 화면*/}
+                        <Route path="/admin/coupons" element={<ProtectedAdminRoute><CouponAdmin /></ProtectedAdminRoute>} /> {/*쿠폰 관리자 화면*/}
+                        <Route path="/coupons" element={<ProtectedRoute><CouponList /></ProtectedRoute>} /> {/*쿠폰 회원 화면*/}
+                        <Route path="/coupons/welcome" element={<ProtectedRoute><WelcomeCouponList /></ProtectedRoute>} /> {/*웰컴 쿠폰 화면*/}
 
-                        <Route path="/admin/categories" element={<CategoryAdminMain />} />
-                        <Route path="/category-create" element={<CategoryCreate />} />
-                        <Route path="/category-update/:id" element={<CategoryUpdate />} />
+                        <Route path="/admin/categories" element={<ProtectedAdminRoute><CategoryAdminMain /></ProtectedAdminRoute>} />
+                        <Route path="/category-create" element={<ProtectedAdminRoute><CategoryCreate /></ProtectedAdminRoute>} />
+                        <Route path="/category-update/:id" element={<ProtectedAdminRoute><CategoryUpdate /></ProtectedAdminRoute>} />
 
-                        <Route path="/admin/banners" element={<BannerAdminMain />} /> {/* 배너 관리자 화면 */}
-                        <Route path="/admin/banner/create" element={<BannerCreate />} /> {/* 배너 생성 화면 */}
-                        <Route path="/admin/banner/update/:id" element={<BannerUpdate />} /> {/* 배너 수정 화면 */}
+                        <Route path="/admin/banners" element={<ProtectedAdminRoute><BannerAdminMain /></ProtectedAdminRoute>} /> {/* 배너 관리자 화면 */}
+                        <Route path="/admin/banner/create" element={<ProtectedAdminRoute><BannerCreate /></ProtectedAdminRoute>} /> {/* 배너 생성 화면 */}
+                        <Route path="/admin/banner/update/:id" element={<ProtectedAdminRoute><BannerUpdate /></ProtectedAdminRoute>} /> {/* 배너 수정 화면 */}
 
                         <Route path="/product/:id" element={<ProductSection />} />
                         <Route path="/products/category/:categoryId" element={<ProductList />} />
-                        <Route path="/admin/products" element={<ProductAdmin />} /> {/* 관리자 상품 관리 화면 */}
-                        <Route path="/admin/products/create" element={<ProductCreate />} />
-                        <Route path="/admin/products/update/:id" element={<ProductUpdate />} />
-                        <Route path="/admin/products/delete" element={<ProductDelete />} />
+                        <Route path="/admin/products" element={<ProtectedAdminRoute><ProductAdmin /></ProtectedAdminRoute>} /> {/* 관리자 상품 관리 화면 */}
+                        <Route path="/admin/products/create" element={<ProtectedAdminRoute><ProductCreate /></ProtectedAdminRoute>} />
+                        <Route path="/admin/products/update/:id" element={<ProtectedAdminRoute><ProductUpdate /></ProtectedAdminRoute>} />
+                        <Route path="/admin/products/delete" element={<ProtectedAdminRoute><ProductDelete /></ProtectedAdminRoute>} />
 
-                        <Route path="/addresses" element={<AddressList />} /> {/*배송지 목록 화면*/}
+                        <Route path="/addresses" element={<ProtectedRoute><AddressList /></ProtectedRoute>} /> {/*배송지 목록 화면*/}
                     </Routes>
                 </main>
                 <Footer />
