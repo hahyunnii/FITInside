@@ -3,28 +3,29 @@ import { useNavigate } from 'react-router-dom';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
-        categoryName: '', // 선택된 카테고리명을 저장
+        categoryName: '',
         productName: '',
         price: '',
         info: '',
         manufacturer: '',
         stock: '',
-        productImgUrls: []
+        productImgUrls: [],
+        productDescImgUrls: [] // 상품 설명 이미지 추가
     });
 
-    const [categories, setCategories] = useState([]); // 카테고리 목록 저장
+    const [categories, setCategories] = useState([]);
     const [images, setImages] = useState([]);
+    const [descImages, setDescImages] = useState([]); // 설명 이미지 상태 추가
     const [previewImages, setPreviewImages] = useState([]);
+    const [previewDescImages, setPreviewDescImages] = useState([]); // 설명 이미지 미리보기 상태 추가
     const navigate = useNavigate();
 
     // 카테고리 목록을 서버에서 가져오는 useEffect
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/categories'); // 카테고리 목록을 가져오는 API 호출
+                const response = await fetch('http://localhost:8080/api/categories');
                 const data = await response.json();
-
-                // parentId가 null인 항목을 제외하고 필터링
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
@@ -49,20 +50,35 @@ const ProductCreate = () => {
         setPreviewImages(previewUrls);
     };
 
+    // 상품 설명 이미지 핸들러
+    const handleDescImageChange = (e) => {
+        const selectedDescFiles = Array.from(e.target.files);
+        setDescImages(selectedDescFiles);
+
+        // 미리보기 설명 이미지 생성
+        const previewDescUrls = selectedDescFiles.map(file => URL.createObjectURL(file));
+        setPreviewDescImages(previewDescUrls);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const data = new FormData();
-        data.append('categoryName', formData.categoryName); // 선택된 카테고리명 추가
+        data.append('categoryName', formData.categoryName);
         data.append('productName', formData.productName);
         data.append('price', formData.price);
         data.append('info', formData.info);
         data.append('manufacturer', formData.manufacturer);
         data.append('stock', formData.stock);
 
-        // 이미지를 FormData에 추가
+        // 상품 이미지를 FormData에 추가
         images.forEach((image) => {
             data.append('productImgUrls', image);
+        });
+
+        // 상품 설명 이미지를 FormData에 추가
+        descImages.forEach((image) => {
+            data.append('productDescImgUrls', image);
         });
 
         try {
@@ -168,9 +184,9 @@ const ProductCreate = () => {
                         />
                     </div>
                 </div>
-                {/* 이미지 업로드 필드 */}
+                {/* 상품 이미지 업로드 필드 */}
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">이미지 업로드</label>
+                    <label className="col-sm-2 col-form-label">상품 이미지 업로드</label>
                     <div className="col-sm-3">
                         <input
                             type="file"
@@ -182,9 +198,9 @@ const ProductCreate = () => {
                     </div>
                 </div>
 
-                {/* 이미지 미리보기 */}
+                {/* 상품 이미지 미리보기 */}
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">이미지 미리보기</label>
+                    <label className="col-sm-2 col-form-label">상품 이미지 미리보기</label>
                     <div className="col-sm-10">
                         <div className="row">
                             {previewImages.map((src, index) => (
@@ -192,6 +208,39 @@ const ProductCreate = () => {
                                     <img
                                         src={src}
                                         alt={`미리보기 ${index + 1}`}
+                                        className="img-thumbnail"
+                                        style={{ width: '100%', height: 'auto' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 상품 설명 이미지 업로드 필드 */}
+                <div className="form-group row">
+                    <label className="col-sm-2 col-form-label">상품 설명 이미지 업로드</label>
+                    <div className="col-sm-3">
+                        <input
+                            type="file"
+                            name="productDescImgUrls"
+                            onChange={handleDescImageChange}
+                            className="form-control"
+                            multiple
+                        />
+                    </div>
+                </div>
+
+                {/* 상품 설명 이미지 미리보기 */}
+                <div className="form-group row">
+                    <label className="col-sm-2 col-form-label">상품 설명 이미지 미리보기</label>
+                    <div className="col-sm-10">
+                        <div className="row">
+                            {previewDescImages.map((src, index) => (
+                                <div key={index} className="col-md-3">
+                                    <img
+                                        src={src}
+                                        alt={`설명 이미지 미리보기 ${index + 1}`}
                                         className="img-thumbnail"
                                         style={{ width: '100%', height: 'auto' }}
                                     />
