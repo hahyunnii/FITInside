@@ -35,6 +35,23 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    // 페이지네이션, 정렬, 검색을 적용한 상품 목록 조회
+    @GetMapping("/byCategory")
+    @Operation(summary = "상품 목록 조회", description = "등록된 모든 상품 목록을 페이지네이션, 정렬, 검색 기능과 함께 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
+    public ResponseEntity<Page<ProductResponseDto>> getAllProductsByCategoryName(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size,
+            @RequestParam(value = "sortField", defaultValue = "createdAt") String sortField,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        Page<ProductResponseDto> products = productService.getAllProductsByCategoryName(page, size, sortField, sortDir, keyword);
+        return ResponseEntity.ok(products);
+    }
+
+
+
     // 페이지네이션, 정렬, 검색을 적용한 특정 카테고리 상품 목록 조회
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "카테고리별 상품 목록 조회", description = "특정 카테고리의 상품 목록을 페이지네이션, 정렬, 검색 기능과 함께 반환합니다.")

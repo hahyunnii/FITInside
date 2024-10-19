@@ -47,6 +47,21 @@ public class ProductService {
         }
     }
 
+    // 페이지네이션, 정렬, 카테고리 이름을 적용한 상품 목록 조회
+    public Page<ProductResponseDto> getAllProductsByCategoryName(int page, int size, String sortField, String sortDir, String categoryName) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (categoryName != null && !categoryName.isEmpty()) {
+            return productRepository.searchByCategoryNameAndIsDeletedFalse(categoryName, pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        } else {
+            return productRepository.findByIsDeletedFalse(pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        }
+    }
+
     // 페이지네이션, 정렬, 검색을 적용한 카테고리별 상품 목록 조회
     public Page<ProductResponseDto> getProductsByCategory(Long categoryId, int page, int size, String sortField, String sortDir, String keyword) {
         Sort sort = Sort.by(sortField);
