@@ -5,6 +5,7 @@ import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 const CouponList = () => {
     const [welcomeCoupons, setWelcomeCoupons] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [couponIds, setCouponIds] = useState([]); // 추가된 상태
 
     useEffect(() => {
         fetchWelcomeCoupons();
@@ -27,6 +28,15 @@ const CouponList = () => {
 
             const data = await response.json();
             setWelcomeCoupons(data.coupons);
+            // MyWelcomeCouponResponseWrapperDto 응답에서 couponIds 설정
+            const myWelcomeResponse = await fetch(`http://localhost:8080/api/coupons/myWelcome`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+            const welcomeData = await myWelcomeResponse.json();
+            setCouponIds(welcomeData.couponIds); // 응답의 couponIds 저장
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
@@ -74,8 +84,10 @@ const CouponList = () => {
 
             if (!response.ok) {
                 if (response.status === 409) {
+                    alert('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
                     throw new Error('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
                 }
+                alert('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
                 throw new Error('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
             }
 
@@ -87,13 +99,13 @@ const CouponList = () => {
                     coupon.code === code ? { ...coupon, active: false } : coupon
                 )
             );
-
-            // 페이지 새로 고침
-            // window.location.reload(); // 페이지 새로 고침 대신 상태 업데이트로 대체
+            window.location.reload();
         } catch (error) {
             try {
-                await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+                if(error.code !== 409){
+                    await sendRefreshTokenAndStoreAccessToken();
+                    window.location.reload();
+                }
             } catch (e) {
                 console.error(error.message);
             }
@@ -101,17 +113,17 @@ const CouponList = () => {
     };
 
     return (
-        <div className="container mt-5 d-flex flex-column justify-content-center">
+        <div className="container d-flex flex-column justify-content-center" style={{marginTop: '100px'}}>
             <h2>웰컴 쿠폰 발급 이벤트!!</h2><br />
-            <img src="/img/welcome_coupon_ad_transparent.png" style={{ width: '100%', height: 'auto' }} alt="쿠폰 광고" />
+            <img src="/img/welcome_ad.png" style={{ width: '100%', height: 'auto' }} alt="쿠폰 광고" />
             <div className="row mb-5" style={{ width: '100%' }}>
                 {welcomeCoupons.map((coupon) => (
                     <div className="couponWrap" key={coupon.id}>
                         <div
-                            className={`mb-5 coupon couponLeft ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
-                            <h1 className="m-0 d-flex justify-content-between" style={{ color: "white" }}>
+                            className={`mb-5 coupon couponLeft ${couponIds.includes(coupon.id) ? 'black' : (coupon.type === 'AMOUNT' ? 'red' : 'blue')}`}>
+                            <h1 className="m-0 d-flex justify-content-between" style={{color: "white"}}>
                                 {coupon.name}
-                                <span>사용가능</span>
+                                <span>{couponIds.includes(coupon.id) ? '보유 중' : '다운가능'}</span>
                             </h1>
                             <div className="title mt-4 mb-2">
                                 <strong>{coupon.code}</strong>
@@ -132,8 +144,8 @@ const CouponList = () => {
                         </div>
 
                         <div
-                            className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
-                            <h1 className="m-0" style={{ color: "white" }}>다운로드</h1>
+                            className={`coupon couponRight ${couponIds.includes(coupon.id) ? 'black' : (coupon.type === 'AMOUNT' ? 'red' : 'blue')}`}>
+                            <h1 className="m-0" style={{color: "white"}}>다운로드</h1>
                             <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
                                 <button
                                     className="btn btn-light mb-2"
@@ -143,10 +155,10 @@ const CouponList = () => {
                                         justifyContent: 'center',
                                         height: '60px',
                                         width: '60px',
-                                        opacity: coupon.active ? 1 : 0.5, // 활성화 상태에 따라 투명도 조정
-                                        cursor: coupon.active ? 'pointer' : 'not-allowed' // 활성화 상태에 따라 커서 변경
+                                        opacity: !couponIds.includes(coupon.id) ? 1 : 0.5,
+                                        cursor: !couponIds.includes(coupon.id) ? 'pointer' : 'not-allowed'
                                     }}
-                                    disabled={!coupon.active} // coupon.active가 false일 때 버튼 비활성화
+                                    disabled={couponIds.includes(coupon.id)} // 보유중일때 버튼 비활성화
                                     onClick={() => handleCouponSubmit(coupon.code)} // 버튼 클릭 시 쿠폰 입력 요청
                                 >
                                     <span className="material-icons">download</span>
