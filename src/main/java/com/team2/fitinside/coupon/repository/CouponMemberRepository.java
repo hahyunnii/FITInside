@@ -29,4 +29,6 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
     Optional<CouponMember> findByMember_IdAndCoupon_IdAndUsedIs(Long memberId, Long couponId, boolean used);
 
     boolean existsByMember_IdAndCoupon_Id(Long memberId, Long couponId);
+
+    List<CouponMember> findByMember_IdAndCoupon_Name_Contains(Long memberId, String couponName);
 }

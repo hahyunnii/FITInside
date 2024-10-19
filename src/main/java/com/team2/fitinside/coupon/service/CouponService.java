@@ -1,10 +1,7 @@
 package com.team2.fitinside.coupon.service;
 
 import com.team2.fitinside.config.SecurityUtil;
-import com.team2.fitinside.coupon.dto.AvailableCouponResponseDto;
-import com.team2.fitinside.coupon.dto.AvailableCouponResponseWrapperDto;
-import com.team2.fitinside.coupon.dto.CouponResponseDto;
-import com.team2.fitinside.coupon.dto.CouponResponseWrapperDto;
+import com.team2.fitinside.coupon.dto.*;
 import com.team2.fitinside.coupon.entity.Coupon;
 import com.team2.fitinside.coupon.entity.CouponMember;
 import com.team2.fitinside.coupon.mapper.CouponMapper;
@@ -129,6 +126,23 @@ public class CouponService {
         }
 
         return new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos, 1);
+    }
+
+    // 보유한 웰컴 쿠폰 목록 조회
+    public MyWelcomeCouponResponseWrapperDto findMyWelcomeCoupons() {
+
+        Long loginMemberId = getAuthenticatedMemberId();
+
+        List<CouponMember> couponMembers = couponMemberRepository.findByMember_IdAndCoupon_Name_Contains(loginMemberId, "웰컴");
+
+        List<Long> couponIds = new ArrayList<>();
+        System.out.println("couponMembers.size() = " + couponMembers.size());
+        for (CouponMember couponMember : couponMembers) {
+            System.out.println("couponMember.getCoupon().getName() = " + couponMember.getCoupon().getName());
+            couponIds.add(couponMember.getCoupon().getId());
+        }
+
+        return new MyWelcomeCouponResponseWrapperDto("쿠폰 목록 조회 안료했습니다!", couponIds);
     }
 
     @Transactional
