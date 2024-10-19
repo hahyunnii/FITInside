@@ -25,8 +25,8 @@ const AvailableCouponModal = ({ coupons, onClose, onApplyCoupon }) => {
                 </div>
 
                 {Array.isArray(coupons) && coupons.length > 0 ? (
-                    coupons.map(coupon => (
-                        <div className="couponWrap d-flex justify-content-center" key={coupon.id}>
+                    coupons.map((coupon, index) => (
+                        <div className="couponWrap d-flex justify-content-center" key={coupon.id ? coupon.id : index}> {/* 고유한 key prop 사용 */}
                             <div
                                 className={`coupon couponLeft ${coupon.type === 'AMOUNT' ? 'red' : 'blue'}`}>
                                 <h1 className="m-0" style={{ color: "white" }}>
