@@ -61,15 +61,16 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
                     maxWidth: `50%`,
                     maxHeight: `70%`,
                     margin: 'auto',
-                    padding: '40px',
+                    padding: '0 40px 40px 40px',
                     borderRadius: '10px'
                 },
                 overlay: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    zIndex: '100'
                 }
             }}
         >
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div className="modal-header d-flex justify-content-between align-items-center">
                 <h2 className="text-center mb-4">보유 회원 목록</h2>
                 <button onClick={handleCloseMemberModal} style={{
                     background: 'none',
