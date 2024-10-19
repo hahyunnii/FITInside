@@ -75,27 +75,29 @@ public class ProductService {
 
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
-    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
+    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
-
-//        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        product.setCategory(category);
 
         // categoryName을 통해 categoryId를 조회하는 로직
         Category category = categoryRepository.findByName(productCreateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
-        // S3 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
-        List<String> imageUrls = uploadImages(images);
+        // S3 상품 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
+        List<String> productImageUrls = uploadImages(productImages);
 
-        // 이미지가 없을 경우 기본 더미 이미지 추가
-        if (imageUrls.isEmpty()) {
-            imageUrls.add(DEFAULT_IMAGE_URL);
+        // 상품 이미지가 없을 경우 기본 더미 이미지 추가
+        if (productImageUrls.isEmpty()) {
+            productImageUrls.add(DEFAULT_IMAGE_URL);
         }
 
-        product.setProductImgUrls(imageUrls);
+        // 상품 설명 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
+        List<String> productDescImageUrls = uploadImages(productDescImages);
+
+        // 상품 이미지 및 설명 이미지 설정
+        product.setProductImgUrls(productImageUrls);
+        product.setProductDescImgUrls(productDescImageUrls);
+
         Product savedProduct = productRepository.save(product);
 
         return ProductMapper.INSTANCE.toDto(savedProduct);

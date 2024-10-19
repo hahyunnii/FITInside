@@ -39,7 +39,8 @@ public class ProductAdminController {
         // 상품 등록 처리 (이미지 포함)
         ProductResponseDto createdProduct = productService.createProduct(
                 ProductMapper.INSTANCE.toProductCreateDto(productInsertDto),
-                productInsertDto.getProductImgUrls()
+                productInsertDto.getProductImgUrls(),
+                productInsertDto.getProductDescImgUrls()
         );
         return ResponseEntity.status(201).body(createdProduct);
     }
