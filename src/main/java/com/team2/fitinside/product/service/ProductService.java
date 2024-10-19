@@ -194,6 +194,10 @@ public class ProductService {
 
         // S3 상품 이미지 업데이트 처리 (기존 이미지 유지하면서 새로운 이미지 추가)
         List<String> productImageUrls = new ArrayList<>(existingProduct.getProductImgUrls()); // 기존 이미지 복사
+
+        // 기존 이미지에 dummy 이미지가 있는지 확인하고 제거
+        productImageUrls.removeIf(imageUrl -> imageUrl.equals(DEFAULT_IMAGE_URL)); // 기본 더미 이미지가 있으면 제거
+
         List<String> newProductImageUrls = uploadImages(productImages); // 새로운 이미지 업로드
         if (!newProductImageUrls.isEmpty()) {
             productImageUrls.addAll(newProductImageUrls); // 새로운 이미지 추가
