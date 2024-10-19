@@ -1,143 +1,3 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-//
-// const BannerCreate = () => {
-//     const [title, setTitle] = useState('');
-//     const [displayOrder, setDisplayOrder] = useState(0);
-//     const [image, setImage] = useState(null);
-//     const navigate = useNavigate();
-//
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         const formData = new FormData();
-//         formData.append('title', title);
-//         formData.append('displayOrder', displayOrder);
-//         formData.append('image', image);
-//
-//         try {
-//             await axios.post('http://localhost:8080/api/admin/banners', formData, {
-//                 headers: {
-//                     'Content-Type': 'multipart/form-data',
-//                     'Authorization': `Bearer ${localStorage.getItem('token')}` // Authorization 헤더 추가
-//                 }
-//             });
-//             navigate('/admin/banners');
-//         } catch (error) {
-//             console.error('Error creating banner:', error);
-//         }
-//     };
-//
-//     return (
-//         <div>
-//             <h1>Create New Banner</h1>
-//             <form onSubmit={handleSubmit}>
-//                 <div>
-//                     <label>Title</label>
-//                     <input
-//                         type="text"
-//                         value={title}
-//                         onChange={(e) => setTitle(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Display Order</label>
-//                     <input
-//                         type="number"
-//                         value={displayOrder}
-//                         onChange={(e) => setDisplayOrder(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Image</label>
-//                     <input
-//                         type="file"
-//                         onChange={(e) => setImage(e.target.files[0])}
-//                         required
-//                     />
-//                 </div>
-//                 <button type="submit">Create Banner</button>
-//             </form>
-//         </div>
-//     );
-// };
-//
-// export default BannerCreate;
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import './BannerCreate.css'; // CSS 파일 추가
-//
-// const BannerCreate = () => {
-//     const [title, setTitle] = useState('');
-//     const [displayOrder, setDisplayOrder] = useState(0);
-//     const [image, setImage] = useState(null);
-//     const navigate = useNavigate();
-//
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         const formData = new FormData();
-//         formData.append('title', title);
-//         formData.append('displayOrder', displayOrder);
-//         formData.append('image', image);
-//
-//         try {
-//             await axios.post('http://localhost:8080/api/admin/banners', formData, {
-//                 headers: {
-//                     'Content-Type': 'multipart/form-data',
-//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-//                 }
-//             });
-//             navigate('/admin/banners');
-//         } catch (error) {
-//             console.error('Error creating banner:', error);
-//         }
-//     };
-//
-//     return (
-//         <div className="form-container">
-//             <h1>Create New Banner</h1>
-//             <form onSubmit={handleSubmit}>
-//                 <div className="form-group">
-//                     <label>Title</label>
-//                     <input
-//                         type="text"
-//                         value={title}
-//                         onChange={(e) => setTitle(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <label>Display Order</label>
-//                     <input
-//                         type="number"
-//                         value={displayOrder}
-//                         onChange={(e) => setDisplayOrder(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <label>Image</label>
-//                     <input
-//                         type="file"
-//                         onChange={(e) => setImage(e.target.files[0])}
-//                         required
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <button type="submit">Create Banner</button>
-//                 </div>
-//             </form>
-//         </div>
-//     );
-// };
-//
-// export default BannerCreate;
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -177,10 +37,10 @@ const BannerCreate = () => {
 
     return (
         <div className="form-container">
-            <h1>Create New Banner</h1>
+            <h1>새 광고 생성</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label>Title</label>
+                    <label>제목</label>
                     <input
                         type="text"
                         value={title}
@@ -189,7 +49,7 @@ const BannerCreate = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Display Order</label>
+                    <label>표시 순서</label>
                     <input
                         type="number"
                         value={displayOrder}
@@ -215,7 +75,7 @@ const BannerCreate = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <button type="submit">Create Banner</button>
+                    <button type="submit">광고 생성하기</button>
                 </div>
             </form>
         </div>
