@@ -121,7 +121,7 @@ const ProductAdmin = () => {
                 <tr>
                     <th>수정</th>
                     <th>삭제</th>
-                    <th>카테고리 이름</th> {/* 카테고리 아이디 대신 카테고리 이름 추가 */}
+                    <th>카테고리 이름</th>
                     <th>상품 아이디</th>
                     <th>상품 이름</th>
                     <th>상품 이미지</th>
@@ -131,6 +131,7 @@ const ProductAdmin = () => {
                     <th>제조사</th>
                     <th>생성일</th>
                     <th>수정일</th>
+                    <th>상품 설명 이미지</th> {/* 상품 설명 이미지 추가 */}
                 </tr>
                 </thead>
                 <tbody>
@@ -153,7 +154,7 @@ const ProductAdmin = () => {
                                     ❌
                                 </button>
                             </td>
-                            <td>{product.categoryName}</td> {/* 카테고리 이름을 표시 */}
+                            <td>{product.categoryName}</td>
                             <td>{product.id}</td>
                             <td>{product.productName}</td>
                             <td>
@@ -169,11 +170,18 @@ const ProductAdmin = () => {
                             <td>{product.manufacturer}</td>
                             <td>{product.createdAt}</td>
                             <td>{product.updatedAt}</td>
+                            <td>
+                                {product.productDescImgUrls && product.productDescImgUrls.length > 0
+                                    ? product.productDescImgUrls.map((url, index) => (
+                                        <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50" />
+                                    ))
+                                    : '설명 이미지 없음'}
+                            </td>
                         </tr>
                     ))
                 ) : (
                     <tr>
-                        <td colSpan="12" className="text-center">상품이 없습니다.</td>
+                        <td colSpan="13" className="text-center">상품이 없습니다.</td>
                     </tr>
                 )}
                 </tbody>

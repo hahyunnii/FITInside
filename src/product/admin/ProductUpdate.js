@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import qs from "qs";
 
 const ProductUpdate = () => {
     const { id } = useParams(); // URL에서 상품 ID를 가져옴
@@ -8,16 +9,23 @@ const ProductUpdate = () => {
 
     // 상품 정보 상태
     const [product, setProduct] = useState({
-        categoryName: '', // categoryId -> categoryName으로 변경
-        productName: '',
-        price: '',
-        info: '',
-        stock: '',
-        manufacturer: '',
+        categoryName: "",
+        productName: "",
+        price: "",
+        info: "",
+        stock: "",
+        manufacturer: "",
         productImgUrls: [],
+        productDescImgUrls: [],
     });
+
     const [newImages, setNewImages] = useState([]); // 새로운 이미지 파일
-    const [error, setError] = useState('');
+    const [previewImages, setPreviewImages] = useState([]); // 이미지 미리보기
+    const [newDescImages, setNewDescImages] = useState([]); // 새로운 설명 이미지 파일
+    const [descPreviewImages, setDescPreviewImages] = useState([]); // 설명 이미지 미리보기
+    const [imageUrlsToDelete, setImageUrlsToDelete] = useState([]); // 삭제할 상품 이미지
+    const [descImageUrlsToDelete, setDescImageUrlsToDelete] = useState([]); // 삭제할 설명 이미지
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
@@ -25,12 +33,14 @@ const ProductUpdate = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/${id}`);
+                const response = await axios.get(
+                    `http://localhost:8080/api/products/${id}`
+                );
                 setProduct(response.data); // 기존 상품 정보 설정
                 setLoading(false);
             } catch (err) {
-                console.error('상품 정보를 불러오는 중 오류 발생:', err);
-                setError('상품 정보를 불러오는 중 오류가 발생했습니다.');
+                console.error("상품 정보를 불러오는 중 오류 발생:", err);
+                setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             }
         };
@@ -41,13 +51,14 @@ const ProductUpdate = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/categories');
-                // parentId가 null이 아닌 카테고리만 필터링
-                const filteredCategories = response.data.filter(category => category.parentId !== null);
+                const response = await axios.get("http://localhost:8080/api/categories");
+                const filteredCategories = response.data.filter(
+                    (category) => category.parentId !== null
+                );
                 setCategories(filteredCategories);
             } catch (err) {
-                console.error('카테고리 목록을 불러오는 중 오류 발생:', err);
-                setError('카테고리 목록을 불러오는 중 오류가 발생했습니다.');
+                console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
+                setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
             }
         };
         fetchCategories();
@@ -62,39 +73,109 @@ const ProductUpdate = () => {
         }));
     };
 
-    // 이미지 파일 선택 처리
+    // 이미지 파일 선택 처리 및 미리보기
     const handleFileChange = (e) => {
-        setNewImages(e.target.files);
+        const files = Array.from(e.target.files);
+        setNewImages(files);
+        setPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+    };
+
+    // 설명 이미지 파일 선택 처리 및 미리보기
+    const handleDescFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setNewDescImages(files);
+        setDescPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+    };
+
+    // 삭제할 이미지 선택 처리
+    const handleImageDelete = (url) => {
+        setImageUrlsToDelete((prev) => [...prev, url]);
+        setProduct((prevProduct) => ({
+            ...prevProduct,
+            productImgUrls: prevProduct.productImgUrls.filter((img) => img !== url),
+        }));
+    };
+
+    // 삭제할 설명 이미지 선택 처리
+    const handleDescImageDelete = (url) => {
+        setDescImageUrlsToDelete((prev) => [...prev, url]);
+        setProduct((prevProduct) => ({
+            ...prevProduct,
+            productDescImgUrls: prevProduct.productDescImgUrls.filter(
+                (img) => img !== url
+            ),
+        }));
+    };
+
+    // 상품 이미지 삭제 요청
+    const deleteProductImages = async () => {
+        try {
+            if (imageUrlsToDelete.length > 0) {
+                await axios.delete(
+                    `http://localhost:8080/api/admin/products/${id}/images`,
+                    {
+                        params: { imageUrlsToDelete },
+                        paramsSerializer: (params) => {
+                            return qs.stringify(params, { arrayFormat: "repeat" });
+                        },
+                    }
+                );
+            }
+
+            if (descImageUrlsToDelete.length > 0) {
+                await axios.delete(
+                    `http://localhost:8080/api/admin/products/${id}/description-images`,
+                    {
+                        params: { descImageUrlsToDelete },
+                        paramsSerializer: (params) => {
+                            return qs.stringify(params, { arrayFormat: "repeat" });
+                        },
+                    }
+                );
+            }
+        } catch (err) {
+            console.error("이미지 삭제 중 오류 발생:", err);
+            setError("이미지 삭제에 실패했습니다.");
+        }
     };
 
     // 상품 수정 요청 처리
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 상품 수정 데이터 준비
         const formData = new FormData();
-        formData.append('categoryName', product.categoryName); // categoryId -> categoryName
-        formData.append('productName', product.productName);
-        formData.append('price', product.price);
-        formData.append('info', product.info);
-        formData.append('stock', product.stock);
-        formData.append('manufacturer', product.manufacturer);
+        formData.append("categoryName", product.categoryName);
+        formData.append("productName", product.productName);
+        formData.append("price", product.price);
+        formData.append("info", product.info);
+        formData.append("stock", product.stock);
+        formData.append("manufacturer", product.manufacturer);
 
         // 새로운 이미지 파일 추가
-        for (let i = 0; i < newImages.length; i++) {
-            formData.append('productImgUrls', newImages[i]);
-        }
+        newImages.forEach((image) => {
+            formData.append("productImgUrls", image);
+        });
+
+        // 새로운 설명 이미지 파일 추가
+        newDescImages.forEach((image) => {
+            formData.append("productDescImgUrls", image);
+        });
 
         try {
+            // 상품 업데이트
             await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "multipart/form-data",
                 },
             });
-            navigate('/admin/products'); // 수정 완료 후 상품 목록 페이지로 이동
+
+            // 이미지 삭제 처리
+            await deleteProductImages();
+
+            navigate("/admin/products");
         } catch (err) {
-            console.error('상품 수정 중 오류 발생:', err);
-            setError('상품 수정에 실패했습니다.');
+            console.error("상품 수정 중 오류 발생:", err);
+            setError("상품 수정에 실패했습니다.");
         }
     };
 
@@ -121,13 +202,15 @@ const ProductUpdate = () => {
                         required
                     >
                         <option value="">카테고리 선택</option>
-                        {categories.map(category => (
+                        {categories.map((category) => (
                             <option key={category.id} value={category.name}>
                                 {category.name}
                             </option>
                         ))}
                     </select>
                 </div>
+
+                {/* 상품명 입력 */}
                 <div className="form-group">
                     <label>상품명</label>
                     <input
@@ -139,6 +222,8 @@ const ProductUpdate = () => {
                         required
                     />
                 </div>
+
+                {/* 가격 입력 */}
                 <div className="form-group">
                     <label>가격</label>
                     <input
@@ -150,6 +235,8 @@ const ProductUpdate = () => {
                         required
                     />
                 </div>
+
+                {/* 상품 설명 입력 */}
                 <div className="form-group">
                     <label>상품 설명</label>
                     <textarea
@@ -160,6 +247,8 @@ const ProductUpdate = () => {
                         required
                     ></textarea>
                 </div>
+
+                {/* 재고 입력 */}
                 <div className="form-group">
                     <label>재고</label>
                     <input
@@ -171,6 +260,8 @@ const ProductUpdate = () => {
                         required
                     />
                 </div>
+
+                {/* 제조사 입력 */}
                 <div className="form-group">
                     <label>제조사</label>
                     <input
@@ -181,8 +272,10 @@ const ProductUpdate = () => {
                         onChange={handleInputChange}
                     />
                 </div>
+
+                {/* 상품 이미지 추가 및 미리보기 */}
                 <div className="form-group">
-                    <label>이미지 추가</label>
+                    <label>상품 이미지 추가</label>
                     <input
                         type="file"
                         className="form-control"
@@ -190,7 +283,46 @@ const ProductUpdate = () => {
                         onChange={handleFileChange}
                         multiple
                     />
+                    <div>
+                        {previewImages.map((src, index) => (
+                            <img key={index} src={src} alt="미리보기" width="100" />
+                        ))}
+                        {product.productImgUrls.map((url) => (
+                            <div key={url}>
+                                <img src={url} alt="상품 이미지" width="100" />
+                                <button type="button" onClick={() => handleImageDelete(url)}>
+                                    삭제
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+
+                {/* 설명 이미지 추가 및 미리보기 */}
+                <div className="form-group">
+                    <label>설명 이미지 추가</label>
+                    <input
+                        type="file"
+                        className="form-control"
+                        name="productDescImgUrls"
+                        onChange={handleDescFileChange}
+                        multiple
+                    />
+                    <div>
+                        {descPreviewImages.map((src, index) => (
+                            <img key={index} src={src} alt="미리보기" width="100" />
+                        ))}
+                        {product.productDescImgUrls.map((url) => (
+                            <div key={url}>
+                                <img src={url} alt="설명 이미지" width="100" />
+                                <button type="button" onClick={() => handleDescImageDelete(url)}>
+                                    삭제
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <button type="submit" className="btn btn-primary mt-3">
                     수정하기
                 </button>
