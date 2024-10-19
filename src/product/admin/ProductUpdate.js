@@ -8,7 +8,7 @@ const ProductUpdate = () => {
 
     // 상품 정보 상태
     const [product, setProduct] = useState({
-        categoryId: '',
+        categoryName: '', // categoryId -> categoryName으로 변경
         productName: '',
         price: '',
         info: '',
@@ -19,13 +19,13 @@ const ProductUpdate = () => {
     const [newImages, setNewImages] = useState([]); // 새로운 이미지 파일
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true); // 로딩 상태
+    const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
     // 상품 정보 불러오기
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/products/${id}`);
-                // console.log('불러온 상품 데이터:', response.data); // 데이터를 콘솔에 출력
                 setProduct(response.data); // 기존 상품 정보 설정
                 setLoading(false);
             } catch (err) {
@@ -36,6 +36,22 @@ const ProductUpdate = () => {
         };
         fetchProduct();
     }, [id]);
+
+    // 카테고리 목록을 불러와 필터링
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/categories');
+                // parentId가 null이 아닌 카테고리만 필터링
+                const filteredCategories = response.data.filter(category => category.parentId !== null);
+                setCategories(filteredCategories);
+            } catch (err) {
+                console.error('카테고리 목록을 불러오는 중 오류 발생:', err);
+                setError('카테고리 목록을 불러오는 중 오류가 발생했습니다.');
+            }
+        };
+        fetchCategories();
+    }, []);
 
     // 입력 값 변경 처리
     const handleInputChange = (e) => {
@@ -57,7 +73,7 @@ const ProductUpdate = () => {
 
         // 상품 수정 데이터 준비
         const formData = new FormData();
-        formData.append('categoryId', product.categoryId);
+        formData.append('categoryName', product.categoryName); // categoryId -> categoryName
         formData.append('productName', product.productName);
         formData.append('price', product.price);
         formData.append('info', product.info);
@@ -94,16 +110,23 @@ const ProductUpdate = () => {
         <div className="container mt-5">
             <h2>상품 수정</h2>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
+                {/* 카테고리 선택 */}
                 <div className="form-group">
-                    <label>카테고리 ID</label>
-                    <input
-                        type="number"
+                    <label>카테고리 선택</label>
+                    <select
                         className="form-control"
-                        name="categoryId"
-                        value={product.categoryId}
+                        name="categoryName"
+                        value={product.categoryName}
                         onChange={handleInputChange}
                         required
-                    />
+                    >
+                        <option value="">카테고리 선택</option>
+                        {categories.map(category => (
+                            <option key={category.id} value={category.name}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="form-group">
                     <label>상품명</label>

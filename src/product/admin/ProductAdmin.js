@@ -121,7 +121,7 @@ const ProductAdmin = () => {
                 <tr>
                     <th>수정</th>
                     <th>삭제</th>
-                    <th>카테고리 아이디</th>
+                    <th>카테고리 이름</th> {/* 카테고리 아이디 대신 카테고리 이름 추가 */}
                     <th>상품 아이디</th>
                     <th>상품 이름</th>
                     <th>상품 이미지</th>
@@ -153,7 +153,7 @@ const ProductAdmin = () => {
                                     ❌
                                 </button>
                             </td>
-                            <td>{product.categoryId}</td>
+                            <td>{product.categoryName}</td> {/* 카테고리 이름을 표시 */}
                             <td>{product.id}</td>
                             <td>{product.productName}</td>
                             <td>

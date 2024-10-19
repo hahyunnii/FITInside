@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+
 const LOCAL_CART_KEY = 'localCart';
 const DB_CART_KEY = 'dbCart';
 
@@ -128,9 +129,7 @@ export const fetchProduct = async (id) => {
         if (!response.ok) {
             throw new Error('네트워크 응답이 좋지 않습니다.');
         }
-        const productData = await response.json();
-        console.log(productData);
-        return productData;
+        return await response.json();
     } catch (error) {
         try {
             await sendRefreshTokenAndStoreAccessToken();
@@ -165,7 +164,6 @@ export const fetchAndMergeCartData = async (token) => {
                 localStorage.setItem(DB_CART_KEY, JSON.stringify(dbCart));
 
                 const mergedCartData = mergeCartData(fetchedCartData);
-                console.log('장바구니 데이터:', mergedCartData);
             } else {
                 throw new Error('장바구니 데이터 형식 오류');
             }
@@ -217,7 +215,6 @@ const updateDBWithDifferences = async (localCart) => {
     // 추가 및 업데이트 처리
     for (const item of localCart) {
         const dbItem = dbCart.find(dbItem => dbItem.id === item.id);
-        console.log(item.id + " =>  " + dbItem);
 
         // DB에 없는 경우 추가
         if (!dbItem) {
@@ -235,7 +232,6 @@ const updateDBWithDifferences = async (localCart) => {
                     },
                     body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
                 });
-                console.log(`장바구니 아이템 추가됨: ${item.id}`);
             } catch (error) {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
@@ -279,8 +275,6 @@ const updateCartItem = async (item) => {
             },
             body: JSON.stringify(requestData), // 변환된 데이터를 JSON으로 변환하여 전송
         });
-
-        console.log(`장바구니 아이템 업데이트됨: ${item.id}`);
     } catch (error) {
         try {
             await sendRefreshTokenAndStoreAccessToken();
@@ -303,7 +297,6 @@ const deleteCartItem = async (item) => {
                 'Content-Type': 'application/json',
             },
         });
-        console.log(`장바구니 아이템 삭제됨: ${item.id}`);
     } catch (error) {
         try {
             await sendRefreshTokenAndStoreAccessToken();
