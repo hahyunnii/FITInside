@@ -118,41 +118,50 @@ const CouponList = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-4">내 쿠폰 목록</h2>
-            <div className="d-flex flex-row justify-content-between">
-                <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
-                        onClick={handleOpenSearchModal}>쿠폰 검색
-                </button>
-                <CouponSearchModal isOpen={isSearchModalOpen} onRequestClose={handleCloseSearchModal}/>
+        <div className="container" style={{marginTop: '100px'}}>
 
-                {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
-                <div className="mb-4">
-                    <select
-                        className="form-select"
-                        value={includeInactiveCoupons ? 'true' : 'false'}
-                        onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
-                    >
-                        <option value="false">사용 가능한 쿠폰만 보기</option>
-                        <option value="true">모든 쿠폰 보기</option>
-                    </select>
+            <div style={{
+                width: '100%',
+                position: 'fixed',
+                backgroundColor: 'white',
+                zIndex: '99',
+                paddingTop: '20px',
+                top: '86px'
+            }}>
+                <h2>내 쿠폰 목록</h2>
+                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                    <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
+                            onClick={handleOpenSearchModal}>쿠폰 검색
+                    </button>
+                    <CouponSearchModal isOpen={isSearchModalOpen} onRequestClose={handleCloseSearchModal}/>
+
+                    {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
+                    <div style={{width: '30%'}}>
+                        <select
+                            className="form-select"
+                            value={includeInactiveCoupons ? 'true' : 'false'}
+                            onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
+                        >
+                            <option value="false">사용 가능한 쿠폰만 보기</option>
+                            <option value="true">모든 쿠폰 보기</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-
-            <div className="row">
+            <div className="row" style={{marginTop: '230px'}}>
                 {coupons.map((coupon) => (
-                        <div className="couponWrap" key={coupon.id}>
-                            <div
-                                className={`coupon couponLeft ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'} ${coupon.used ? 'green' : ''}`}>
-                                <h1 className="m-0 d-flex justify-content-between" style={{color: "white"}}>
-                                    {coupon.name}
-                                    <span>
+                    <div className="couponWrap" key={coupon.id}>
+                        <div
+                            className={`coupon couponLeft ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'} ${coupon.used ? 'green' : ''}`}>
+                            <h1 className="m-0 d-flex justify-content-between" style={{color: "white"}}>
+                                {coupon.name}
+                                <span>
                                     {coupon.used ? '사용완료' : (coupon.active ? '사용가능' : '사용불가')}
                                 </span>
-                                </h1>
-                                <div className="title mt-4 mb-2">
-                                    <strong>{coupon.code}</strong>
+                            </h1>
+                            <div className="title mt-4 mb-2">
+                                <strong>{coupon.code}</strong>
                                 </div>
                                 <div className="name mb-0">
                                     <strong>{coupon.categoryName}</strong>
@@ -177,7 +186,13 @@ const CouponList = () => {
                                         <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
                                             <button
                                                 className="btn btn-light mb-2"
-                                                style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60px', width: '60px' }}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    height: '60px',
+                                                    width: '60px'
+                                                }}
                                                 onClick={() => handleOrderHistoryClick(coupon.id)}>
                                                 <span className="material-icons">history</span>
                                             </button>
