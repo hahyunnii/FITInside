@@ -88,45 +88,48 @@ public class OrderService {
                 .deliveryMemo(request.getDeliveryMemo())
                 .build();
 
-        // 장바구니의 각 상품 -> OrderProduct 변환 후 주문에 추가
-        for (Cart cart : carts) {
+        // request의 상품ID와 회원 장바구니의 상품ID가 일치하는 것만 orderProduct로 변환 후 주문에 추가
+        for (OrderCartRequestDto orderItem : request.getOrderItems()) {
+            // 장바구니에서 해당 상품 찾기
+            Cart cart = carts.stream()
+                    .filter(c -> c.getProduct().getId().equals(orderItem.getProductId()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(ORDER_PRODUCT_NOT_FOUND));
+
             Product product = cart.getProduct();
             if (product.getStock() < cart.getQuantity()) {
                 throw new CustomException(OUT_OF_STOCK);
             }
-
             product.sold(cart.getQuantity()); // 재고 차감
-
-            // 장바구니 상품ID와 일치하는 상품ID를 갖고 있는 OrderCartRequestDto 조회
-            OrderCartRequestDto orderCartRequestDto = request.getOrderItems().stream()
-                    .filter(dto -> dto.getProductId().equals(product.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new CustomException(ORDER_PRODUCT_NOT_FOUND));
 
             // id에 맞는 couponMember 조회
             CouponMember couponMember = null;
-            if (orderCartRequestDto.getCouponMemberId() != null) {
-                couponMember = couponMemberRepository.findById(orderCartRequestDto.getCouponMemberId())
+            if (orderItem.getCouponMemberId() != null) {
+                couponMember = couponMemberRepository.findById(orderItem.getCouponMemberId())
                         .orElseThrow(() -> new CustomException(COUPON_NOT_FOUND));
             }
 
+            // OrderProduct 생성
             OrderProduct orderProduct = OrderProduct.builder()
                     .product(product)
                     .orderProductName(product.getProductName())
                     .orderProductPrice(product.getPrice())
                     .count(cart.getQuantity())
                     .couponMember(couponMember)
-                    .discountedPrice(orderCartRequestDto.getDiscountedTotalPrice())
+                    .discountedPrice(orderItem.getDiscountedTotalPrice())
                     .build();
 
-            // 쿠폰 사용
-            if (orderCartRequestDto.getCouponMemberId() != null) {
-                couponService.redeemCoupon(orderCartRequestDto.getCouponMemberId());
+            // 쿠폰 사용 처리
+            if (orderItem.getCouponMemberId() != null) {
+                couponService.redeemCoupon(orderItem.getCouponMemberId());
             }
 
-            // 주문에 상품 추가 (총가격도 업데이트)
+            // 주문에 상품 추가 (총가격 업데이트)
             order.addOrderProduct(orderProduct);
+
+            // 장바구니에서 해당 상품 삭제
             cartRepository.delete(cart);
+
         }
 
         // 주문(+주문상품) 저장
