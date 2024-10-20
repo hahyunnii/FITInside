@@ -14,8 +14,10 @@ public interface AddressMapper {
     List<AddressResponseDto> toAddressResponseDtoList(List<Address> addresses);
 
     @Mapping(source = "id", target = "addressId")
+    @Mapping(source = "defaultAddress", target = "defaultAddress")
     AddressResponseDto toAddressResponseDto(Address address);
 
+    @Mapping(source = "defaultAddress", target = "defaultAddress")
     Address toAddress(AddressRequestDto addressRequestDto);
 
 }

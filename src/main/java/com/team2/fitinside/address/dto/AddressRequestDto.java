@@ -24,4 +24,6 @@ public class AddressRequestDto {
 
     private String deliveryMemo;
 
+    private String defaultAddress;
+
 }

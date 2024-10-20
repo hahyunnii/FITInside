@@ -14,5 +14,5 @@ public class AddressResponseDto {
     private String deliveryAddress;
     private String detailedAddress;
     private String deliveryMemo;
-
+    private String defaultAddress;
 }

@@ -18,4 +18,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> findAllByMemberId(@Param("memberId") Long memberId);
 
     Optional<Address> findByIdAndIsDeletedFalse(Long addressId);
+
+    Optional<Address> findByMemberIdAndDefaultAddress(Long memberId, String defaultAddress);
 }
