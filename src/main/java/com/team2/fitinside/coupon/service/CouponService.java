@@ -136,13 +136,12 @@ public class CouponService {
         List<CouponMember> couponMembers = couponMemberRepository.findByMember_IdAndCoupon_Name_Contains(loginMemberId, "웰컴");
 
         List<Long> couponIds = new ArrayList<>();
-        System.out.println("couponMembers.size() = " + couponMembers.size());
         for (CouponMember couponMember : couponMembers) {
-            System.out.println("couponMember.getCoupon().getName() = " + couponMember.getCoupon().getName());
+
             couponIds.add(couponMember.getCoupon().getId());
         }
 
-        return new MyWelcomeCouponResponseWrapperDto("쿠폰 목록 조회 안료했습니다!", couponIds);
+        return new MyWelcomeCouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", couponIds);
     }
 
     @Transactional
@@ -174,9 +173,11 @@ public class CouponService {
     @Transactional
     public void redeemCoupon(Long couponMemberId) {
 
+        getAuthenticatedMemberId();
+
         CouponMember couponMember = couponMemberRepository.findById(couponMemberId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_COUPON_DATA));
 
-        // 이미 쿠폰을 사용했거나 쿠폰이 유효하지 않거나 기간이 만료된 경우 예외
+        // 이미 쿠폰을 사용했거나 쿠폰이 비활성화 되었거나 기간이 만료된 경우 예외
         if(couponMember.isUsed() || !couponMember.getCoupon().isActive() || couponMember.getCoupon().getExpiredAt().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.INVALID_COUPON_DATA);
         }
