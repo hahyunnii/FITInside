@@ -278,6 +278,32 @@ class CouponControllerTest {
 
     @Test
     @Order(9)
+    @DisplayName("보유한 웰컴 쿠폰 검색")
+    void findMyWelcomeCoupons() throws Exception{
+
+        //given
+        String message = "쿠폰 목록 조회 완료했습니다!";
+
+        CouponResponseDto dto1 = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
+        CouponResponseDto dto2 = CouponMapper.INSTANCE.toCouponResponseDto(coupon2);
+
+        // MyWelcomeCouponResponseWrapperDto 반환하게 설정
+        given(couponService.findMyWelcomeCoupons()).willReturn(new MyWelcomeCouponResponseWrapperDto(message, List.of(dto1.getId(), dto2.getId())));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get(URL + "/myWelcome"));
+
+        //then
+        resultActions
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(jsonPath("$.couponIds.size()").value(2))
+                .andExpect(jsonPath("$.couponIds[0]").value(dto1.getId()))
+                .andExpect(jsonPath("$.couponIds[1]").value(dto2.getId()));
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("쿠폰 다운로드")
     void enterCouponCode() throws Exception{
 
@@ -301,7 +327,7 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     @DisplayName("쿠폰 다운로드 - 409에러 (등록 이력이 존재한 경우)")
     void enterCouponCode409Exception() throws Exception{
 
@@ -325,7 +351,7 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     @DisplayName("쿠폰 사용")
     void redeemCoupon() throws Exception{
 
@@ -347,7 +373,7 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     @DisplayName("쿠폰 사용 내역 조회")
     void findOrder() throws Exception{
 
