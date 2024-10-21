@@ -47,6 +47,10 @@ public class Product {
     @Column(name = "product_stock", nullable = false)
     private int stock;
 
+    // 품절 여부
+    @Column(name = "is_sold_out", nullable = false)
+    private boolean isSoldOut;
+
     // 제조사
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
@@ -79,11 +83,13 @@ public class Product {
     public void prePersist() {
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();
+        this.isSoldOut = (this.stock == 0); // 재고가 0이면 품절 상태로 설정
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+        this.isSoldOut = (this.stock == 0); // 재고가 0이면 품절 상태로 설정
     }
 
     // 카테고리를 설정하는 메서드
@@ -102,14 +108,25 @@ public class Product {
         this.productImgUrls = productImgUrls;
     }
 
-    // 주문 시 재고 변동
-    public void sold(int count){
-        this.stock -= count;
-    }
 
     // 상품 설명 이미지 URL 설정 메서드
     public void setProductDescImgUrls(List<String> productDescImgUrls) {
         this.productDescImgUrls = productDescImgUrls;
     }
 
+    // 재고 설정 시 품절 여부 자동 설정
+    public void setStock(int stock) {
+        this.stock = stock;
+        this.isSoldOut = stock == 0; // 재고가 0이면 품절로 설정
+    }
+
+    // 주문 시 재고 변동
+    public void sold(int count){
+        this.stock -= count;
+        this.isSoldOut = this.stock == 0;  // 재고가 0이면 품절 상태로 설정
+    }
+
+    public void setIsSoldOut(boolean b) {
+        this.isSoldOut = b;
+    }
 }
