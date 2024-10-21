@@ -21,6 +21,7 @@ public interface ProductMapper {
     ProductResponseDto toDto(Product product);
 
     @Mapping(target = "productImgUrls", ignore = true)
+    @Mapping(target = "productDescImgUrls", ignore = true)
     ProductCreateDto toProductCreateDto(ProductInsertDto productInsertDto);
 
     @Mapping(target = "productImgUrls", ignore = true)

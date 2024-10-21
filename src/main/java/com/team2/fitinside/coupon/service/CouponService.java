@@ -1,10 +1,7 @@
 package com.team2.fitinside.coupon.service;
 
 import com.team2.fitinside.config.SecurityUtil;
-import com.team2.fitinside.coupon.dto.AvailableCouponResponseDto;
-import com.team2.fitinside.coupon.dto.AvailableCouponResponseWrapperDto;
-import com.team2.fitinside.coupon.dto.CouponResponseDto;
-import com.team2.fitinside.coupon.dto.CouponResponseWrapperDto;
+import com.team2.fitinside.coupon.dto.*;
 import com.team2.fitinside.coupon.entity.Coupon;
 import com.team2.fitinside.coupon.entity.CouponMember;
 import com.team2.fitinside.coupon.mapper.CouponMapper;
@@ -131,11 +128,28 @@ public class CouponService {
         return new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", dtos, 1);
     }
 
+    // 보유한 웰컴 쿠폰 목록 조회
+    public MyWelcomeCouponResponseWrapperDto findMyWelcomeCoupons() {
+
+        Long loginMemberId = getAuthenticatedMemberId();
+
+        List<CouponMember> couponMembers = couponMemberRepository.findByMember_IdAndCoupon_Name_Contains(loginMemberId, "웰컴");
+
+        List<Long> couponIds = new ArrayList<>();
+        for (CouponMember couponMember : couponMembers) {
+
+            couponIds.add(couponMember.getCoupon().getId());
+        }
+
+        return new MyWelcomeCouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", couponIds);
+    }
+
     @Transactional
     public Long enterCouponCode(String code) {
 
         Long loginMemberId = getAuthenticatedMemberId();
 
+        System.out.println("code = " + code);
         // 이미 등록 이력이 있는 쿠폰 예외
         if(couponMemberRepository.existsByCoupon_Code(code)) {
             throw new CustomException(ErrorCode.DUPLICATE_COUPON);
@@ -160,9 +174,11 @@ public class CouponService {
     @Transactional
     public void redeemCoupon(Long couponMemberId) {
 
+        getAuthenticatedMemberId();
+
         CouponMember couponMember = couponMemberRepository.findById(couponMemberId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_COUPON_DATA));
 
-        // 이미 쿠폰을 사용했거나 쿠폰이 유효하지 않거나 기간이 만료된 경우 예외
+        // 이미 쿠폰을 사용했거나 쿠폰이 비활성화 되었거나 기간이 만료된 경우 예외
         if(couponMember.isUsed() || !couponMember.getCoupon().isActive() || couponMember.getCoupon().getExpiredAt().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.INVALID_COUPON_DATA);
         }

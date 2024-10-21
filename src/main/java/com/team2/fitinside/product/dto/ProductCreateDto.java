@@ -16,5 +16,6 @@ public class ProductCreateDto {
     private Integer stock;
     private String manufacturer;
     private List<String> productImgUrls;
+    private List<String> productDescImgUrls;
 
 }

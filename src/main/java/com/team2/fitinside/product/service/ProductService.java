@@ -47,6 +47,21 @@ public class ProductService {
         }
     }
 
+    // 페이지네이션, 정렬, 카테고리 이름을 적용한 상품 목록 조회
+    public Page<ProductResponseDto> getAllProductsByCategoryName(int page, int size, String sortField, String sortDir, String categoryName) {
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (categoryName != null && !categoryName.isEmpty()) {
+            return productRepository.searchByCategoryNameAndIsDeletedFalse(categoryName, pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        } else {
+            return productRepository.findByIsDeletedFalse(pageable)
+                    .map(ProductMapper.INSTANCE::toDto);
+        }
+    }
+
     // 페이지네이션, 정렬, 검색을 적용한 카테고리별 상품 목록 조회
     public Page<ProductResponseDto> getProductsByCategory(Long categoryId, int page, int size, String sortField, String sortDir, String keyword) {
         Sort sort = Sort.by(sortField);
@@ -75,27 +90,34 @@ public class ProductService {
 
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
-    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> images) {
-        Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
+    public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+        // info 필드의 길이 유효성 검사
+        if (productCreateDto.getInfo() != null && productCreateDto.getInfo().length() > 500) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
 
-//        Category category = categoryRepository.findById(productCreateDto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        product.setCategory(category);
+        Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
 
         // categoryName을 통해 categoryId를 조회하는 로직
         Category category = categoryRepository.findByName(productCreateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
-        // S3 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
-        List<String> imageUrls = uploadImages(images);
+        // S3 상품 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
+        List<String> productImageUrls = uploadImages(productImages);
 
-        // 이미지가 없을 경우 기본 더미 이미지 추가
-        if (imageUrls.isEmpty()) {
-            imageUrls.add(DEFAULT_IMAGE_URL);
-        }
+//        // 상품 이미지가 없을 경우 기본 더미 이미지 추가
+//        if (productImageUrls.isEmpty()) {
+//            productImageUrls.add(DEFAULT_IMAGE_URL);
+//        }
 
-        product.setProductImgUrls(imageUrls);
+        // 상품 설명 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
+        List<String> productDescImageUrls = uploadImages(productDescImages);
+
+        // 상품 이미지 및 설명 이미지 설정
+        product.setProductImgUrls(productImageUrls);
+        product.setProductDescImgUrls(productDescImageUrls);
+
         Product savedProduct = productRepository.save(product);
 
         return ProductMapper.INSTANCE.toDto(savedProduct);
@@ -104,33 +126,117 @@ public class ProductService {
 
     // 상품 수정 (이미지 업로드 포함)
     @Transactional
-    public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto, List<MultipartFile> images) {
+    public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto,
+                                            List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+
+        // info 필드의 길이 유효성 검사
+        if (productUpdateDto.getInfo() != null && productUpdateDto.getInfo().length() > 500) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
+        // 기존 상품 조회
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        // 업데이트할 상품 정보로 변환
         Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
 
-//        Category category = categoryRepository.findById(productUpdateDto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//        updatedProduct.setCategory(category);
-
+        // categoryName을 통해 categoryId 조회
         Category category = categoryRepository.findByName(productUpdateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         updatedProduct.setCategory(category);
 
-        // S3 이미지 업데이트 처리
-        List<String> imageUrls = uploadImages(images);
+        // S3 상품 이미지 업데이트 처리 (기존 이미지 유지하면서 새로운 이미지 추가)
+        List<String> productImageUrls = new ArrayList<>(existingProduct.getProductImgUrls()); // 기존 이미지 복사
 
-        // 이미지가 없을 경우 기본 더미 이미지 추가
-        if (imageUrls.isEmpty()) {
-            imageUrls.add(DEFAULT_IMAGE_URL);
+//        // 기존 이미지에 dummy 이미지가 있는지 확인하고 제거
+//        productImageUrls.removeIf(imageUrl -> imageUrl.equals(DEFAULT_IMAGE_URL)); // 기본 더미 이미지가 있으면 제거
+
+        List<String> newProductImageUrls = uploadImages(productImages); // 새로운 이미지 업로드
+        if (!newProductImageUrls.isEmpty()) {
+            productImageUrls.addAll(newProductImageUrls); // 새로운 이미지 추가
         }
 
-        updatedProduct.setProductImgUrls(imageUrls);
-        productRepository.save(updatedProduct);
+//        // 이미지가 없을 경우 기본 더미 이미지 추가
+//        if (productImageUrls.isEmpty()) {
+//            productImageUrls.add(DEFAULT_IMAGE_URL); // 기본 이미지 추가
+//        }
 
-        return ProductMapper.INSTANCE.toDto(updatedProduct);
+        // S3 상품 설명 이미지 업데이트 처리 (기존 설명 이미지 유지하면서 새로운 설명 이미지 추가)
+        List<String> productDescImageUrls = new ArrayList<>(existingProduct.getProductDescImgUrls()); // 기존 설명 이미지 복사
+        List<String> newProductDescImageUrls = uploadImages(productDescImages); // 새로운 설명 이미지 업로드
+        if (!newProductDescImageUrls.isEmpty()) {
+            productDescImageUrls.addAll(newProductDescImageUrls); // 새로운 설명 이미지 추가
+        }
+
+//        // 설명 이미지가 없을 경우 기본 더미 이미지 추가 (필요시)
+//        if (productDescImageUrls.isEmpty()) {
+//            productDescImageUrls.add(DEFAULT_IMAGE_URL); // 기본 이미지 추가 (설명 이미지도 필요하다면)
+//        }
+
+        // 업데이트된 이미지 URL 설정
+        updatedProduct.setProductImgUrls(productImageUrls);
+        updatedProduct.setProductDescImgUrls(productDescImageUrls);
+
+        // **재고에 따른 품절 여부 수동 설정**
+        if (updatedProduct.getStock() == 0) {
+            updatedProduct.setIsSoldOut(true); // 재고가 0일 경우 품절로 설정
+        } else {
+            updatedProduct.setIsSoldOut(false); // 재고가 있을 경우 품절 해제
+        }
+
+        // 상품 저장
+        Product savedProduct = productRepository.save(updatedProduct);
+
+        // DTO로 변환하여 반환
+        return ProductMapper.INSTANCE.toDto(savedProduct);
     }
+
+
+
+    // 특정 상품 이미지 삭제 로직 (특정 이미지만 삭제)
+    @Transactional
+    public void deleteProductImages(Long productId, List<String> imageUrlsToDelete) {
+        // 기존 상품 조회
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        // S3에서 상품 이미지 삭제 (특정 이미지들만 삭제)
+        if (imageUrlsToDelete != null && !imageUrlsToDelete.isEmpty()) {
+            for (String imageUrl : imageUrlsToDelete) {
+                s3ImageService.deleteImageFromS3(imageUrl); // S3에서 이미지 삭제
+            }
+            List<String> updatedProductImages = existingProduct.getProductImgUrls();
+            updatedProductImages.removeAll(imageUrlsToDelete); // 삭제된 이미지 URL만 제거
+            existingProduct.setProductImgUrls(updatedProductImages); // 업데이트된 이미지 리스트 설정
+        }
+
+        // 상품 정보 업데이트
+        productRepository.save(existingProduct);
+    }
+
+
+    // 특정 상품 설명 이미지 삭제 로직 (특정 설명 이미지만 삭제)
+    @Transactional
+    public void deleteProductDescriptionImages(Long productId, List<String> descImageUrlsToDelete) {
+        // 기존 상품 조회
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        // S3에서 상품 설명 이미지 삭제 (특정 설명 이미지들만 삭제)
+        if (descImageUrlsToDelete != null && !descImageUrlsToDelete.isEmpty()) {
+            for (String imageUrl : descImageUrlsToDelete) {
+                s3ImageService.deleteImageFromS3(imageUrl); // S3에서 설명 이미지 삭제
+            }
+            List<String> updatedDescImages = existingProduct.getProductDescImgUrls();
+            updatedDescImages.removeAll(descImageUrlsToDelete); // 삭제된 설명 이미지 URL만 제거
+            existingProduct.setProductDescImgUrls(updatedDescImages); // 업데이트된 설명 이미지 리스트 설정
+        }
+
+        // 상품 정보 업데이트
+        productRepository.save(existingProduct);
+    }
+
 
 
 

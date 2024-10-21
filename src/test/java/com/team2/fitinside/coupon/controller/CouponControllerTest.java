@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -38,13 +39,11 @@ class CouponControllerTest {
     @MockBean
     private CouponService couponService;
 
-    // 기본 장바구니 컨트롤러의 url
     private static final String URL = "/api/coupons";
+    private static final int PAGE = 1;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    private static final int PAGE = 1;
 
     private Coupon coupon1;
     private Coupon coupon2;
@@ -52,69 +51,63 @@ class CouponControllerTest {
     @BeforeEach
     void setUp() {
         // 테스트용 쿠폰 생성
-        // 유효한 쿠폰
-        coupon1 = Coupon.builder().id(1L).name("coupon1").code("AAAAAA").type(CouponType.AMOUNT).value(10000).minValue(0).expiredAt(LocalDate.of(2024, 10, 27)).build();
-        // 유효하지 않은 쿠폰
-        coupon2 = Coupon.builder().id(2L).name("coupon2").code("BBBBBB").type(CouponType.PERCENTAGE).percentage(20).minValue(30000).expiredAt(LocalDate.of(2024, 10, 20)).active(false).build();
+        coupon1 = createTestCoupon(1L, "coupon1", "AAAAAA", CouponType.AMOUNT, 10000, 0, LocalDate.of(2024, 10, 27), true);
+        coupon2 = createTestCoupon(2L, "coupon2", "BBBBBB", CouponType.PERCENTAGE, 20, 30000, LocalDate.of(2024, 10, 20), false);
+    }
+
+    private Coupon createTestCoupon(Long id, String name, String code, CouponType type, int value, int minValue, LocalDate expiredAt, boolean active) {
+        return Coupon.builder()
+                .id(id)
+                .name(name)
+                .code(code)
+                .type(type)
+                .value(value)
+                .minValue(minValue)
+                .expiredAt(expiredAt)
+                .active(active)
+                .build();
     }
 
     @Test
     @Order(1)
     @DisplayName("쿠폰 목록 조회 - 유효한 쿠폰만 조회")
     void findAllActiveCoupons() throws Exception {
-
         //given
-        boolean includeInActiveCoupons = false; // 유효하지 않은 쿠폰은 제외
+        boolean includeInActiveCoupons = false;
 
-        // 테스트용 쿠폰 응답 dto 생성 => 매퍼 사용
         CouponResponseDto dto1 = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
+        CouponResponseWrapperDto expectedResponse = new CouponResponseWrapperDto(
+                "쿠폰 목록 조회 완료했습니다!",
+                List.of(dto1),
+                1
+        );
 
-        // couponService.findAllCoupons() 호출 시 CouponResponseWrapperDto 반환하게 설정
         given(couponService.findAllCoupons(PAGE, includeInActiveCoupons))
-                .willReturn(
-                        new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", List.of(dto1), 1));
+                .willReturn(expectedResponse);
 
         //when
-        // page, includeInActiveCoupons는 생략 가능 (defaultValue 존재하므로)
         ResultActions resultActions = mockMvc.perform(get(URL + "?includeInActiveCoupons=" + includeInActiveCoupons));
 
         //then
         resultActions
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.message").value("쿠폰 목록 조회 완료했습니다!"))
-                .andExpect(jsonPath("$.coupons.length()").value(1))
-                .andExpect(jsonPath("$.coupons[0].id").value(dto1.getId()))
-                .andExpect(jsonPath("$.coupons[0].name").value(dto1.getName()))
-                .andExpect(jsonPath("$.coupons[0].code").value(dto1.getCode()))
-                .andExpect(jsonPath("$.coupons[0].type").value(dto1.getType().toString()))
-                .andExpect(jsonPath("$.coupons[0].value").value(dto1.getValue()))
-                .andExpect(jsonPath("$.coupons[0].percentage").value(dto1.getPercentage()))
-                .andExpect(jsonPath("$.coupons[0].minValue").value(dto1.getMinValue()))
-                .andExpect(jsonPath("$.coupons[0].active").value(dto1.isActive()))
-                .andExpect(jsonPath("$.coupons[0].expiredAt").value(dto1.getExpiredAt().toString()))
-                .andExpect(jsonPath("$.coupons[0].categoryName").value(dto1.getCategoryName()))
-                .andExpect(jsonPath("$.coupons[0].used").value(dto1.isUsed()));
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse))); // 전체 응답 JSON 비교
     }
 
     @Test
     @Order(2)
     @DisplayName("쿠폰 목록 조회 - 전체 쿠폰 조회")
     void findAllCoupons() throws Exception {
-
         //given
-        boolean includeInActiveCoupons = true; // 유효하지 않은 쿠폰은 제외
+        boolean includeInActiveCoupons = true;
 
-        // 테스트용 쿠폰 응답 dto 생성 => 매퍼 사용
         CouponResponseDto dto1 = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
         CouponResponseDto dto2 = CouponMapper.INSTANCE.toCouponResponseDto(coupon2);
 
-        // couponService.findAllCoupons() 호출 시 CouponResponseWrapperDto 반환하게 설정
         given(couponService.findAllCoupons(PAGE, includeInActiveCoupons))
-                .willReturn(
-                        new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", List.of(dto1, dto2), 1));
+                .willReturn(new CouponResponseWrapperDto("쿠폰 목록 조회 완료했습니다!", List.of(dto1, dto2), 1));
 
         //when
-        // page, includeInActiveCoupons는 생략 가능 (defaultValue 존재하므로)
         ResultActions resultActions = mockMvc.perform(get(URL + "?includeInActiveCoupons=" + includeInActiveCoupons));
 
         //then
@@ -130,11 +123,9 @@ class CouponControllerTest {
     @Order(3)
     @DisplayName("쿠폰 목록 조회 - 403에러 (권한 없는 경우)")
     public void findAllCoupons403Exception() throws Exception {
-
         //given
         CustomException authorizedException = new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        given(couponService.findAllCoupons(PAGE, false))
-                .willThrow(authorizedException);
+        given(couponService.findAllCoupons(PAGE, false)).willThrow(authorizedException);
 
         //when
         ResultActions resultActions = mockMvc.perform(get(URL));
@@ -149,20 +140,22 @@ class CouponControllerTest {
     @Test
     @Order(4)
     @DisplayName("적용 가능 쿠폰 목록 조회")
-    void findAllAvailableCoupons() throws Exception{
-
+    void findAllAvailableCoupons() throws Exception {
         //given
         Long productId = 1L;
         String message = "쿠폰 목록 조회 완료했습니다!";
-        // 테스트용 AvailableCouponResponseDto 생성 (2개)
+
         AvailableCouponResponseDto dto1 = CouponMapper.INSTANCE.toAvailableCouponResponseDto(coupon1);
         dto1.setCouponMemberId(1L);
         AvailableCouponResponseDto dto2 = CouponMapper.INSTANCE.toAvailableCouponResponseDto(coupon2);
         dto2.setCouponMemberId(2L);
 
-        // couponService.findAllAvailableCoupons가 AvailableCouponResponseWrapperDto를 반환하게 설정
-        given(couponService.findAllAvailableCoupons(productId))
-                .willReturn(new AvailableCouponResponseWrapperDto(message, List.of(dto1, dto2)));
+        AvailableCouponResponseWrapperDto expectedResponse = new AvailableCouponResponseWrapperDto(
+                message, List.of(dto1, dto2)
+        );
+
+        given(couponService.findAllAvailableCoupons(productId)).willReturn(expectedResponse);
+        String expectedJson = objectMapper.writeValueAsString(expectedResponse);
 
         //when
         ResultActions resultActions = mockMvc.perform(get(URL + "/" + productId));
@@ -170,29 +163,17 @@ class CouponControllerTest {
         //then
         resultActions
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.message").value(message))
-                .andExpect(jsonPath("$.coupons.length()").value(2))
-                .andExpect(jsonPath("$.coupons[0].name").value(dto1.getName()))
-                .andExpect(jsonPath("$.coupons[0].couponMemberId").value(dto1.getCouponMemberId()))
-                .andExpect(jsonPath("$.coupons[0].type").value(dto1.getType().toString()))
-                .andExpect(jsonPath("$.coupons[0].value").value(dto1.getValue()))
-                .andExpect(jsonPath("$.coupons[0].percentage").value(dto1.getPercentage()))
-                .andExpect(jsonPath("$.coupons[0].minValue").value(dto1.getMinValue()))
-                .andExpect(jsonPath("$.coupons[0].expiredAt").value(dto1.getExpiredAt().toString()));
+                .andExpect(content().json(expectedJson));
     }
 
     @Test
     @Order(5)
     @DisplayName("적용 가능 쿠폰 목록 조회 - 404에러 (상품을 찾을 수 없는 경우)")
-    void findAllAvailableCoupons404Exception() throws Exception{
-
+    void findAllAvailableCoupons404Exception() throws Exception {
         //given
         Long productId = 1L;
-
         CustomException productNotFoundException = new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
-        // couponService.findAllAvailableCoupons가 PRODUCT_NOT_FOUND 에러를 반환하게 설정
-        given(couponService.findAllAvailableCoupons(productId))
-                .willThrow(productNotFoundException);
+        given(couponService.findAllAvailableCoupons(productId)).willThrow(productNotFoundException);
 
         //when
         ResultActions resultActions = mockMvc.perform(get(URL + "/" + productId));
@@ -207,13 +188,11 @@ class CouponControllerTest {
     @Test
     @Order(6)
     @DisplayName("쿠폰 검색")
-    void findCoupon() throws Exception{
-
+    void findCoupon() throws Exception {
         //given
         String couponCode = coupon1.getCode();
         CouponResponseDto dto = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
 
-        // couponService.findCoupon가 CouponResponseDto를 반환하게 설정
         given(couponService.findCoupon(couponCode)).willReturn(dto);
 
         //when
@@ -231,14 +210,11 @@ class CouponControllerTest {
     @Test
     @Order(7)
     @DisplayName("쿠폰 검색 - 400에러 (쿠폰 정보가 유효하지 않은 경우)")
-    void findCoupon400Exception() throws Exception{
-
+    void findCoupon400Exception() throws Exception {
         //given
         String couponCode = "ERROR1";
-
         CustomException invalidCouponDataException = new CustomException(ErrorCode.INVALID_COUPON_DATA);
 
-        // couponService.findCoupon가 INVALID_COUPON_DATA 에러를 반환하게 설정
         given(couponService.findCoupon(couponCode)).willThrow(invalidCouponDataException);
 
         //when
@@ -249,22 +225,19 @@ class CouponControllerTest {
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.code").value(invalidCouponDataException.getErrorCode().toString()))
                 .andExpect(jsonPath("$.message").value("쿠폰 정보가 유효하지 않습니다."));
-
     }
 
     @Test
     @Order(8)
     @DisplayName("웰컴 쿠폰 검색")
-    void findWelcomeCoupons() throws Exception{
-
+    void findWelcomeCoupons() throws Exception {
         //given
         String message = "쿠폰 목록 조회 완료했습니다!";
-
         CouponResponseDto dto1 = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
         CouponResponseDto dto2 = CouponMapper.INSTANCE.toCouponResponseDto(coupon2);
 
-        // couponService.findWelcomeCoupons()이 CouponResponseWrapperDto를 반환하게 설정
-        given(couponService.findWelcomeCoupons()).willReturn(new CouponResponseWrapperDto(message, List.of(dto1, dto2), 1));
+        given(couponService.findWelcomeCoupons())
+                .willReturn(new CouponResponseWrapperDto(message, List.of(dto1, dto2), 1));
 
         //when
         ResultActions resultActions = mockMvc.perform(get(URL + "/welcome"));
@@ -278,20 +251,43 @@ class CouponControllerTest {
 
     @Test
     @Order(9)
-    @DisplayName("쿠폰 다운로드")
-    void enterCouponCode() throws Exception{
+    @DisplayName("보유한 웰컴 쿠폰 검색")
+    void findMyWelcomeCoupons() throws Exception {
+        //given
+        String message = "쿠폰 목록 조회 완료했습니다!";
+        CouponResponseDto dto1 = CouponMapper.INSTANCE.toCouponResponseDto(coupon1);
+        CouponResponseDto dto2 = CouponMapper.INSTANCE.toCouponResponseDto(coupon2);
 
+        given(couponService.findMyWelcomeCoupons())
+                .willReturn(new MyWelcomeCouponResponseWrapperDto(message, List.of(dto1.getId(), dto2.getId())));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get(URL + "/my-welcome"));
+
+        //then
+        resultActions
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(jsonPath("$.couponIds.size()").value(2))
+                .andExpect(jsonPath("$.couponIds[0]").value(dto1.getId()))
+                .andExpect(jsonPath("$.couponIds[1]").value(dto2.getId()));
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("쿠폰 다운로드")
+    void enterCouponCode() throws Exception {
         //given
         Long couponMemberId = 1L;
         String couponCode = coupon1.getCode();
         String message = "쿠폰이 다운로드되었습니다! couponMemberId: " + couponMemberId;
 
-        // couponService.enterCouponCode()가 couponMemberId 반환하게 설정
         given(couponService.enterCouponCode(couponCode)).willReturn(couponMemberId);
 
         //when
         ResultActions resultActions = mockMvc.perform(post(URL)
-                .content(couponCode));
+                .content(couponCode)
+                .contentType(MediaType.TEXT_PLAIN));
 
         //then
         resultActions
@@ -301,21 +297,20 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     @DisplayName("쿠폰 다운로드 - 409에러 (등록 이력이 존재한 경우)")
-    void enterCouponCode409Exception() throws Exception{
-
+    void enterCouponCode409Exception() throws Exception {
         //given
         String couponCode = "ERROR1";
         CustomException duplicateCouponException = new CustomException(ErrorCode.DUPLICATE_COUPON);
         String message = "쿠폰 등록 이력이 존재합니다.";
 
-        // couponService.enterCouponCode()가 DUPLICATE_COUPON 에러 반환하게 설정
         given(couponService.enterCouponCode(couponCode)).willThrow(duplicateCouponException);
 
         //when
         ResultActions resultActions = mockMvc.perform(post(URL)
-                .content(couponCode));
+                .content(couponCode)
+                .contentType(MediaType.TEXT_PLAIN));
 
         //then
         resultActions
@@ -325,15 +320,13 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     @DisplayName("쿠폰 사용")
-    void redeemCoupon() throws Exception{
-
+    void redeemCoupon() throws Exception {
         //given
         Long couponMemberId = 1L;
         String message = "쿠폰이 사용되었습니다! couponMemberId: " + couponMemberId;
 
-        // couponService.redeemCoupon()이 아무것도 안하게 설정
         willDoNothing().given(couponService).redeemCoupon(couponMemberId);
 
         //when
@@ -347,15 +340,13 @@ class CouponControllerTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     @DisplayName("쿠폰 사용 내역 조회")
-    void findOrder() throws Exception{
-
+    void findOrder() throws Exception {
         //given
         Long orderId = 1L;
         Long couponId = coupon1.getId();
 
-        // couponService.findOrder(couponId)가 orderId를 반환하게 설정
         given(couponService.findOrder(couponId)).willReturn(orderId);
 
         //when
