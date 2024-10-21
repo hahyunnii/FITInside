@@ -87,6 +87,11 @@ public class AddressService {
                 .orElseThrow(() -> new CustomException(ADDRESS_NOT_FOUND));
 
         checkAuthorization(address);
+
+        if(request.getDefaultAddress().equals("Y")){
+            changeToNotDefaultAddress();
+        }
+
         address.updateAddress(request);
         return addressMapper.toAddressResponseDto(address);
     }

@@ -77,6 +77,7 @@ public class Address {
         this.deliveryAddress = request.getDeliveryAddress();
         this.detailedAddress = request.getDetailedAddress();
         this.deliveryMemo = request.getDeliveryMemo();
+        this.defaultAddress = request.getDefaultAddress();
     }
 
     // 기본 배송지로 설정 여부
