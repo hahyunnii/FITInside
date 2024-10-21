@@ -30,10 +30,10 @@ public class Address {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(name = "receiver", nullable = false)
+    @Column(name = "delivery_receiver", nullable = false)
     private String deliveryReceiver;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "delivery_phone", nullable = false)
     private String deliveryPhone;
 
     @Column(name = "postal_code", nullable = false)
@@ -45,7 +45,7 @@ public class Address {
     @Column(name = "detailed_address")
     private String detailedAddress;
 
-    @Column(name = "memo")
+    @Column(name = "delivery_memo")
     private String deliveryMemo;
 
     @CreatedDate
