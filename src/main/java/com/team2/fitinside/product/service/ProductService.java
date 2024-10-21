@@ -91,6 +91,11 @@ public class ProductService {
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+        // info 필드의 길이 유효성 검사
+        if (productCreateDto.getInfo() != null && productCreateDto.getInfo().length() > 500) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
 
         // categoryName을 통해 categoryId를 조회하는 로직
@@ -123,6 +128,12 @@ public class ProductService {
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto,
                                             List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+
+        // info 필드의 길이 유효성 검사
+        if (productUpdateDto.getInfo() != null && productUpdateDto.getInfo().length() > 500) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
         // 기존 상품 조회
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -166,6 +177,13 @@ public class ProductService {
         // 업데이트된 이미지 URL 설정
         updatedProduct.setProductImgUrls(productImageUrls);
         updatedProduct.setProductDescImgUrls(productDescImageUrls);
+
+        // **재고에 따른 품절 여부 수동 설정**
+        if (updatedProduct.getStock() == 0) {
+            updatedProduct.setIsSoldOut(true); // 재고가 0일 경우 품절로 설정
+        } else {
+            updatedProduct.setIsSoldOut(false); // 재고가 있을 경우 품절 해제
+        }
 
         // 상품 저장
         Product savedProduct = productRepository.save(updatedProduct);
