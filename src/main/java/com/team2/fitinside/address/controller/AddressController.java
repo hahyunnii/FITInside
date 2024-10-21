@@ -56,10 +56,7 @@ public class AddressController {
     @Operation(summary = "배송지 추가", description = "배송지 추가")
     @ApiResponse(responseCode = "201", description = "배송지 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AddressResponseDto.class)))
     public ResponseEntity<AddressResponseDto> createAddress(@Valid @RequestBody AddressRequestDto request) {
-        System.out.println("========================그냥 값 확인: " + request.getDeliveryReceiver());
-        System.out.println("======================isDefault로 받아오는지 확인: " + request.getDefaultAddress());
         AddressResponseDto response = addressService.createAddress(request);
-        System.out.println("==============request의 기본 배송지 여부가 entity에 잘 저장? " + response.getDefaultAddress());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -89,7 +86,6 @@ public class AddressController {
     public ResponseEntity<String> checkDefault(
             @PathVariable("address_id") Long addressId,
             @RequestParam("isDefault") String isDefault){
-        System.out.println("======================넘어온 isDefault: " + isDefault);
         addressService.checkDefault(addressId, isDefault);
         return ResponseEntity.status(HttpStatus.OK).body("기본 배송지로 등록 완료. addressId: " + addressId);
     }
