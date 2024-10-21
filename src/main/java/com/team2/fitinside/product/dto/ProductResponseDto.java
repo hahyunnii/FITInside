@@ -16,6 +16,7 @@ public class ProductResponseDto {
     private int price;               // 가격
     private String info;             // 상품 설명
     private int stock;               // 재고
+    private boolean isSoldOut;       // 품절여부
     private String manufacturer;     // 재조사
     private List<String> productImgUrls; //이미지url들
     private List<String> productDescImgUrls; // 상품 설명 이미지들
