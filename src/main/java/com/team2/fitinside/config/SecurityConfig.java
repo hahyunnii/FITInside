@@ -64,6 +64,7 @@ public class SecurityConfig{
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/oath2/**").permitAll()
                         .requestMatchers("/api/categories/**", "/api/banners/**").permitAll()
+                        .requestMatchers("/api/products/**", "/api/categories/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
         );
