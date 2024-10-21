@@ -26,7 +26,7 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final MemberRepository memberRepository;
 
-    public List<AddressResponseDto> findAllAddresses(){
+    public List<AddressResponseDto> findAllAddresses() {
 
         Long loginMemberId = securityUtil.getCurrentMemberId();
         List<Address> addresses = addressRepository.findAllByMemberId(loginMemberId);
@@ -52,8 +52,12 @@ public class AddressService {
 
         // 배송지는 최대 5개까지 저장
         List<Address> addresses = addressRepository.findAllByMemberId(loginMemberId);
-        if(addresses.size() >= 5){
+        if (addresses.size() >= 5) {
             throw new CustomException(EXCEEDED_MAX_ADDRESS_LIMIT);
+        }
+
+        if (isDuplicate(addresses, request)) {
+            throw new CustomException(DUPLICATE_ADDRESS);
         }
 
         Address address = addressMapper.toAddress(request);
@@ -84,10 +88,20 @@ public class AddressService {
         address.deleteAddress();
     }
 
-    private void checkAuthorization(Address address){
+    private void checkAuthorization(Address address) {
         Long loginMemberId = securityUtil.getCurrentMemberId();
-        if(!loginMemberId.equals(address.getMember().getId())){
+        if (!loginMemberId.equals(address.getMember().getId())) {
             throw new CustomException(USER_NOT_AUTHORIZED);
         }
     }
+
+    // 중복 배송지 검사: 수령인, 전화번호, 우편번호, 상세주소 중 하나라도 다르면 추가
+    private boolean isDuplicate(List<Address> addresses, AddressRequestDto request) {
+        return addresses.stream().anyMatch(exist ->
+                exist.getDeliveryReceiver().equals(request.getDeliveryReceiver()) &&
+                        exist.getDeliveryPhone().equals(request.getDeliveryPhone()) &&
+                        exist.getPostalCode().equals(request.getPostalCode()) &&
+                        exist.getDetailedAddress().equals(request.getDetailedAddress()));
+    }
+
 }

@@ -81,10 +81,6 @@ public class CartService {
 
         checkQuantity(dto.getQuantity(), cart.getProduct());
 
-        if (!loginMemberID.equals(cart.getMember().getId())) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
-
         // 수량을 동일하게 수정하면 리턴
         if (cart.getQuantity() == dto.getQuantity()) return cart.getId();
 
@@ -101,16 +97,12 @@ public class CartService {
         Cart cart = cartRepository.findByMember_IdAndProduct_Id(loginMemberID, productId).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
         Long deletedCartId = cart.getId();
 
-        if (!loginMemberID.equals(cart.getMember().getId())) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
-
         cartRepository.delete(cart);
 
         return deletedCartId;
     }
 
-    // 장바구니 단일 삭제 메서드
+    // 장바구니 초기화 메서드
     @Transactional
     public void clearCart() {
 
@@ -155,24 +147,24 @@ public class CartService {
 //    }
 
     // 장바구니 조회 시 상품 정보 포함
-    public CartProductResponseWrapperDto getCartProducts() {
-        Long loginMemberID = getAuthenticatedMemberId();
-        List<Object[]> results = cartRepository.findCartProductsByMemberId(loginMemberID);
-
-        // Object[] 결과를 CartProductDto로 변환
-        List<CartProductResponseDto> dtos = new ArrayList<>();
-        for (Object[] result : results) {
-            String productName = (String) result[0];
-            int price = (int) result[1];
-            int quantity = (int) result[2];
-            dtos.add(CartProductResponseDto.builder()
-                    .productName(productName)
-                    .price(price)
-                    .quantity(quantity)
-                    .build());
-        }
-
-        return new CartProductResponseWrapperDto("장바구니 조회(상품 정보 포함) 완료했습니다!", dtos);
-    }
+//    public CartProductResponseWrapperDto getCartProducts() {
+//        Long loginMemberID = getAuthenticatedMemberId();
+//        List<Object[]> results = cartRepository.findCartProductsByMemberId(loginMemberID);
+//
+//        // Object[] 결과를 CartProductDto로 변환
+//        List<CartProductResponseDto> dtos = new ArrayList<>();
+//        for (Object[] result : results) {
+//            String productName = (String) result[0];
+//            int price = (int) result[1];
+//            int quantity = (int) result[2];
+//            dtos.add(CartProductResponseDto.builder()
+//                    .productName(productName)
+//                    .price(price)
+//                    .quantity(quantity)
+//                    .build());
+//        }
+//
+//        return new CartProductResponseWrapperDto("장바구니 조회(상품 정보 포함) 완료했습니다!", dtos);
+//    }
 
 }

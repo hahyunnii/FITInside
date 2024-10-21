@@ -7,11 +7,12 @@ import lombok.Setter;
 @Setter
 public class AddressResponseDto {
 
-    private String receiver;
-    private String phone;
+    private Long addressId;
+    private String deliveryReceiver;
+    private String deliveryPhone;
     private String postalCode;
     private String deliveryAddress;
     private String detailedAddress;
-    private String memo;
+    private String deliveryMemo;
 
 }

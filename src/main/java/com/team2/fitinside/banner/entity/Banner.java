@@ -23,16 +23,33 @@ public class Banner {
 
     private String title;
 
-    private Boolean isDeleted = false;
+    // 광고 URL 필드 추가
+    private String targetUrl;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private BannerImage bannerImage;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
+    // 배너의 정보를 업데이트하는 메서드
+    public Banner updateDetails(String title, String imageUrl, Integer displayOrder, String targetUrl) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.displayOrder = displayOrder;
+        this.targetUrl = targetUrl; // URL 필드 업데이트
+        return this;
+    }
 
-    // Soft delete 메서드
-    public void setIsDeleted() {
+    // displayOrder를 변경하는 메서드 (set 대신)
+    public void updateDisplayOrder(Integer newDisplayOrder) {
+        this.displayOrder = newDisplayOrder;
+    }
+
+    // 배너를 삭제 처리하는 메서드
+    public void delete() {
         this.isDeleted = true;
     }
 }
+
+
 
 
