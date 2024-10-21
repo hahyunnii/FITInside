@@ -32,9 +32,6 @@ class CouponEmailServiceTest {
     @Mock
     private MimeMessage mimeMessage;
 
-//    @Mock
-//    private MimeMessageHelper mimeMessageHelper;
-
     @InjectMocks
     private CouponEmailService couponEmailService;
 

@@ -67,7 +67,7 @@ public class CouponController {
         return ResponseEntity.status(HttpStatus.OK).body(allCoupons);
     }
 
-    @GetMapping("/myWelcome")
+    @GetMapping("/my-welcome")
     @Operation(summary = "보유한 웰컴 쿠폰 목록 조회", description = "보유한 웰컴 쿠폰 목록 조회 (보유한 쿠폰 중 이름에 “웰컴” 을 포함하는 쿠폰 조회)")
     @ApiResponse(responseCode = "200", description = "쿠폰 목록 조회 완료했습니다!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MyWelcomeCouponResponseWrapperDto.class)))
     public ResponseEntity<MyWelcomeCouponResponseWrapperDto> findMyWelcomeCoupons() {

@@ -149,6 +149,7 @@ public class CouponService {
 
         Long loginMemberId = getAuthenticatedMemberId();
 
+        System.out.println("code = " + code);
         // 이미 등록 이력이 있는 쿠폰 예외
         if(couponMemberRepository.existsByCoupon_Code(code)) {
             throw new CustomException(ErrorCode.DUPLICATE_COUPON);
