@@ -1,7 +1,7 @@
 .modal {
     display: flex; /* 모달을 화면 중앙에 위치시키기 위해 flex 사용 */
     position: fixed;
-    z-index: 1;
+    z-index: 100;
     left: 0;
     top: 0;
     width: 100%;
@@ -10,12 +10,20 @@
     background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
 }
 
+.modal-header {
+    position: sticky; /* 스크롤 시에도 고정됨 */
+    top: 0; /* 상단에 고정 */
+    background-color: white; /* 배경색을 설정하여 가독성 향상 */
+    padding: 30px 10px 0 10px ; /* 상단 패딩 추가 */
+    z-index: 1000; /* 다른 요소 위로 표시 */
+}
+
 .modal-content {
     background-color: #fefefe;
     margin: 10% auto;
-    padding: 40px;
+    padding: 0 40px 40px 40px;
     border: 1px solid #888;
-    width: 80%; /* 모달 너비 */
+    width: 50%; /* 모달 너비 */
     max-height: 80%; /* 최대 높이 설정 */
     overflow-y: auto; /* 내용이 넘칠 경우 세로 스크롤 생성 */
 }
@@ -23,7 +31,7 @@
 .close {
     color: #aaa;
     position: absolute; /* 절대 위치로 설정하여 모달 콘텐츠의 상단 오른쪽에 배치 */
-    top: 30px; /* 위쪽 여백 */
+    /*top: 30px; !* 위쪽 여백 *!*/
     right: 20px; /* 오른쪽 여백 */
     font-size: 28px;
     font-weight: bold;

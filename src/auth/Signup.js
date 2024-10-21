@@ -1,6 +1,7 @@
 // src/Signup.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Signup = () => {
     const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,6 +34,7 @@ const Signup = () => {
                 // 회원가입 성공 시 처리
                 setSuccess('회원가입에 성공했습니다! 로그인 페이지로 이동하세요.');
                 setError('');
+                navigate('/login');
             }
         } catch (error) {
             setError('회원가입 실패: 이미 존재하는 이메일이거나 서버 오류가 발생했습니다.');
@@ -41,7 +44,7 @@ const Signup = () => {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{width: '35rem'}}>
+            <div className="card p-4" style={{width: '35rem', height: 'fit-content'}}>
                 <h2 className="text-center mb-4">회원가입</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">

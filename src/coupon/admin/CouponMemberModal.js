@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
 
 const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId }) => {
     const [memberModalData, setMemberModalData] = useState(null);
@@ -7,20 +8,29 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
     const [totalPages, setTotalPages] = useState(1);
 
     const fetchMembers = async (id, page) => {
-        const response = await fetch(`http://localhost:8080/api/admin/coupons/${id}?page=${page}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-        });
+        try{
+            const response = await fetch(`http://localhost:8080/api/admin/coupons/${id}?page=${page}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
 
-        if (!response.ok) {
-            throw new Error('회원 목록을 가져오는 데 실패했습니다.');
+            if (!response.ok) {
+                throw new Error('회원 목록을 가져오는 데 실패했습니다.');
+            }
+
+            const data = await response.json();
+            setMemberModalData(data);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
-
-        const data = await response.json();
-        setMemberModalData(data);
-        setTotalPages(data.totalPages);
     };
 
     useEffect(() => {
@@ -51,15 +61,16 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
                     maxWidth: `50%`,
                     maxHeight: `70%`,
                     margin: 'auto',
-                    padding: '40px',
+                    padding: '0 40px 40px 40px',
                     borderRadius: '10px'
                 },
                 overlay: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    zIndex: '100'
                 }
             }}
         >
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div className="modal-header d-flex justify-content-between align-items-center">
                 <h2 className="text-center mb-4">보유 회원 목록</h2>
                 <button onClick={handleCloseMemberModal} style={{
                     background: 'none',

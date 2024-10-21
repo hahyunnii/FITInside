@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const CouponSearchModal = ({ isOpen, onRequestClose }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -34,8 +35,17 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
             setCoupon(data); // 쿠폰 정보 설정
             setErrorMessage(''); // 에러 메시지 초기화
         } catch (error) {
-            setCoupon(null);
-            setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
+            if (error.response && (error.response.status === 400)) {
+                setCoupon(null);
+                setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
+            } else {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    window.location.reload();
+                } catch (e) {
+                    console.error(error.message);
+                }
+            }
         }
     };
 
@@ -64,7 +74,12 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
             // 페이지 새로 고침
             window.location.reload();
         } catch (error) {
-            alert(error.message); // 에러 메시지 표시
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
     };
 
@@ -85,15 +100,16 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     maxWidth: `70%`,
                     maxHeight: `80%`,
                     margin: 'auto',
-                    padding: '40px',
+                    padding: '0 40px 40px 40px',
                     borderRadius: '10px'
                 },
                 overlay: {
                     backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    zIndex: '100'
                 }
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="modal-header d-flex justify-content-between align-items-center">
                 <h2 className="text-center mb-4">쿠폰 검색</h2>
                 <button onClick={handleCloseModal} style={{
                     background: 'none',

@@ -18,7 +18,10 @@ const Login = () => {
             const response = await axios.post('http://localhost:8080/api/auth/login', {
                 email,
                 password
-            });
+            },
+                {
+                    withCredentials: true
+                });
 
             if (response.status === 200) {
                 // 로그인 성공 시 처리 (예: 토큰 저장, 리다이렉트)
@@ -43,7 +46,7 @@ const Login = () => {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{width: '25rem'}}>
+            <div className="card p-4" style={{width: '25rem', height: 'fit-content'}}>
                 <h2 className="text-center mb-4">로그인</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">

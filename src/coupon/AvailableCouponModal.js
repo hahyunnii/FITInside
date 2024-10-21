@@ -19,17 +19,18 @@ const AvailableCouponModal = ({ coupons, onClose, onApplyCoupon }) => {
     return (
         <div className="modal" onClick={handleModalClick}> {/* 모달 외부 클릭 이벤트 추가 */}
             <div className="modal-content">
-                <div className="d-flex justify-content-between">
+                <div className="modal-header d-flex justify-content-between">
                     <h3>적용 가능한 쿠폰</h3>
                     <span className="close" onClick={onClose}>&times;</span>
                 </div>
 
                 {Array.isArray(coupons) && coupons.length > 0 ? (
-                    coupons.map(coupon => (
-                        <div className="couponWrap d-flex justify-content-center" key={coupon.id}>
+                    coupons.map((coupon, index) => (
+                        <div className="couponWrap d-flex justify-content-center"
+                             key={coupon.id ? coupon.id : index}> {/* 고유한 key prop 사용 */}
                             <div
                                 className={`coupon couponLeft ${coupon.type === 'AMOUNT' ? 'red' : 'blue'}`}>
-                                <h1 className="m-0" style={{ color: "white" }}>
+                                <h1 className="m-0" style={{color: "white"}}>
                                     {coupon.name}
                                 </h1>
                                 <div className="title mt-4 mb-2">

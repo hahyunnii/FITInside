@@ -1,29 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import './ProductList.css'; // Import CSS file for custom styles
 
 const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
-    const [products, setProducts] = useState([]);
+    const [categoryName, setCategoryName] = useState(''); // 카테고리 이름 상태
+    const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0); // 현재 페이지 상태
+    const [size, setSize] = useState(9); // 페이지당 아이템 수
+    const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
+    const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
+    const [keyword, setKeyword] = useState(''); // 검색어
+    const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
+    const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
+    const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
+    // 카테고리 이름을 가져오는 함수
+    const fetchCategoryName = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
+            setCategoryName(response.data.name); // 응답에서 카테고리 이름 설정
+        } catch (err) {
+            setError('카테고리 정보를 불러오는 데 실패했습니다.');
+        }
+    };
+
+    // 상품 목록을 백엔드에서 가져오는 함수
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
+                params: {
+                    page,
+                    size,
+                    sortField,
+                    sortDir,
+                    keyword: searchKeyword // 엔터로 입력한 키워드로 검색
+                }
+            });
+
+            // 응답에서 데이터와 전체 페이지 수 추출
+            const productData = Array.isArray(response.data.content) ? response.data.content : [];
+            const totalPages = response.data.totalPages || 1; // totalPages가 없는 경우 기본값 1
+
+            setProducts(productData);
+            setTotalPages(totalPages);
+        } catch (err) {
+            setError('상품 목록을 불러오는 데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 카테고리 이름과 상품 목록을 가져오는 useEffect 훅
     useEffect(() => {
-        // 상품 목록을 백엔드에서 가져오는 함수
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`);
-                setProducts(response.data);
-            } catch (err) {
-                setError('상품 목록을 불러오는 데 실패했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        fetchCategoryName(); // 카테고리 이름 가져오기
+        fetchProducts(); // 상품 목록 가져오기
+    }, [categoryId, page, size, sortField, sortDir, searchKeyword]);
 
-        fetchProducts();
-    }, [categoryId]);
+    // 페이지 클릭 핸들러
+    const handlePageClick = (pageNumber) => {
+        setPage(pageNumber);
+    };
+
+    // 검색어 입력 필드에서 엔터키 눌렀을 때 동작
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setSearchKeyword(keyword); // 엔터키를 눌렀을 때만 키워드를 검색어로 설정
+        }
+    };
 
     if (loading) {
         return <p>Loading...</p>;
@@ -33,24 +81,57 @@ const ProductList = () => {
         return <p>{error}</p>;
     }
 
+    if (!Array.isArray(products)) {
+        return <p>상품 목록이 없습니다.</p>;
+    }
+
     return (
         <>
             {/* Header */}
             <header className="bg-dark py-5">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="text-center text-white">
-                        <h1 className="display-4 fw-bolder">Shop in style</h1>
-                        <p className="lead fw-normal text-white-50 mb-0">With this shop homepage template</p>
+                        <h1 className="display-4 fw-bolder">{categoryName} </h1> {/* 카테고리 이름 표시 */}
+                        <p className="lead fw-normal text-white-50 mb-0">Explore the best products in the {categoryName} category</p>
                     </div>
                 </div>
             </header>
 
-            {/* Section */}
+            {/* 검색과 정렬 옵션 */}
+            <div className="container mt-4">
+                <div className="row">
+                    <div className="col-md-6">
+                        <input
+                            type="text"
+                            placeholder="검색어를 입력하세요"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)} // 검색어 상태 변경
+                            onKeyPress={handleKeyPress} // 엔터키 입력 시 검색어 적용
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="col-md-3">
+                        <select className="form-select" value={sortField} onChange={(e) => setSortField(e.target.value)}>
+                            <option value="createdAt">생성일</option>
+                            <option value="price">가격</option>
+                            <option value="productName">상품명</option>
+                        </select>
+                    </div>
+                    <div className="col-md-3">
+                        <select className="form-select" value={sortDir} onChange={(e) => setSortDir(e.target.value)}>
+                            <option value="asc">오름차순</option>
+                            <option value="desc">내림차순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* 상품 목록 */}
             <section className="py-5">
                 <div className="container px-4 px-lg-5 mt-5">
                     <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                        {products.map((product, index) => (
-                            <div className="col mb-5" key={index}>
+                        {products.map((product) => (
+                            <div className="col mb-5" key={product.id}>
                                 <div className="card h-100">
                                     {/* Sale badge */}
                                     {product.onSale && (
@@ -59,7 +140,11 @@ const ProductList = () => {
                                         </div>
                                     )}
                                     {/* Product image */}
-                                    <img className="card-img-top" src={product.image} alt={product.name} />
+                                    {product.productImgUrls && product.productImgUrls.length > 0 ? (
+                                        <img className="card-img-top product-image" src={product.productImgUrls[0]} alt={product.productName} />
+                                    ) : (
+                                        <img className="card-img-top product-image" src="/placeholder-image.jpg" alt="No image available" />
+                                    )}
                                     {/* Product details */}
                                     <div className="card-body p-4">
                                         <div className="text-center">
@@ -88,6 +173,60 @@ const ProductList = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Pagination */}
+                    <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                            {/* 맨앞으로 가기 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(0)}
+                                    aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </button>
+                            </li>
+
+                            {/* Previous 페이지 그룹 버튼 */}
+                            <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 페이지 번호 버튼 */}
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageClick(index)}>
+                                        {index + 1}
+                                    </button>
+                                </li>
+                            ))}
+
+                            {/* Next 페이지 그룹 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </button>
+                            </li>
+
+                            {/* 맨뒤로 가기 버튼 */}
+                            <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => setPage(totalPages - 1)}
+                                    aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </section>
         </>

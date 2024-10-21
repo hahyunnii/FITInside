@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import '../coupon.css';
 import CouponCreateModal from "./CouponCreateModal";
 import CouponMemberModal from "./CouponMemberModal";
+import CouponEmailModal from "./CouponEmailModal";
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken"; // 이메일 모달 컴포넌트 import
 
 const CouponAdmin = () => {
     const [coupons, setCoupons] = useState([]);
@@ -9,9 +11,11 @@ const CouponAdmin = () => {
     const [categories, setCategories] = useState([]);
     const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
     const [selectedCouponId, setSelectedCouponId] = useState(null);
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [includeInactiveCoupons, setIncludeInactiveCoupons] = useState(true);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false); // 이메일 모달 상태 추가
     useEffect(() => {
         fetchCoupons(currentPage, includeInactiveCoupons);
         fetchCategories();
@@ -34,7 +38,12 @@ const CouponAdmin = () => {
             setCoupons(data.coupons);
             setTotalPages(data.totalPages); // 총 페이지 수 설정
         } catch (error) {
-            console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(error.message);
+            }
         }
     };
 
@@ -54,7 +63,12 @@ const CouponAdmin = () => {
             const data = await response.json();
             setCategories(data);
         } catch (error) {
-            console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            }
         }
     };
 
@@ -94,7 +108,12 @@ const CouponAdmin = () => {
                 alert(`오류 발생: ${errorData.message}`);
             }
         } catch (error) {
-            alert(`네트워크 오류 발생: ${error.message}`);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error(`네트워크 오류 발생: ${error.message}`);
+            }
         }
     };
 
@@ -110,34 +129,50 @@ const CouponAdmin = () => {
         }
     };
 
+    const handleEmailButtonClick = (coupon) => {
+        setSelectedCoupon(coupon);
+        setIsEmailModalOpen(true); // 이메일 모달 열기
+    };
+
+    const handleCloseEmailModal = () => {
+        setIsEmailModalOpen(false);
+        setSelectedCoupon(null);
+    };
+
     const handleIncludeInactiveChange = (e) => {
         setIncludeInactiveCoupons(e.target.value === 'true');
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-4">쿠폰 관리</h2>
-            <div className="d-flex flex-row justify-content-between">
-                <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
-                        onClick={handleCreateCoupon}>
-                    쿠폰 추가
-                </button>
+        <div className="container" style={{marginTop: '86px'}}>
+            <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop: '20px', top:'86px'}}>
+                <h2>쿠폰 관리</h2>
+                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                    <div>
+                        <button className="btn btn-light text-dark mb-4"
+                                style={{border: '1px solid #ced4da'}}
+                                onClick={handleCreateCoupon}>
+                            쿠폰 추가
+                        </button>
+                    </div>
 
-                {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
-                <div className="mb-4">
-                    <select
-                        className="form-select"
-                        value={includeInactiveCoupons ? 'true' : 'false'}
-                        onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
-                    >
-                        <option value="false">활성화 쿠폰만 보기</option>
-                        <option value="true">전체 쿠폰 보기</option>
-                    </select>
+
+                    {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
+                    <div style={{width: '20%'}}>
+                        <select
+                            className="form-select"
+                            value={includeInactiveCoupons ? 'true' : 'false'}
+                            onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
+                        >
+                            <option value="false">활성화 쿠폰만 보기</option>
+                            <option value="true">전체 쿠폰 보기</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
 
-            <div className="row">
+            <div className="row" style={{marginTop: '230px'}}>
                 {coupons.map((coupon) => (
                     <div className="couponWrap" key={coupon.id}>
                         <div
@@ -164,10 +199,22 @@ const CouponAdmin = () => {
                             </div>
                         </div>
 
-                        <div className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
-                            <h1 className="m-0" style={{ color: "white" }}>관리자</h1>
-                            <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
-                                <button className="btn btn-light mb-2" onClick={() => handleMemberButtonClick(coupon.id)} style={{
+                        <div
+                            className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
+                            <h1 className="m-0" style={{color: "white"}}>관리자</h1>
+                            <div className="mt-4 d-flex flex-column justify-content-center align-items-center">
+                                {coupon.active && (
+                                    <button className="btn btn-light mb-2" style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        height: '40px',
+                                        width: '40px'
+                                    }} onClick={() => handleEmailButtonClick(coupon)}>
+                                        <span className="material-icons">email</span>
+                                    </button>)}
+                                <button className="btn btn-light mb-2"
+                                        onClick={() => handleMemberButtonClick(coupon.id, coupon.code)} style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -193,7 +240,7 @@ const CouponAdmin = () => {
                                             }
                                         }}
                                     >
-                                        <span className="material-icons" style={{ color: 'red' }}>block</span>
+                                        <span className="material-icons" style={{color: 'red'}}>block</span>
                                     </button>
                                 )}
                                 {selectedCouponId && (
@@ -210,12 +257,19 @@ const CouponAdmin = () => {
             </div>
 
             {/* 페이징 버튼 */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '50px' }}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: '20px',
+                marginBottom: '50px'
+            }}>
                 <button className="btn btn-secondary me-2" onClick={handlePreviousPage} disabled={currentPage === 1}>
                     이전
                 </button>
                 <span>{currentPage} / {totalPages}</span>
-                <button className="btn btn-secondary ms-2" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                <button className="btn btn-secondary ms-2" onClick={handleNextPage}
+                        disabled={currentPage === totalPages}>
                     다음
                 </button>
             </div>
@@ -228,6 +282,14 @@ const CouponAdmin = () => {
                 }}
                 categories={categories}
             />
+
+            {/* 이메일 모달 추가 */}
+            <CouponEmailModal
+                isOpen={isEmailModalOpen}
+                onRequestClose={handleCloseEmailModal}
+                coupon={selectedCoupon}
+            />
+
         </div>
     );
 };

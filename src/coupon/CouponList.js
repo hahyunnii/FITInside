@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './coupon.css';
 import CouponSearchModal from './CouponSearchModal';
+import { useNavigate } from 'react-router-dom';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const CouponList = () => {
     const [coupons, setCoupons] = useState([]);
@@ -8,6 +10,8 @@ const CouponList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [includeInactiveCoupons, setIncludeInactiveCoupons] = useState(false);
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchCoupons(currentPage, includeInactiveCoupons);
         fetchCategories();
@@ -39,9 +43,15 @@ const CouponList = () => {
 
             const data = await response.json();
             setCoupons(data.coupons);
+            console.log(data.coupons);
             setTotalPages(data.totalPages); // 총 페이지 수 설정
         } catch (error) {
-            console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+            }
         }
     };
 
@@ -61,7 +71,12 @@ const CouponList = () => {
             const data = await response.json();
             setCategories(data);
         } catch (error) {
-            console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                window.location.reload();
+            } catch (e) {
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+            }
         }
     };
 
@@ -82,73 +97,137 @@ const CouponList = () => {
         setIncludeInactiveCoupons(e.target.value === 'true');
     };
 
-    return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-4">내 쿠폰 목록</h2>
-            <div className="d-flex flex-row justify-content-between">
-                <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}} onClick={handleOpenSearchModal}>쿠폰 검색</button>
-                <CouponSearchModal isOpen={isSearchModalOpen} onRequestClose={handleCloseSearchModal}/>
+    const handleOrderHistoryClick = async (couponId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/coupons/${couponId}/order`, {
+                method: `GET`,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('네트워크 응답이 좋지 않습니다.');
+            }
 
-                {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
-                <div className="mb-4">
-                    <select
-                        className="form-select"
-                        value={includeInactiveCoupons ? 'true' : 'false'}
-                        onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
-                    >
-                        <option value="false">사용 가능한 쿠폰만 보기</option>
-                        <option value="true">모든 쿠폰 보기</option>
-                    </select>
+            const orderId = await response.text(); // 반환된 문자열을 받아옴
+            console.log(response);
+            navigate(`/orders/${orderId}`);
+        } catch (error) {
+            console.error('쿠폰 사용 내역 요청 중 오류 발생:', error);
+        }
+    };
+
+    return (
+        <div className="container" style={{marginTop: '100px'}}>
+
+            <div style={{
+                width: '100%',
+                position: 'fixed',
+                backgroundColor: 'white',
+                zIndex: '99',
+                paddingTop: '20px',
+                top: '86px'
+            }}>
+                <h2>내 쿠폰 목록</h2>
+                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                    <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
+                            onClick={handleOpenSearchModal}>쿠폰 검색
+                    </button>
+                    <CouponSearchModal isOpen={isSearchModalOpen} onRequestClose={handleCloseSearchModal}/>
+
+                    {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
+                    <div style={{width: '30%'}}>
+                        <select
+                            className="form-select"
+                            value={includeInactiveCoupons ? 'true' : 'false'}
+                            onChange={(e) => setIncludeInactiveCoupons(e.target.value === 'true')}
+                        >
+                            <option value="false">사용 가능한 쿠폰만 보기</option>
+                            <option value="true">모든 쿠폰 보기</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-
-            <div className="row">
+            <div className="row" style={{marginTop: '230px'}}>
                 {coupons.map((coupon) => (
                     <div className="couponWrap" key={coupon.id}>
                         <div
-                            className={`coupon couponLeft ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
+                            className={`coupon couponLeft ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'} ${coupon.used ? 'green' : ''}`}>
                             <h1 className="m-0 d-flex justify-content-between" style={{color: "white"}}>
                                 {coupon.name}
-                                <span>{coupon.active ? '사용가능' : '사용불가'}</span>
+                                <span>
+                                    {coupon.used ? '사용완료' : (coupon.active ? '사용가능' : '사용불가')}
+                                </span>
                             </h1>
                             <div className="title mt-4 mb-2">
                                 <strong>{coupon.code}</strong>
+                                </div>
+                                <div className="name mb-0">
+                                    <strong>{coupon.categoryName}</strong>
+                                </div>
+                                <div className="name m-0">
+                                    ({coupon.type === 'AMOUNT' ? '고정 금액' : '퍼센티지'})&nbsp;
+                                    <strong>{coupon.type === 'AMOUNT' ? `${new Intl.NumberFormat().format(coupon.value)}원` : `${coupon.percentage}%`}</strong> 할인
+                                </div>
+                                <div className="name m-0">
+                                    {coupon.minValue === 0 ? '최소 주문 금액 없음' : new Intl.NumberFormat().format(coupon.minValue) + ' 원 부터 적용 가능'}
+                                </div>
+                                <div className="name m-0">
+                                    ~ {coupon.expiredAt} 까지 적용 가능
+                                </div>
                             </div>
-                            <div className="name mb-0">
-                                <strong>{coupon.categoryName}</strong>
-                            </div>
-                            <div className="name m-0">
-                                ({coupon.type === 'AMOUNT' ? '고정 금액' : '퍼센티지'})&nbsp;
-                                <strong>{coupon.type === 'AMOUNT' ? `${new Intl.NumberFormat().format(coupon.value)}원` : `${coupon.percentage}%`}</strong> 할인
-                            </div>
-                            <div className="name m-0">
-                                {coupon.minValue === 0 ? '최소 주문 금액 없음' : new Intl.NumberFormat().format(coupon.minValue) + ' 원 부터 적용 가능'}
-                            </div>
-                            <div className="name m-0">
-                                ~ {coupon.expiredAt} 까지 적용 가능
-                            </div>
-                        </div>
 
-                        <div className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'}`}>
+                            <div
+                                className={`coupon couponRight ${coupon.active ? (coupon.type === 'AMOUNT' ? 'red' : 'blue') : 'black'} ${coupon.used ? 'green' : ''}`}>
+                                {coupon.used && (
+                                    <div>
+                                        <h1 className="m-0" style={{color: "white"}}>사용내역</h1>
+                                        <div className="mt-5 d-flex flex-column justify-content-center align-items-center">
+                                            <button
+                                                className="btn btn-light mb-2"
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    height: '60px',
+                                                    width: '60px'
+                                                }}
+                                                onClick={() => handleOrderHistoryClick(coupon.id)}>
+                                                <span className="material-icons">history</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                )}
             </div>
 
-            {/* 페이징 버튼 */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '50px' }}>
+            {/* 페이징 버튼 */
+            }
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: '20px',
+                marginBottom: '50px'
+            }}>
                 <button className="btn btn-secondary me-2" onClick={handlePreviousPage} disabled={currentPage === 1}>
                     이전
                 </button>
                 <span>{currentPage} / {totalPages}</span>
-                <button className="btn btn-secondary ms-2" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                <button className="btn btn-secondary ms-2" onClick={handleNextPage}
+                        disabled={currentPage === totalPages}>
                     다음
                 </button>
             </div>
 
         </div>
-    );
+    )
+        ;
 };
 
 export default CouponList;

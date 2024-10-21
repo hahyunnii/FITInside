@@ -1,250 +1,66 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import './categoryCreate.css';
-//
-// const CategoryCreate = () => {
-//     const [name, setName] = useState('');
-//     const [displayOrder, setDisplayOrder] = useState('');
-//     const [parentId, setParentId] = useState('');
-//     const [categories, setCategories] = useState([]);
-//     const [isDeleted, setIsDeleted] = useState(false);
-//
-//     useEffect(() => {
-//         // 기존 카테고리를 불러와서 상위 카테고리 선택 드롭다운에 표시
-//         axios.get('/api/categories') // 엔드포인트는 필요에 따라 조정하세요
-//             .then(response => setCategories(response.data))
-//             .catch(error => console.error('카테고리 불러오기 오류:', error));
-//     }, []);
-//
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//
-//         const categoryData = {
-//             name,
-//             displayOrder: displayOrder ? Number(displayOrder) : null,
-//             isDeleted,
-//             parentId: parentId ? Number(parentId) : null,
-//         };
-//
-//         axios.post('/api/categories', categoryData) // 엔드포인트는 필요에 따라 조정하세요
-//             .then(response => {
-//                 console.log('카테고리 생성됨:', response.data);
-//                 // 폼 초기화 또는 페이지 이동 등 추가 작업
-//             })
-//             .catch(error => console.error('카테고리 생성 오류:', error));
-//     };
-//
-//     return (
-//         <div>
-//             <h2>카테고리 생성</h2>
-//             <form onSubmit={handleSubmit}>
-//                 <div>
-//                     <label>이름:</label>
-//                     <input
-//                         type="text"
-//                         value={name}
-//                         onChange={(e) => setName(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>표시 순서:</label>
-//                     <input
-//                         type="number"
-//                         value={displayOrder}
-//                         onChange={(e) => setDisplayOrder(e.target.value)}
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>상위 카테고리:</label>
-//                     <select
-//                         value={parentId}
-//                         onChange={(e) => setParentId(e.target.value)}
-//                     >
-//                         <option value="">없음</option>
-//                         {categories.map((category) => (
-//                             <option key={category.id} value={category.id}>
-//                                 {category.name}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-//                 <button type="submit">카테고리 생성</button>
-//             </form>
-//         </div>
-//     );
-// };
-//
-// export default CategoryCreate;
-
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import './categoryCreate.css'; // CSS 파일 import
-//
-// const CategoryCreate = () => {
-//     const [name, setName] = useState('');
-//     const [displayOrder, setDisplayOrder] = useState('');
-//     const [parentId, setParentId] = useState('');
-//     const [categories, setCategories] = useState([]);
-//     const [isDeleted, setIsDeleted] = useState(false);
-//
-//     // 기존 카테고리 목록 가져오기
-//     // useEffect(() => {
-//     //     // 기존 카테고리를 불러와서 상위 카테고리 선택 드롭다운에 표시
-//     //     axios.get('/api/categories') // 엔드포인트는 필요에 따라 조정하세요
-//     //         .then(response => setCategories(response.data))
-//     //         .catch(error => console.error('카테고리 불러오기 오류:', error));
-//     // }, []);
-//
-//     const handleSubmit = (e) => {
-//         // e.preventDefault(); // 폼 제출 시 페이지가 새로고침되는 기본 동작을 막음
-//
-//         const categoryData = {
-//             name,
-//             displayOrder: displayOrder ? Number(displayOrder) : null,
-//             isDeleted,
-//             parentId: parentId ? Number(parentId) : null,
-//         };
-//
-//         axios.post('http://localhost:8080/api/admin/categories', categoryData) // 엔드포인트는 필요에 따라 조정하세요
-//             .then(response => {
-//                 console.log('카테고리 생성됨:', response.data);
-//                 // 폼 초기화 또는 페이지 이동 등 추가 작업
-//             })
-//             .catch(error => console.error('카테고리 생성 오류:', error));
-//     };
-//
-//     return (
-//         <div className="category-create-container">
-//             <h2>카테고리 생성</h2>
-//             <form onSubmit={handleSubmit}>
-//                 <div className="form-group">
-//                     <label>이름:</label>
-//                     <input
-//                         type="text"
-//                         value={name}
-//                         onChange={(e) => setName(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <label>표시 순서:</label>
-//                     <input
-//                         type="number"
-//                         value={displayOrder}
-//                         onChange={(e) => setDisplayOrder(e.target.value)}
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <label>상위 카테고리:</label>
-//                     <select
-//                         value={parentId}
-//                         onChange={(e) => setParentId(e.target.value)}
-//                     >
-//                         <option value="">없음</option>
-//                         {categories.map((category) => (
-//                             <option key={category.id} value={category.id}>
-//                                 {category.name}
-//                             </option>
-//                         ))}
-//                     </select>
-//                 </div>
-//                 <button type="submit" className="submit-button">카테고리 생성</button>
-//             </form>
-//         </div>
-//     );
-// };
-//
-// export default CategoryCreate;
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-// import './categoryCreate.css';
-//
-// const CategoryCreate = () => {
-//     const [name, setName] = useState('');
-//     const [displayOrder, setDisplayOrder] = useState('');
-//     const [parentId, setParentId] = useState(null);
-//
-//     const navigate = useNavigate();
-//
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//
-//         const categoryData = {
-//             name,
-//             displayOrder: displayOrder ? Number(displayOrder) : null,
-//             parentId
-//         };
-//
-//         axios.post('http://localhost:8080/api/admin/categories', categoryData)
-//             .then(response => {
-//                 console.log('Category created:', response.data);
-//                 navigate('/'); // 성공적으로 생성된 후 메인 화면으로 이동
-//             })
-//             .catch(error => console.error('Error creating category:', error));
-//     };
-//
-//     return (
-//         <div className="category-create-container">
-//             <h2>카테고리 생성</h2>
-//             <form onSubmit={handleSubmit}>
-//                 <div className="form-group">
-//                     <label>이름:</label>
-//                     <input
-//                         type="text"
-//                         value={name}
-//                         onChange={(e) => setName(e.target.value)}
-//                         required
-//                     />
-//                 </div>
-//                 <div className="form-group">
-//                     <label>표시 순서:</label>
-//                     <input
-//                         type="number"
-//                         value={displayOrder}
-//                         onChange={(e) => setDisplayOrder(e.target.value)}
-//                     />
-//                 </div>
-//                 <button type="submit" className="submit-button">카테고리 생성</button>
-//             </form>
-//         </div>
-//     );
-// };
-//
-// export default CategoryCreate;
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './categoryCreate.css';
 
 const CategoryCreate = () => {
     const [name, setName] = useState('');
     const [displayOrder, setDisplayOrder] = useState('');
+    const [mainDisplayOrder, setMainDisplayOrder] = useState('');
     const [parentId, setParentId] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
+    const [previewImageUrl, setPreviewImageUrl] = useState(null);
+    const [parentCategories, setParentCategories] = useState([]);
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const categoryData = {
-            name,
-            displayOrder: displayOrder ? Number(displayOrder) : null,
-            parentId
-        };
-
-        axios.post('http://localhost:8080/api/admin/categories', categoryData, {
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         })
             .then(response => {
-                console.log('Category created:', response.data);
-                navigate('/admin/categories'); // 성공적으로 생성된 후 메인 화면으로 이동
+                const parentCategories = response.data.filter(category => category.parentId === null);
+                setParentCategories(parentCategories);
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+                if (error.response && error.response.status === 401) {
+                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                }
+            });
+    }, []);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setImageFile(file);
+        setPreviewImageUrl(URL.createObjectURL(file));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+
+        // mainDisplayOrder가 빈칸이 아닐 때만 추가
+        if (mainDisplayOrder !== '') {
+            formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+        }
+
+        if (parentId) formData.append('parentId', parentId);
+        if (imageFile) formData.append('imageFile', imageFile);
+
+        axios.post('http://localhost:8080/api/admin/categories', formData, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(() => {
+                navigate('/admin/categories');
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Error creating category:', error);
@@ -274,6 +90,43 @@ const CategoryCreate = () => {
                         value={displayOrder}
                         onChange={(e) => setDisplayOrder(e.target.value)}
                     />
+                </div>
+                <div className="form-group">
+                    <label>메인 카테고리 정렬 순서:</label>
+                    <input
+                        type="number"
+                        value={mainDisplayOrder}
+                        onChange={(e) => setMainDisplayOrder(e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>부모 카테고리 선택:</label>
+                    <select
+                        value={parentId || ''}
+                        onChange={(e) => setParentId(e.target.value || null)}
+                    >
+                        <option value="">부모 카테고리 없음</option>
+                        {parentCategories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label>이미지 파일:</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                    />
+                    {previewImageUrl && (
+                        <div className="image-preview">
+                            <img src={previewImageUrl} alt="Preview"
+                                 style={{ width: '100px', marginTop: '10px', borderRadius: '8px' }}
+                            />
+                        </div>
+                    )}
                 </div>
                 <button type="submit" className="submit-button">카테고리 생성</button>
             </form>
