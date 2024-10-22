@@ -11,8 +11,4 @@ public class CartResponseWrapperDto {
 
     private String message;
     private List<CartResponseDto> carts;
-
-    public CartResponseWrapperDto(String message) {
-        this.message = message;
-    }
 }
