@@ -1,6 +1,5 @@
 package com.team2.fitinside.coupon.mapper;
 
-
 import com.team2.fitinside.category.entity.Category;
 import com.team2.fitinside.coupon.dto.AvailableCouponResponseDto;
 import com.team2.fitinside.coupon.dto.CouponCreateRequestDto;
