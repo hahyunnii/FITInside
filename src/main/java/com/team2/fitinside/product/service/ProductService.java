@@ -92,6 +92,11 @@ public class ProductService {
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+        // price 필드의 유효성 검사
+        if (productCreateDto.getPrice() < 0) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
+        }
+
         // productName 필드의 길이 유효성 검사
         if (productCreateDto.getProductName() != null && productCreateDto.getProductName().length() > 100) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME_LENGTH);
@@ -138,6 +143,11 @@ public class ProductService {
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto,
                                             List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+
+        // price 필드의 유효성 검사
+        if (productUpdateDto.getPrice() < 0) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
+        }
 
         // productName 필드의 길이 유효성 검사
         if (productUpdateDto.getProductName() != null && productUpdateDto.getProductName().length() > 100) {
