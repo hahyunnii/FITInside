@@ -17,7 +17,9 @@ public enum ErrorCode {
     INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "허용되지 않는 파일 형식입니다."),
     AUTH_CODE_EXTENSION(HttpStatus.BAD_REQUEST, "로그인을 실패하였습니다(임시)"),
     INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
-    INVALID_PRODUCT_INFO_LENGTH(HttpStatus.BAD_REQUEST, "상품 설명은 500자 이하로 입력해야 합니다."), // 추가된 부분
+    INVALID_PRODUCT_NAME_LENGTH(HttpStatus.BAD_REQUEST, "상품명은 100자 이하로 입력해야 합니다."),
+    INVALID_PRODUCT_INFO_LENGTH(HttpStatus.BAD_REQUEST, "상품 설명은 500자 이하로 입력해야 합니다."),
+    INVALID_MANUFACTURER_LENGTH(HttpStatus.BAD_REQUEST, "제조사는 100자 이하로 입력해야 합니다."),
     INVALID_COUPON_DATA(HttpStatus.BAD_REQUEST, "쿠폰 정보가 유효하지 않습니다."),
     INVALID_COUPON_CREATE_DATA(HttpStatus.BAD_REQUEST, "쿠폰 생성 정보가 유효하지 않습니다."),
     INVALID_EMAIL_DATA(HttpStatus.BAD_REQUEST, "이메일 정보가 유효하지 않습니다."),

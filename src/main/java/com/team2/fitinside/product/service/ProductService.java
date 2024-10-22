@@ -92,9 +92,19 @@ public class ProductService {
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+        // productName 필드의 길이 유효성 검사
+        if (productCreateDto.getProductName() != null && productCreateDto.getProductName().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME_LENGTH);
+        }
+
         // info 필드의 길이 유효성 검사
         if (productCreateDto.getInfo() != null && productCreateDto.getInfo().length() > 500) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
+        // manufacturer 필드의 길이 유효성 검사
+        if (productCreateDto.getManufacturer() != null && productCreateDto.getManufacturer().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_MANUFACTURER_LENGTH);
         }
 
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
@@ -129,9 +139,19 @@ public class ProductService {
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto,
                                             List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
 
+        // productName 필드의 길이 유효성 검사
+        if (productUpdateDto.getProductName() != null && productUpdateDto.getProductName().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME_LENGTH);
+        }
+
         // info 필드의 길이 유효성 검사
         if (productUpdateDto.getInfo() != null && productUpdateDto.getInfo().length() > 500) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
+        // manufacturer 필드의 길이 유효성 검사
+        if (productUpdateDto.getManufacturer() != null && productUpdateDto.getManufacturer().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_MANUFACTURER_LENGTH);
         }
 
         // 기존 상품 조회
