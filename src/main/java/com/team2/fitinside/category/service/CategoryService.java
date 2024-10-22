@@ -131,7 +131,7 @@ public class CategoryService {
         Long newMainDisplayOrder = mainDisplayOrder;
 
         if (newMainDisplayOrder != null && newMainDisplayOrder > maxMainDisplayOrder) {
-            newMainDisplayOrder = maxMainDisplayOrder + 1;
+            newMainDisplayOrder = maxMainDisplayOrder;
         }
 
         // displayOrder와 mainDisplayOrder 값 조정
@@ -193,7 +193,6 @@ public class CategoryService {
     }
 
     //================================================================
-
     private void adjustMainDisplayOrder(Long oldOrder, Long newOrder) {
         if (newOrder == null && oldOrder != null) {
             categoryRepository.decrementMainDisplayOrder(oldOrder, Long.MAX_VALUE);
@@ -201,12 +200,14 @@ public class CategoryService {
             if (oldOrder == null) {
                 categoryRepository.incrementMainDisplayOrder(newOrder, Long.MAX_VALUE);
             } else if (newOrder > oldOrder) {
-                categoryRepository.decrementMainDisplayOrder(oldOrder + 1, newOrder);
-            } else {
+                categoryRepository.decrementMainDisplayOrder(oldOrder + 1, newOrder); // 범위 재확인
+            } else if (newOrder < oldOrder) {
                 categoryRepository.incrementMainDisplayOrder(newOrder, oldOrder - 1);
             }
         }
     }
+
+
 
     private Category getParentCategory(Long parentId) {
         return (parentId != null) ? categoryRepository.findByIdAndIsDeletedFalse(parentId)
