@@ -134,37 +134,4 @@ public class CartService {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }
-
-    // 사용자의 권환 확인 + 정보 가져오는 메서드
-//    private String getAuthenticatedUserEmail() throws AccessDeniedException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-//            throw new AccessDeniedException("권한이 없습니다!");
-//        }
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        return userDetails.getUsername(); // getUsername()을 호출
-////        return (CustomUserDetails) authentication.getPrincipal().getUserName();
-//    }
-
-    // 장바구니 조회 시 상품 정보 포함
-//    public CartProductResponseWrapperDto getCartProducts() {
-//        Long loginMemberID = getAuthenticatedMemberId();
-//        List<Object[]> results = cartRepository.findCartProductsByMemberId(loginMemberID);
-//
-//        // Object[] 결과를 CartProductDto로 변환
-//        List<CartProductResponseDto> dtos = new ArrayList<>();
-//        for (Object[] result : results) {
-//            String productName = (String) result[0];
-//            int price = (int) result[1];
-//            int quantity = (int) result[2];
-//            dtos.add(CartProductResponseDto.builder()
-//                    .productName(productName)
-//                    .price(price)
-//                    .quantity(quantity)
-//                    .build());
-//        }
-//
-//        return new CartProductResponseWrapperDto("장바구니 조회(상품 정보 포함) 완료했습니다!", dtos);
-//    }
-
 }
