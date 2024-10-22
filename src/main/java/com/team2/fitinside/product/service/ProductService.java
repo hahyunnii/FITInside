@@ -211,8 +211,13 @@ public class ProductService {
         // DTO로 변환하여 반환
         return ProductMapper.INSTANCE.toDto(savedProduct);
     }
+
     // 파일 형식 검증 메서드
     private void validateImageTypes(List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            return; // 이미지가 없을 경우 검증할 필요 없음
+        }
+
         List<String> validImageTypes = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/webp");
 
         for (MultipartFile image : images) {
