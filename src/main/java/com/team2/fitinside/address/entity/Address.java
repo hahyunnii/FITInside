@@ -48,6 +48,9 @@ public class Address {
     @Column(name = "delivery_memo")
     private String deliveryMemo;
 
+    @Column(name = "default_address", nullable = false)
+    private String defaultAddress;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -59,21 +62,28 @@ public class Address {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    public void setMember(Member member){
+    public void setMember(Member member) {
         this.member = member;
     }
 
-    public void deleteAddress(){
+    public void deleteAddress() {
         this.isDeleted = true;
     }
 
-    public void updateAddress(AddressRequestDto request){
+    public void updateAddress(AddressRequestDto request) {
         this.deliveryReceiver = request.getDeliveryReceiver();
         this.deliveryPhone = request.getDeliveryPhone();
         this.postalCode = request.getPostalCode();
         this.deliveryAddress = request.getDeliveryAddress();
         this.detailedAddress = request.getDetailedAddress();
         this.deliveryMemo = request.getDeliveryMemo();
+        this.defaultAddress = request.getDefaultAddress();
+    }
+
+    // 기본 배송지로 설정 여부
+    public void checkDefault(String isDefault) {
+        if (isDefault.equals("Y")) this.defaultAddress = "Y";
+        else this.defaultAddress = "N";
     }
 
 }

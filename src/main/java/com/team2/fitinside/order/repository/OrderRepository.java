@@ -17,7 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByMemberId(Long memberId);
 
-    @Query("SELECT o FROM Order o " +
+    @Query("SELECT DISTINCT o FROM Order o " +
             "JOIN o.orderProducts op " +
             "JOIN op.product p " +
             "WHERE o.member.id = :memberId " +
