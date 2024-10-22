@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final S3ImageService s3ImageService;
-    private final String DEFAULT_IMAGE_URL = "https://dummyimage.com/100x100";
+//    private final String DEFAULT_IMAGE_URL = "https://dummyimage.com/100x100";
 
     // 페이지네이션, 정렬, 검색을 적용한 상품 전체 목록 조회
     public Page<ProductResponseDto> getAllProducts(int page, int size, String sortField, String sortDir, String keyword) {
@@ -91,9 +92,24 @@ public class ProductService {
     // 상품 등록 (이미지 업로드 포함)
     @Transactional
     public ProductResponseDto createProduct(ProductCreateDto productCreateDto, List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
+        // price 필드의 유효성 검사
+        if (productCreateDto.getPrice() < 0) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
+        }
+
+        // productName 필드의 길이 유효성 검사
+        if (productCreateDto.getProductName() != null && productCreateDto.getProductName().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME_LENGTH);
+        }
+
         // info 필드의 길이 유효성 검사
         if (productCreateDto.getInfo() != null && productCreateDto.getInfo().length() > 500) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
+        // manufacturer 필드의 길이 유효성 검사
+        if (productCreateDto.getManufacturer() != null && productCreateDto.getManufacturer().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_MANUFACTURER_LENGTH);
         }
 
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
@@ -103,13 +119,12 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
+        // 상품 이미지 업로드 전 파일 형식 검증
+        validateImageTypes(productImages);
+        validateImageTypes(productDescImages);
+
         // S3 상품 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
         List<String> productImageUrls = uploadImages(productImages);
-
-//        // 상품 이미지가 없을 경우 기본 더미 이미지 추가
-//        if (productImageUrls.isEmpty()) {
-//            productImageUrls.add(DEFAULT_IMAGE_URL);
-//        }
 
         // 상품 설명 이미지 업로드 처리 (이미지 없으면 빈 리스트로 처리)
         List<String> productDescImageUrls = uploadImages(productDescImages);
@@ -129,9 +144,24 @@ public class ProductService {
     public ProductResponseDto updateProduct(Long id, ProductUpdateDto productUpdateDto,
                                             List<MultipartFile> productImages, List<MultipartFile> productDescImages) {
 
+        // price 필드의 유효성 검사
+        if (productUpdateDto.getPrice() < 0) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
+        }
+
+        // productName 필드의 길이 유효성 검사
+        if (productUpdateDto.getProductName() != null && productUpdateDto.getProductName().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME_LENGTH);
+        }
+
         // info 필드의 길이 유효성 검사
         if (productUpdateDto.getInfo() != null && productUpdateDto.getInfo().length() > 500) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_INFO_LENGTH);
+        }
+
+        // manufacturer 필드의 길이 유효성 검사
+        if (productUpdateDto.getManufacturer() != null && productUpdateDto.getManufacturer().length() > 100) {
+            throw new CustomException(ErrorCode.INVALID_MANUFACTURER_LENGTH);
         }
 
         // 기존 상품 조회
@@ -146,21 +176,16 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         updatedProduct.setCategory(category);
 
+        // 상품 이미지 업로드 전 파일 형식 검증
+        validateImageTypes(productImages);
+        validateImageTypes(productDescImages);
+
         // S3 상품 이미지 업데이트 처리 (기존 이미지 유지하면서 새로운 이미지 추가)
         List<String> productImageUrls = new ArrayList<>(existingProduct.getProductImgUrls()); // 기존 이미지 복사
-
-//        // 기존 이미지에 dummy 이미지가 있는지 확인하고 제거
-//        productImageUrls.removeIf(imageUrl -> imageUrl.equals(DEFAULT_IMAGE_URL)); // 기본 더미 이미지가 있으면 제거
-
         List<String> newProductImageUrls = uploadImages(productImages); // 새로운 이미지 업로드
         if (!newProductImageUrls.isEmpty()) {
             productImageUrls.addAll(newProductImageUrls); // 새로운 이미지 추가
         }
-
-//        // 이미지가 없을 경우 기본 더미 이미지 추가
-//        if (productImageUrls.isEmpty()) {
-//            productImageUrls.add(DEFAULT_IMAGE_URL); // 기본 이미지 추가
-//        }
 
         // S3 상품 설명 이미지 업데이트 처리 (기존 설명 이미지 유지하면서 새로운 설명 이미지 추가)
         List<String> productDescImageUrls = new ArrayList<>(existingProduct.getProductDescImgUrls()); // 기존 설명 이미지 복사
@@ -168,11 +193,6 @@ public class ProductService {
         if (!newProductDescImageUrls.isEmpty()) {
             productDescImageUrls.addAll(newProductDescImageUrls); // 새로운 설명 이미지 추가
         }
-
-//        // 설명 이미지가 없을 경우 기본 더미 이미지 추가 (필요시)
-//        if (productDescImageUrls.isEmpty()) {
-//            productDescImageUrls.add(DEFAULT_IMAGE_URL); // 기본 이미지 추가 (설명 이미지도 필요하다면)
-//        }
 
         // 업데이트된 이미지 URL 설정
         updatedProduct.setProductImgUrls(productImageUrls);
@@ -190,6 +210,22 @@ public class ProductService {
 
         // DTO로 변환하여 반환
         return ProductMapper.INSTANCE.toDto(savedProduct);
+    }
+
+    // 파일 형식 검증 메서드
+    private void validateImageTypes(List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            return; // 이미지가 없을 경우 검증할 필요 없음
+        }
+
+        List<String> validImageTypes = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/webp");
+
+        for (MultipartFile image : images) {
+            String contentType = image.getContentType();
+            if (!validImageTypes.contains(contentType)) {
+                throw new CustomException(ErrorCode.INVALID_FILE_FORMAT);
+            }
+        }
     }
 
 
