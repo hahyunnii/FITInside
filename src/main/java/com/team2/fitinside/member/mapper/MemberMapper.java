@@ -18,7 +18,7 @@ public interface MemberMapper {
 
     MemberResponseDto memberToResponse(Member member);
 
-    List<MemberResponseDto> toDtoList(List<Member> members);
+    List<MemberResponseDto> toDtoList(List<Member> memberList);
 
     @Named("encryptPassword") // 2
     default String encryptPassword(String password) {

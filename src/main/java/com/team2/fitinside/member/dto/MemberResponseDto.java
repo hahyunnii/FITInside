@@ -2,6 +2,8 @@ package com.team2.fitinside.member.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,5 +15,6 @@ public class MemberResponseDto {
     private String email;
     private String userName;
     private String phone;
+    private LocalDateTime createdAt;
 
 }
