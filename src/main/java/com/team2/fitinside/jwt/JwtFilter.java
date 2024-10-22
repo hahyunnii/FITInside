@@ -1,4 +1,4 @@
-package com.team2.fitinside.member.jwt;
+package com.team2.fitinside.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

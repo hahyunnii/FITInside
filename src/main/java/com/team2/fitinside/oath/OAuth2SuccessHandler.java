@@ -1,10 +1,10 @@
-package com.team2.fitinside.member.oath;
+package com.team2.fitinside.oath;
 
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Member;
-import com.team2.fitinside.member.jwt.TokenProvider;
-import com.team2.fitinside.member.oath.util.RefreshTokenCookieUtil;
+import com.team2.fitinside.jwt.TokenProvider;
+import com.team2.fitinside.oath.util.RefreshTokenCookieUtil;
 import com.team2.fitinside.member.repository.MemberRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

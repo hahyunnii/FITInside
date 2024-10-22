@@ -1,13 +1,11 @@
-package com.team2.fitinside.member.oath.dto;
+package com.team2.fitinside.oath.dto;
 
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.global.exception.ErrorCode;
 import com.team2.fitinside.member.entity.Authority;
 import com.team2.fitinside.member.entity.Member;
-import jakarta.security.auth.message.AuthException;
 import lombok.Builder;
 
-import javax.crypto.KeyGenerator;
 import java.util.Map;
 
 @Builder

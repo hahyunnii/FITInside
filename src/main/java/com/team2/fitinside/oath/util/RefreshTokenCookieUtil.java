@@ -1,13 +1,13 @@
-package com.team2.fitinside.member.oath.util;
+package com.team2.fitinside.oath.util;
 
-import com.team2.fitinside.member.oath.entity.RefreshToken;
-import com.team2.fitinside.member.oath.repository.RefreshTokenRepository;
+import com.team2.fitinside.oath.entity.RefreshToken;
+import com.team2.fitinside.oath.repository.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.team2.fitinside.member.jwt.TokenProvider.REFRESH_TOKEN_EXPIRE_TIME;
+import static com.team2.fitinside.jwt.TokenProvider.REFRESH_TOKEN_EXPIRE_TIME;
 
 @RequiredArgsConstructor
 @Component

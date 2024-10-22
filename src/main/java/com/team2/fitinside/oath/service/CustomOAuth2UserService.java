@@ -1,8 +1,8 @@
-package com.team2.fitinside.member.oath.service;
+package com.team2.fitinside.oath.service;
 
 import com.team2.fitinside.member.entity.Member;
-import com.team2.fitinside.member.oath.PrincipalDetails;
-import com.team2.fitinside.member.oath.dto.OAuth2UserInfo;
+import com.team2.fitinside.oath.PrincipalDetails;
+import com.team2.fitinside.oath.dto.OAuth2UserInfo;
 import com.team2.fitinside.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

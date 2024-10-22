@@ -1,4 +1,4 @@
-package com.team2.fitinside.member.oath.dto;
+package com.team2.fitinside.oath.dto;
 
 import lombok.Getter;
 import lombok.Setter;

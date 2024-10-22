@@ -1,7 +1,7 @@
-package com.team2.fitinside.member.oath.service;
+package com.team2.fitinside.oath.service;
 
 
-import com.team2.fitinside.member.jwt.TokenProvider;
+import com.team2.fitinside.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

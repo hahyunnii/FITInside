@@ -3,7 +3,7 @@ package com.team2.fitinside.member.controller;
 import com.team2.fitinside.member.dto.MemberRequestDto;
 import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.dto.TokenDto;
-import com.team2.fitinside.member.oath.util.RefreshTokenCookieUtil;
+import com.team2.fitinside.oath.util.RefreshTokenCookieUtil;
 import com.team2.fitinside.member.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

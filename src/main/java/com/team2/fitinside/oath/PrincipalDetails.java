@@ -1,4 +1,4 @@
-package com.team2.fitinside.member.oath;
+package com.team2.fitinside.oath;
 
 import com.team2.fitinside.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package com.team2.fitinside.member.oath.entity;
+package com.team2.fitinside.oath.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

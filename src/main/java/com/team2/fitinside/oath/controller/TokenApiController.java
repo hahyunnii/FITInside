@@ -1,7 +1,7 @@
-package com.team2.fitinside.member.oath.controller;
+package com.team2.fitinside.oath.controller;
 
-import com.team2.fitinside.member.oath.dto.CreateAccessTokenResponse;
-import com.team2.fitinside.member.oath.service.TokenService;
+import com.team2.fitinside.oath.dto.CreateAccessTokenResponse;
+import com.team2.fitinside.oath.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.team2.fitinside.member.oath.util;
+package com.team2.fitinside.oath.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
