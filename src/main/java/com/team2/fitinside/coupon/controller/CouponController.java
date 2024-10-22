@@ -102,6 +102,8 @@ public class CouponController {
     @GetMapping("/{couponId}/order")
     @Operation(summary = "쿠폰 사용 내역 조회", description = "쿠폰 사용 내역 (주문서) 조회")
     @ApiResponse(responseCode = "200", description = "쿠폰이 사용되었습니다!")
+    @ApiResponse(responseCode = "404", description = "해당 쿠폰을 찾을 수 없습니다.")
+    @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없습니다.")
     public ResponseEntity<String> findOrder(@PathVariable("couponId") Long couponId) {
 
         Long orderId = couponService.findOrder(couponId);
