@@ -1,6 +1,5 @@
 package com.team2.fitinside.global;
 
-import com.team2.fitinside.cart.exception.CartOutOfRangeException;
 import com.team2.fitinside.order.exception.CartEmptyException;
 import com.team2.fitinside.order.exception.OrderModificationNotAllowedException;
 import com.team2.fitinside.order.exception.OrderNotFoundException;
@@ -22,9 +21,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    // 장바구니 범위 관련 커스텀 예외 추가
     @ExceptionHandler({OutOfStockException.class, OrderModificationNotAllowedException.class,
-            CartOutOfRangeException.class, NoSuchElementException.class})
+            NoSuchElementException.class})
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
