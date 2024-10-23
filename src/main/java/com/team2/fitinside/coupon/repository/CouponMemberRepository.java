@@ -24,7 +24,7 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
             "(cm.coupon.category.id = :categoryId OR cm.coupon.category IS NULL)")
     List<CouponMember> findByMember_IdAndCoupon_Category_Id(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
 
-    boolean existsByCoupon_Code(String code);
+    boolean existsByCoupon_CodeAndMember_Id(String code, Long memberId);
 
     Optional<CouponMember> findByMember_IdAndCoupon_IdAndUsedIs(Long memberId, Long couponId, boolean used);
 
