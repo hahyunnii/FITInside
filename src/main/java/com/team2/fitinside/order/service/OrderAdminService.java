@@ -67,7 +67,7 @@ public class OrderAdminService {
             return orderResponseDto;
         }).collect(Collectors.toList());
 
-        return new OrderResponseWrapperDto(orderResponseDtos, pageable.getPageNumber());
+        return new OrderResponseWrapperDto(orderResponseDtos, orders.getTotalPages());
     }
 
     // 주문 상태 수정
