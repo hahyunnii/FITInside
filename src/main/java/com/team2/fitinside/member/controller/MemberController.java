@@ -6,6 +6,7 @@ import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,13 +32,13 @@ public class MemberController {
 
     // 유저 비밀번호 변경
     @PutMapping("/password")
-    public ResponseEntity<MemberResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
+    public ResponseEntity<MemberResponseDto> setMemberPassword(@Validated @RequestBody ChangePasswordRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
     }
 
     // 유저 전화번호 변경
     @PutMapping("/phone")
-    public ResponseEntity<MemberResponseDto> setMemberPhone(@RequestBody MemberRequestDto request) {
+    public ResponseEntity<MemberResponseDto> setMemberPhone(@Validated @RequestBody MemberRequestDto request) {
         return ResponseEntity.ok(memberService.changeMemberPhone(request.getPhone()));
     }
 
