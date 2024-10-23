@@ -18,7 +18,6 @@ import com.team2.fitinside.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,15 +40,15 @@ public class CouponService {
     public CouponResponseWrapperDto findAllCoupons(int page, boolean includeInActiveCoupons) {
 
         // 페이지 당 쿠폰 10개, 만료 일 기준 오름차순 정렬
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("Coupon_expiredAt").ascending());
+        PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
         Long loginMemberId = getAuthenticatedMemberId();
 
         Page<CouponMember> couponMembers;
         if(includeInActiveCoupons) {     // 비활성화 쿠폰 포함
-            couponMembers = couponMemberRepository.findByMember_Id(pageRequest, loginMemberId);
+            couponMembers = couponMemberRepository.findByMemberIdWithCouponsAndCategories(loginMemberId, pageRequest);
         } else {                        // 활성화 쿠폰만 조회
-            couponMembers = couponMemberRepository.findByMember_IdAndCoupon_ActiveIsAndUsed(pageRequest, loginMemberId, true, false);
+            couponMembers = couponMemberRepository.findByMemberIdAndCouponActiveAndUsed(loginMemberId, true, false, pageRequest);
         }
 
         List<CouponResponseDto> dtos = new ArrayList<>();

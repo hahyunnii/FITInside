@@ -205,7 +205,7 @@ class CouponAdminServiceTest {
         int page = 1;
         Long couponId = activeCoupon1.getId();
 
-        given(couponMemberRepository.findByCoupon_Id(any(), eq(couponId)))
+        given(couponMemberRepository.findByCoupon_Id(eq(couponId), any()))
                 .willReturn(new PageImpl<>(List.of(couponMember1)));
 
         //when
@@ -227,7 +227,7 @@ class CouponAdminServiceTest {
         int page = 1;
         Long couponId = activeCoupon1.getId();
 
-        given(couponMemberRepository.findByCoupon_Id(any(), eq(couponId)))
+        given(couponMemberRepository.findByCoupon_Id(eq(couponId), any()))
                 .willReturn(new PageImpl<>(List.of(), PageRequest.of(0, 10), 0));
 
         //when

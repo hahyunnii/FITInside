@@ -12,23 +12,57 @@ import java.util.Optional;
 
 public interface CouponMemberRepository extends JpaRepository<CouponMember, Long> {
 
-    Page<CouponMember> findByCoupon_Id(Pageable pageable, Long couponId);
+    @Query("SELECT cm " +
+            "FROM CouponMember cm " +
+            "JOIN FETCH cm.member " +
+            "WHERE cm.coupon.id = :couponId")
+    Page<CouponMember> findByCoupon_Id(@Param("couponId") Long couponId, Pageable pageable);
 
     Page<CouponMember> findByMember_Id(Pageable pageable, Long memberId);
 
+    @Query("SELECT cm FROM CouponMember cm " +
+            "JOIN FETCH cm.coupon c " +
+            "LEFT JOIN FETCH c.category " +
+            "WHERE cm.member.id = :memberId " +
+            "ORDER BY c.expiredAt ASC")
+    Page<CouponMember> findByMemberIdWithCouponsAndCategories(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query("SELECT cm FROM CouponMember cm " +
+            "JOIN FETCH cm.coupon c " +
+            "LEFT JOIN FETCH c.category " +
+            "WHERE cm.member.id = :memberId AND c.active = :active AND cm.used = :used " +
+            "ORDER BY c.expiredAt ASC")
+    Page<CouponMember> findByMemberIdAndCouponActiveAndUsed(@Param("memberId") Long memberId,
+                                                            @Param("active") boolean active,
+                                                            @Param("used") boolean used,
+                                                            Pageable pageable);
+
+
     Page<CouponMember> findByMember_IdAndCoupon_ActiveIsAndUsed(Pageable pageable, Long memberId, boolean active, boolean used);
 
-    // 적용 가능한 CouponMember 리스트 반환 (카테고리 없는 엔티티도 반환)
     @Query("SELECT cm FROM CouponMember cm " +
+            "JOIN FETCH cm.coupon c " +
+            "LEFT JOIN FETCH c.category " + // 카테고리가 없는 경우도 고려
             "WHERE cm.member.id = :memberId AND " +
-            "(cm.coupon.category.id = :categoryId OR cm.coupon.category IS NULL)")
-    List<CouponMember> findByMember_IdAndCoupon_Category_Id(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
+            "(c.category.id = :categoryId OR c.category IS NULL)")
+    List<CouponMember> findByMember_IdAndCoupon_Category_Id(@Param("memberId") Long memberId,
+                                                            @Param("categoryId") Long categoryId);
 
     boolean existsByCoupon_CodeAndMember_Id(String code, Long memberId);
 
     Optional<CouponMember> findByMember_IdAndCoupon_IdAndUsedIs(Long memberId, Long couponId, boolean used);
 
-    boolean existsByMember_IdAndCoupon_Id(Long memberId, Long couponId);
+    @Query("SELECT cm " +
+            "FROM CouponMember cm " +
+            "JOIN FETCH cm.member " +
+            "WHERE cm.member.id NOT IN " +
+                "(SELECT cm2.member.id " +
+                "FROM CouponMember cm2 " +
+                "WHERE cm2.coupon.id = :couponId)")
+    List<CouponMember> findCouponMembersWithoutCoupons(@Param("couponId") Long couponId);
 
-    List<CouponMember> findByMember_IdAndCoupon_Name_Contains(Long memberId, String couponName);
+    @Query("SELECT cm FROM CouponMember cm " +
+            "JOIN FETCH cm.coupon c " +
+            "WHERE cm.member.id = :memberId AND c.name LIKE %:couponName%")
+    List<CouponMember> findByMember_IdAndCoupon_Name_Contains(@Param("memberId") Long memberId, @Param("couponName") String couponName);
 }
