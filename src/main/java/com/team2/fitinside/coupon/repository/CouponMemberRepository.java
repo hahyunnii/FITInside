@@ -18,8 +18,6 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
             "WHERE cm.coupon.id = :couponId")
     Page<CouponMember> findByCoupon_Id(@Param("couponId") Long couponId, Pageable pageable);
 
-    Page<CouponMember> findByMember_Id(Pageable pageable, Long memberId);
-
     @Query("SELECT cm FROM CouponMember cm " +
             "JOIN FETCH cm.coupon c " +
             "LEFT JOIN FETCH c.category " +
@@ -37,8 +35,6 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
                                                             @Param("used") boolean used,
                                                             Pageable pageable);
 
-
-    Page<CouponMember> findByMember_IdAndCoupon_ActiveIsAndUsed(Pageable pageable, Long memberId, boolean active, boolean used);
 
     @Query("SELECT cm FROM CouponMember cm " +
             "JOIN FETCH cm.coupon c " +
