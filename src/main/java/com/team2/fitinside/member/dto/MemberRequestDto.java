@@ -1,10 +1,10 @@
 package com.team2.fitinside.member.dto;
 
-import com.team2.fitinside.member.entity.Authority;
-import com.team2.fitinside.member.entity.Member;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Setter
@@ -12,6 +12,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor
 public class MemberRequestDto {
     private String email;
+
+    @NotNull(message = "비밀번호가 비어있습니다.")
+    @Size(min = 8, message = "비밀번호는 8자 이상 필요합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).{8,}$",
+            message = "비밀번호는 숫자를 포함한 문자 8자 이상 필요합니다.")
     private String password;
     private String userName;
     private String phone;

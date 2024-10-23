@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,14 +25,14 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("")
-    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto requestDto) {
+    public ResponseEntity<MemberResponseDto> signup(@Validated @RequestBody MemberRequestDto requestDto) {
         return ResponseEntity.ok(authService.signup(requestDto));
     }
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(
-            @RequestBody MemberRequestDto requestDto,
+            @Validated @RequestBody MemberRequestDto requestDto,
             HttpServletResponse response,
             HttpServletRequest request) {
         TokenDto tokenDto = authService.login(request, response, requestDto);
