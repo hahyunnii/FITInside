@@ -33,7 +33,7 @@ public class OrderAdminController {
     @GetMapping
     @Operation(summary = "관리자의 전체 주문 조회(+주문 상태, 날짜 검색)", description = "전체 주문 조회(+주문 상태, 날짜 검색)")
     @ApiResponse(responseCode = "200", description = "전체 주문 조회 완료", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderResponseDto.class))))
-    public ResponseEntity<?> findAllOrdersByAdmin(
+    public ResponseEntity<OrderResponseWrapperDto> findAllOrdersByAdmin(
             @RequestParam(required = false, value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "orderStatus") String orderStatus,
             @RequestParam(required = false, value = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -47,7 +47,7 @@ public class OrderAdminController {
     @Operation(summary = "관리자의 주문 상태 수정", description = "주문 상태 수정")
     @ApiResponse(responseCode = "200", description = "주문 상태 수정 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponseDto.class)))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<?> updateStatusOrder(
+    public ResponseEntity<OrderStatusResponseDto> updateStatusOrder(
             @PathVariable("order_id") Long orderId,
             @RequestBody OrderStatusUpdateRequestDto request) {
 
@@ -59,7 +59,7 @@ public class OrderAdminController {
     @Operation(summary = "관리자의 주문 삭제", description = "주문 삭제")
     @ApiResponse(responseCode = "200", description = "주문 삭제 완료", content = @Content(mediaType = "application/json"))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 주문", content = @Content(mediaType = "application/json"))
-    public ResponseEntity<?> deleteOrder(@PathVariable("order_id") Long orderId) {
+    public ResponseEntity<String> deleteOrder(@PathVariable("order_id") Long orderId) {
         orderAdminService.deleteOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK).body("주문 삭제 완료. orderId: " + orderId);
     }
