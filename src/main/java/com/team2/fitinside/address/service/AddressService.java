@@ -22,6 +22,8 @@ import static com.team2.fitinside.global.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class AddressService {
 
+    private static final int MAX_ADDRESS_LIMIT = 5;
+
     private final SecurityUtil securityUtil;
     private final AddressMapper addressMapper;
     private final AddressRepository addressRepository;
@@ -59,10 +61,6 @@ public class AddressService {
         Long loginMemberId = securityUtil.getCurrentMemberId();
         Member findMember = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-        // 배송지는 최대 5개까지 저장
-        // 근데 5개 인데 그냥 디폴트만 체크한거면?
-//        validateAddressLimit(loginMemberId);
 
         // 기본 배송지 설정
         if (request.getDefaultAddress().equals("Y")) {
@@ -118,7 +116,6 @@ public class AddressService {
         }
 
         address.checkDefault(isDefault);
-        System.out.println("================변경된 default: " + address.getDefaultAddress());
     }
 
     private void checkAuthorization(Address address) {
@@ -138,7 +135,7 @@ public class AddressService {
 
     // 배송지 최대 개수 검사
     private void validateAddressLimit(Long loginMemberId) {
-        if (addressRepository.findAllByMemberId(loginMemberId).size() >= 5) {
+        if (addressRepository.findAllByMemberId(loginMemberId).size() >= MAX_ADDRESS_LIMIT) {
             throw new CustomException(EXCEEDED_MAX_ADDRESS_LIMIT);
         }
     }
