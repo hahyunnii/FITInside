@@ -121,8 +121,8 @@ class CouponServiceTest {
         given(securityUtil.getCurrentMemberId()).willReturn(loginMember.getId());
 
         // 활성화 쿠폰 (+ 미사용 쿠폰) 반환하게 설정
-        given(couponMemberRepository.findByMember_IdAndCoupon_ActiveIsAndUsed(
-                any(), eq(loginMember.getId()), eq(true), eq(false)))
+        given(couponMemberRepository.findByMemberIdAndCouponActiveAndUsed(
+                eq(loginMember.getId()), eq(true), eq(false), any()))
                 .willReturn(new PageImpl<>(List.of(couponMember1)));
 
         //when
@@ -147,7 +147,7 @@ class CouponServiceTest {
         given(securityUtil.getCurrentMemberId()).willReturn(loginMember.getId());
 
         // 모든 쿠폰 반환하게 설정
-        given(couponMemberRepository.findByMember_Id(any(), eq(loginMember.getId())))
+        given(couponMemberRepository.findByMemberIdWithCouponsAndCategories(eq(loginMember.getId()), any()))
                 .willReturn(new PageImpl<>(List.of(couponMember1, couponMember2, couponMember3, couponMember4)));
 
         //when
@@ -175,7 +175,7 @@ class CouponServiceTest {
         given(securityUtil.getCurrentMemberId()).willReturn(loginMember.getId());
 
         // 빈 리스트 반환하게 설정
-        given(couponMemberRepository.findByMember_Id(any(), eq(loginMember.getId()))).willReturn(
+        given(couponMemberRepository.findByMemberIdWithCouponsAndCategories(eq(loginMember.getId()), any())).willReturn(
                 new PageImpl<>(List.of(), PageRequest.of(0, 10), 0));
 
         //when
@@ -296,7 +296,7 @@ class CouponServiceTest {
         given(couponRepository.findByCode(couponCode)).willReturn(Optional.of(coupon));
 
         // 등록 이력 false 반환하게 설정
-        given(couponMemberRepository.existsByCoupon_Code(couponCode)).willReturn(false);
+        given(couponMemberRepository.existsByCoupon_CodeAndMember_Id(couponCode, loginMember.getId())).willReturn(false);
 
         // 쿠폰 멤버 저장 시 테스트용 쿠폰멤버 객체 반환하게 설정
         given(couponMemberRepository.save(any()))
@@ -320,7 +320,7 @@ class CouponServiceTest {
         given(securityUtil.getCurrentMemberId()).willReturn(loginMember.getId());
 
         // 등록 이력 true 반환하게 설정
-        given(couponMemberRepository.existsByCoupon_Code(couponCode)).willReturn(true);
+        given(couponMemberRepository.existsByCoupon_CodeAndMember_Id(couponCode, loginMember.getId())).willReturn(true);
 
         // when, then
         CustomException duplicateCouponException = assertThrows(CustomException.class, () -> {
@@ -342,7 +342,7 @@ class CouponServiceTest {
         given(couponRepository.findByCode(couponCode)).willReturn(Optional.of(inActiveCoupon1));
 
         // 등록 이력 false 반환하게 설정
-        given(couponMemberRepository.existsByCoupon_Code(couponCode)).willReturn(false);
+        given(couponMemberRepository.existsByCoupon_CodeAndMember_Id(couponCode, loginMember.getId())).willReturn(false);
 
         // when, then
         CustomException invalidCouponDataException = assertThrows(CustomException.class, () -> {

@@ -240,7 +240,7 @@ class CouponAdminServiceTest {
     }
 
     @Test
-    @DisplayName("쿠폰 생성")
+    @DisplayName("쿠폰 생성 - 카테고리 존재")
     public void createCoupon() throws Exception {
         //given
         setUpAdminMember();
@@ -272,16 +272,46 @@ class CouponAdminServiceTest {
     }
 
     @Test
+    @DisplayName("쿠폰 생성 - 모든 카테고리")
+    public void createCouponAllCategories() throws Exception {
+        //given
+        setUpAdminMember();
+
+        CouponCreateRequestDto dto = CouponCreateRequestDto.builder()
+                .name("새로운 쿠폰").type(CouponType.AMOUNT).value(7000)
+                .minValue(7000).expiredAt(LocalDate.now().plusDays(3)).categoryId(0L).build();
+
+        Coupon createdCoupon = Coupon.builder().id(4L).build();
+
+        given(couponRepository.save(any())).willReturn(createdCoupon);
+
+        //when
+        Long result = couponAdminService.createCoupon(dto);
+
+        //then
+        assertThat(result).isEqualTo(4L);
+
+        // ArgumentCaptor 사용하여 save 메서드에서 전달된 Coupon 객체를 캡쳐
+        ArgumentCaptor<Coupon> couponCaptor = ArgumentCaptor.forClass(Coupon.class);
+        verify(couponRepository).save(couponCaptor.capture());
+
+        // 캡쳐한 Coupon 객체의 setCategory가 호출 안되었는지 검증
+        Coupon capturedCoupon = couponCaptor.getValue();
+        assertNotNull(capturedCoupon);
+        assertNull(capturedCoupon.getCategory()); // setCategory가 호출되었는지 검증
+    }
+
+    @Test
     @DisplayName("쿠폰 생성 - 400에러 (쿠폰 생성 정보가 유효하지 않은 경우)")
     public void createCouponWithInvalidData() throws Exception {
         //given
         setUpAdminMember();
 
         // 유효하지 않은 쿠폰 생성 dto들
-        CouponCreateRequestDto dto1 = createInvalidCouponDto(-7000, 7000);
-        CouponCreateRequestDto dto2 = createInvalidCouponDto(0, -10);
-        CouponCreateRequestDto dto3 = createInvalidCouponDto(0, 200);
-        CouponCreateRequestDto dto4 = createInvalidCouponDto(7000, -7000);
+        CouponCreateRequestDto dto1 = createInvalidCouponDto(-7000, 0, 7000);
+        CouponCreateRequestDto dto2 = createInvalidCouponDto(0, -10, 10000);
+        CouponCreateRequestDto dto3 = createInvalidCouponDto(0, 200, 0);
+        CouponCreateRequestDto dto4 = createInvalidCouponDto(7000, 0, -7000);
         CouponCreateRequestDto dto5 = createExpiredCouponDto();
 
         //when, then
@@ -292,10 +322,10 @@ class CouponAdminServiceTest {
         assertThrows(CustomException.class, () -> couponAdminService.createCoupon(dto5));
     }
 
-    private CouponCreateRequestDto createInvalidCouponDto(int value, int percentage) {
+    private CouponCreateRequestDto createInvalidCouponDto(int value, int percentage, int minValue) {
         return CouponCreateRequestDto.builder()
-                .name("새로운 쿠폰").type(CouponType.AMOUNT).value(value)
-                .minValue(7000).expiredAt(LocalDate.now().plusDays(3)).categoryId(1L).build();
+                .name("새로운 쿠폰").type(CouponType.AMOUNT).value(value).percentage(percentage)
+                .minValue(minValue).expiredAt(LocalDate.now().plusDays(3)).categoryId(1L).build();
     }
 
     private CouponCreateRequestDto createExpiredCouponDto() {
@@ -380,10 +410,12 @@ class CouponAdminServiceTest {
 
         Long couponId = activeCoupon1.getId();
         given(couponRepository.findById(couponId)).willReturn(Optional.of(activeCoupon1));
-        given(memberRepository.findAll()).willReturn(List.of(adminMember, userMember));
 
-        given(couponMemberRepository.existsByMember_IdAndCoupon_Id(userMember.getId(), couponId)).willReturn(true);
-        given(couponMemberRepository.existsByMember_IdAndCoupon_Id(adminMember.getId(), couponId)).willReturn(false);
+        // 쿠폰을 보유하지 않은 회원 목록 설정
+        CouponMember couponMemberWithoutCoupon = new CouponMember();
+        couponMemberWithoutCoupon.setCouponAndMember(activeCoupon1, adminMember); // adminMember가 쿠폰을 보유하지 않음
+
+        given(couponMemberRepository.findCouponMembersWithoutCoupons(couponId)).willReturn(List.of(couponMemberWithoutCoupon));
 
         //when
         CouponMemberResponseWrapperDto result = couponAdminService.findMembersWithOutCoupons(couponId);
