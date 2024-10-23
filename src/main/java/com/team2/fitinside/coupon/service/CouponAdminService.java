@@ -87,7 +87,8 @@ public class CouponAdminService {
 
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
-        Page<CouponMember> couponMembers = couponMemberRepository.findByCoupon_Id(pageRequest, couponId);
+        // 쿠폰 보유 목록 반환 (n+1 문제 해결)
+        Page<CouponMember> couponMembers = couponMemberRepository.findByCoupon_Id(couponId, pageRequest);
 
         // CouponMember를 CouponMemberResponseDto로 변환
         List<CouponMemberResponseDto> dtos = couponMembers.stream()
@@ -159,21 +160,15 @@ public class CouponAdminService {
         // 쿠폰이 존재하지 않는 경우
         couponRepository.findById(couponId).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-        // 전체 회원 목록
-        List<Member> members = memberRepository.findAll();
+        // 쿠폰을 보유하지 않은 CouponMember 목록 조회 (n+1 문제 해결)
+        List<CouponMember> couponMembersWithoutCoupons = couponMemberRepository.findCouponMembersWithoutCoupons(couponId);
 
-        List<CouponMemberResponseDto> dtos = new ArrayList<>();
-        for (Member member : members) {
-
-            // 쿠폰 보유 현황에 존재하지 않는 경우에만 리스트에 추가
-            if(!couponMemberRepository.existsByMember_IdAndCoupon_Id(member.getId(), couponId)) {
-
-                dtos.add(CouponMemberResponseDto.builder()
-                        .userName(member.getUserName())
-                        .email(member.getEmail())
-                        .build());
-            }
-        }
+        List<CouponMemberResponseDto> dtos = couponMembersWithoutCoupons.stream()
+                .map(couponMember -> CouponMemberResponseDto.builder()
+                        .userName(couponMember.getMember().getUserName())
+                        .email(couponMember.getMember().getEmail())
+                        .build())
+                .collect(Collectors.toList());
 
         return new CouponMemberResponseWrapperDto("쿠폰 미보유 회원 목록을 조회했습니다!", dtos, 1);
     }
