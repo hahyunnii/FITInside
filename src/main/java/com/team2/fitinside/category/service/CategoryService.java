@@ -104,57 +104,6 @@ public class CategoryService {
         return CategoryMapper.toCreateDTO(categoryRepository.save(category));
     }
 
-
-    // 카테고리 수정
-//    public CategoryUpdateRequestDTO updateCategory(Long id, String name, Long displayOrder,
-//                                                   Long mainDisplayOrder, Boolean isDeleted,
-//                                                   Long parentId, MultipartFile imageFile) {
-//        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//
-//        // 부모 카테고리의 최대 displayOrder 값 계산
-//        Long maxDisplayOrder = category.getParent() == null ?
-//                (long) categoryRepository.findAllByIsDeletedFalseAndParentIsNullOrderByDisplayOrder().size() :
-//                (long) categoryRepository.findAllByIsDeletedFalseAndParentIdOrderByDisplayOrder(category.getParent().getId()).size();
-//
-//        Long oldDisplayOrder = category.getDisplayOrder();
-//        Long newDisplayOrder = displayOrder;
-//
-//        // 새로운 displayOrder가 최대치를 넘으면 자동 조정
-//        if (newDisplayOrder > maxDisplayOrder) {
-//            newDisplayOrder = maxDisplayOrder;
-//        }
-//
-//        // mainDisplayOrder 최대 값 계산
-//        Long maxMainDisplayOrder = (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size();
-//        Long oldMainDisplayOrder = category.getMainDisplayOrder();
-//        Long newMainDisplayOrder = mainDisplayOrder;
-//
-//        if (newMainDisplayOrder != null && newMainDisplayOrder > maxMainDisplayOrder) {
-//            newMainDisplayOrder = maxMainDisplayOrder;
-//        }
-//
-//        // displayOrder와 mainDisplayOrder 값 조정
-//        if (!oldDisplayOrder.equals(newDisplayOrder)) {
-//            if (category.getParent() == null) {
-//                adjustDisplayOrderForParentCategories(oldDisplayOrder, newDisplayOrder);
-//            } else {
-//                adjustDisplayOrderForChildCategories(oldDisplayOrder, newDisplayOrder, category.getParent().getId());
-//            }
-//        }
-//
-//        if (!Objects.equals(oldMainDisplayOrder, newMainDisplayOrder)) {
-//            adjustMainDisplayOrder(oldMainDisplayOrder, newMainDisplayOrder);
-//        }
-//
-//        String imageUrl = updateCategoryImage(category, imageFile);
-//
-//        // Category의 update 메서드를 통해 값 업데이트
-//        category.updateCategory(name, newDisplayOrder, getParentCategory(parentId), imageUrl, newMainDisplayOrder);
-//
-//        return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
-//    }
-
     // 카테고리 수정
     public CategoryUpdateRequestDTO updateCategory(Long id, String name, Long displayOrder,
                                                    Long mainDisplayOrder, Boolean isDeleted,
