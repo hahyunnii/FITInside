@@ -124,10 +124,6 @@ public class CategoryService {
         if (newDisplayOrder > maxDisplayOrder) {
             newDisplayOrder = maxDisplayOrder;
         }
-//
-//        if (category.getMainDisplayOrder() == null) {
-//
-//        }
 
         // mainDisplayOrder 최대 값 계산
         Long maxMainDisplayOrder = (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size();
