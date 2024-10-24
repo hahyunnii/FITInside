@@ -115,7 +115,7 @@ public class ProductService {
         Product product = ProductMapper.INSTANCE.toEntity(productCreateDto);
 
         // categoryName을 통해 categoryId를 조회하는 로직
-        Category category = categoryRepository.findByName(productCreateDto.getCategoryName())
+        Category category = categoryRepository.findByNameAndIsDeletedFalse(productCreateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         product.setCategory(category);
 
@@ -172,7 +172,7 @@ public class ProductService {
         Product updatedProduct = ProductMapper.INSTANCE.toEntity(id, productUpdateDto);
 
         // categoryName을 통해 categoryId 조회
-        Category category = categoryRepository.findByName(productUpdateDto.getCategoryName())
+        Category category = categoryRepository.findByNameAndIsDeletedFalse(productUpdateDto.getCategoryName())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         updatedProduct.setCategory(category);
 

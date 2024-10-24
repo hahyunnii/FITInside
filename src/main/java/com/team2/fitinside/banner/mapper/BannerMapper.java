@@ -15,7 +15,4 @@ public interface BannerMapper {
     @Mapping(target = "isDeleted", ignore = true)  // isDeleted 필드를 무시
     @Mapping(target = "id", ignore = true)         // id 필드를 무시
     Banner toEntity(BannerRequestDTO requestDTO);
-
-    // Entity -> ResponseDTO 변환
-//    BannerResponseDTO toDto(Banner banner);
 }
