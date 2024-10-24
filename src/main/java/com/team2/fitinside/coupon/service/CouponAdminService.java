@@ -161,12 +161,12 @@ public class CouponAdminService {
         couponRepository.findById(couponId).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
         // 쿠폰을 보유하지 않은 CouponMember 목록 조회 (n+1 문제 해결)
-        List<CouponMember> couponMembersWithoutCoupons = couponMemberRepository.findCouponMembersWithoutCoupons(couponId);
+        List<Member> couponMembersWithoutCoupons = couponMemberRepository.findCouponMembersWithoutCoupons(couponId);
 
         List<CouponMemberResponseDto> dtos = couponMembersWithoutCoupons.stream()
-                .map(couponMember -> CouponMemberResponseDto.builder()
-                        .userName(couponMember.getMember().getUserName())
-                        .email(couponMember.getMember().getEmail())
+                .map(member -> CouponMemberResponseDto.builder()
+                        .userName(member.getUserName())
+                        .email(member.getEmail())
                         .build())
                 .collect(Collectors.toList());
 
