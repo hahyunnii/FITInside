@@ -1,6 +1,7 @@
 package com.team2.fitinside.coupon.repository;
 
 import com.team2.fitinside.coupon.entity.CouponMember;
+import com.team2.fitinside.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,14 +49,13 @@ public interface CouponMemberRepository extends JpaRepository<CouponMember, Long
 
     Optional<CouponMember> findByMember_IdAndCoupon_IdAndUsedIs(Long memberId, Long couponId, boolean used);
 
-    @Query("SELECT cm " +
-            "FROM CouponMember cm " +
-            "JOIN FETCH cm.member " +
-            "WHERE cm.member.id NOT IN " +
+    @Query("SELECT m " +
+            "FROM Member m " +
+            "WHERE m.id NOT IN " +
                 "(SELECT cm2.member.id " +
                 "FROM CouponMember cm2 " +
                 "WHERE cm2.coupon.id = :couponId)")
-    List<CouponMember> findCouponMembersWithoutCoupons(@Param("couponId") Long couponId);
+    List<Member> findCouponMembersWithoutCoupons(@Param("couponId") Long couponId);
 
     @Query("SELECT cm FROM CouponMember cm " +
             "JOIN FETCH cm.coupon c " +

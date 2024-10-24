@@ -26,8 +26,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findByNameAndIsDeletedFalse(String name);
 
-    List<Category> findByMainDisplayOrderNotNullOrderByMainDisplayOrderAsc();
-
     @Modifying
     @Transactional
     @Query("UPDATE Category c SET c.displayOrder = c.displayOrder - 1 WHERE c.displayOrder BETWEEN :startOrder AND :endOrder AND c.parent IS NULL")

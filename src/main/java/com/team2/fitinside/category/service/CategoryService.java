@@ -104,7 +104,6 @@ public class CategoryService {
         return CategoryMapper.toCreateDTO(categoryRepository.save(category));
     }
 
-
     // 카테고리 수정
     public CategoryUpdateRequestDTO updateCategory(Long id, String name, Long displayOrder,
                                                    Long mainDisplayOrder, Boolean isDeleted,
@@ -125,32 +124,41 @@ public class CategoryService {
             newDisplayOrder = maxDisplayOrder;
         }
 
-        // mainDisplayOrder 최대 값 계산
-        Long maxMainDisplayOrder = (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size();
-        Long oldMainDisplayOrder = category.getMainDisplayOrder();
-        Long newMainDisplayOrder = mainDisplayOrder;
-
-        if (newMainDisplayOrder != null && newMainDisplayOrder > maxMainDisplayOrder) {
-            newMainDisplayOrder = maxMainDisplayOrder;
-        }
-
-        // displayOrder와 mainDisplayOrder 값 조정
-        if (!oldDisplayOrder.equals(newDisplayOrder)) {
-            if (category.getParent() == null) {
-                adjustDisplayOrderForParentCategories(oldDisplayOrder, newDisplayOrder);
-            } else {
-                adjustDisplayOrderForChildCategories(oldDisplayOrder, newDisplayOrder, category.getParent().getId());
+        if (category.getMainDisplayOrder() == null) {
+            // mainDisplayOrder 값이 없는 경우 최대 값 설정 및 정렬 조정
+            long maxMainDisplayOrder = categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size() + 1;
+            if (mainDisplayOrder == null || mainDisplayOrder > maxMainDisplayOrder) {
+                mainDisplayOrder = maxMainDisplayOrder;
             }
+            adjustMainDisplayOrder(null, mainDisplayOrder);
+            category.updateCategory(name, newDisplayOrder, getParentCategory(parentId), updateCategoryImage(category, imageFile), mainDisplayOrder);
+        } else {
+            // mainDisplayOrder가 있는 경우
+            Long maxMainDisplayOrder = (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size();
+            Long oldMainDisplayOrder = category.getMainDisplayOrder();
+            Long newMainDisplayOrder = mainDisplayOrder;
+
+            if (newMainDisplayOrder != null && newMainDisplayOrder > maxMainDisplayOrder) {
+                newMainDisplayOrder = maxMainDisplayOrder;
+            }
+
+            // displayOrder와 mainDisplayOrder 값 조정
+            if (!oldDisplayOrder.equals(newDisplayOrder)) {
+                if (category.getParent() == null) {
+                    adjustDisplayOrderForParentCategories(oldDisplayOrder, newDisplayOrder);
+                } else {
+                    adjustDisplayOrderForChildCategories(oldDisplayOrder, newDisplayOrder, category.getParent().getId());
+                }
+            }
+
+            if (!Objects.equals(oldMainDisplayOrder, newMainDisplayOrder)) {
+                adjustMainDisplayOrder(oldMainDisplayOrder, newMainDisplayOrder);
+            }
+
+            // Category의 update 메서드를 통해 값 업데이트
+            String imageUrl = updateCategoryImage(category, imageFile);
+            category.updateCategory(name, newDisplayOrder, getParentCategory(parentId), imageUrl, newMainDisplayOrder);
         }
-
-        if (!Objects.equals(oldMainDisplayOrder, newMainDisplayOrder)) {
-            adjustMainDisplayOrder(oldMainDisplayOrder, newMainDisplayOrder);
-        }
-
-        String imageUrl = updateCategoryImage(category, imageFile);
-
-        // Category의 update 메서드를 통해 값 업데이트
-        category.updateCategory(name, newDisplayOrder, getParentCategory(parentId), imageUrl, newMainDisplayOrder);
 
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }

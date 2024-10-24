@@ -411,11 +411,7 @@ class CouponAdminServiceTest {
         Long couponId = activeCoupon1.getId();
         given(couponRepository.findById(couponId)).willReturn(Optional.of(activeCoupon1));
 
-        // 쿠폰을 보유하지 않은 회원 목록 설정
-        CouponMember couponMemberWithoutCoupon = new CouponMember();
-        couponMemberWithoutCoupon.setCouponAndMember(activeCoupon1, adminMember); // adminMember가 쿠폰을 보유하지 않음
-
-        given(couponMemberRepository.findCouponMembersWithoutCoupons(couponId)).willReturn(List.of(couponMemberWithoutCoupon));
+        given(couponMemberRepository.findCouponMembersWithoutCoupons(couponId)).willReturn(List.of(adminMember));
 
         //when
         CouponMemberResponseWrapperDto result = couponAdminService.findMembersWithOutCoupons(couponId);

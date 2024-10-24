@@ -1,4 +1,4 @@
-package com.team2.fitinside.order.common;
+package com.team2.fitinside.order.entity;
 
 public enum OrderStatus {
     ORDERED("주문 완료"),
