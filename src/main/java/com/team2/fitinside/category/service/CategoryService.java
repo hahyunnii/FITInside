@@ -163,7 +163,6 @@ public class CategoryService {
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
 
-
     //=================================================================
     // 카테고리 삭제
     public void deleteCategory(Long id) {
@@ -214,8 +213,6 @@ public class CategoryService {
             }
         }
     }
-
-
 
     private Category getParentCategory(Long parentId) {
         return (parentId != null) ? categoryRepository.findByIdAndIsDeletedFalse(parentId)
