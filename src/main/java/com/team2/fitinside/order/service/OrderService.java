@@ -9,7 +9,7 @@ import com.team2.fitinside.coupon.service.CouponService;
 import com.team2.fitinside.global.exception.CustomException;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.repository.MemberRepository;
-import com.team2.fitinside.order.common.OrderStatus;
+import com.team2.fitinside.order.entity.OrderStatus;
 import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.entity.OrderProduct;
