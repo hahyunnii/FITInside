@@ -31,29 +31,6 @@ public class CategoryAdminController {
         return ResponseEntity.ok(createdCategory);
     }
 
-//    // 카테고리 수정 엔드포인트
-//    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<CategoryUpdateRequestDTO> updateCategory(
-//            @PathVariable Long id,
-//            @RequestParam("name") String name,
-//            @RequestParam("displayOrder") Long displayOrder,
-//            @RequestParam(value = "mainDisplayOrder", required = false) Long mainDisplayOrder,
-//            @RequestParam(value = "isDeleted", required = false) Boolean isDeleted,
-//            @RequestParam(value = "parentId", required = false) Long parentId,
-//            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
-//
-//        CategoryUpdateRequestDTO categoryDTO = CategoryUpdateRequestDTO.builder()
-//                .name(name)
-//                .displayOrder(displayOrder)
-//                .mainDisplayOrder(mainDisplayOrder)
-//                .isDeleted(isDeleted)
-//                .parentId(parentId)
-//                .build();
-//
-//        CategoryUpdateRequestDTO updatedCategory = categoryService.updateCategory(id, categoryDTO, imageFile);
-//        return ResponseEntity.ok(updatedCategory);
-//    }
-
     // 카테고리 수정
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoryUpdateRequestDTO> updateCategory(
@@ -70,7 +47,6 @@ public class CategoryAdminController {
 
         return ResponseEntity.ok(updatedCategory);
     }
-
 
     // 카테고리 삭제 엔드포인트
     @DeleteMapping("/{id}")
