@@ -43,15 +43,12 @@ public class Product {
     @Column(name = "info", length = 500)
     private String info;
 
-    //재고수량
     @Column(name = "product_stock", nullable = false)
     private int stock;
 
-    // 품절 여부
     @Column(name = "is_sold_out", nullable = false)
     private boolean isSoldOut;
 
-    // 제조사
     @Column(name = "manufacturer", length = 100)
     private String manufacturer;
 

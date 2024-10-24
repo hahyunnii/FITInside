@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -48,26 +47,6 @@ public class ProductAdminController {
     }
 
 
-
-    // 상품 수정 (관리자 전용)
-//    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @Operation(summary = "상품 수정", description = "기존 상품의 정보를 수정합니다. 이미지를 함께 수정할 수 있습니다.")
-//    @ApiResponse(responseCode = "200", description = "상품 수정 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class)))
-//    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content(mediaType = "application/json"))
-//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
-//    public ResponseEntity<ProductResponseDto> updateProduct(
-//            @PathVariable Long id,
-//            @ModelAttribute ProductInsertDto productInsertDto) {
-//
-//        // 상품 수정 처리 (이미지 포함)
-//        ProductResponseDto updatedProduct = productService.updateProduct(
-//                id,
-//                ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto),
-//                productInsertDto.getProductImgUrls()
-//        );
-//        return ResponseEntity.ok(updatedProduct);
-//    }
-
     // 상품 수정 (관리자 전용)
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "상품 수정", description = "기존 상품의 정보를 수정합니다. 이미지를 함께 수정할 수 있습니다.")
@@ -89,44 +68,6 @@ public class ProductAdminController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-
-//    // 상품 이미지 삭제 (특정 이미지 삭제)
-//    @DeleteMapping("/{id}/images")
-//    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
-//    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
-//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
-//    public ResponseEntity<?> deleteProductImages(
-//            @PathVariable Long id,
-//            @RequestParam List<String> imageUrlsToDelete,  // 삭제할 이미지 URL 리스트
-//            @RequestParam List<String> descImageUrlsToDelete // 삭제할 설명 이미지 URL 리스트
-//    ) {
-//        // 상품 이미지 삭제 처리
-//        productService.deleteProductImages(id, imageUrlsToDelete, descImageUrlsToDelete);
-//
-//        return ResponseEntity.ok("이미지가 성공적으로 삭제되었습니다.");
-//    }
-
-    // 상품 이미지 삭제 (특정 이미지 삭제)
-//    @DeleteMapping("/{id}/images")
-//    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
-//    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
-//    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
-//    public ResponseEntity<?> deleteProductImages(
-//            @PathVariable Long id,
-//            @RequestParam(required = false) List<String> imageUrlsToDelete,  // 삭제할 이미지 URL 리스트 (선택적 입력)
-//            @RequestParam(required = false) List<String> descImageUrlsToDelete // 삭제할 설명 이미지 URL 리스트 (선택적 입력)
-//    ) {
-//        // 둘 중 하나라도 값이 들어오면 삭제 처리 진행
-//        if ((imageUrlsToDelete == null || imageUrlsToDelete.isEmpty()) &&
-//                (descImageUrlsToDelete == null || descImageUrlsToDelete.isEmpty())) {
-//            return ResponseEntity.badRequest().body("삭제할 이미지 URL을 입력하세요.");
-//        }
-//
-//        // 상품 이미지 삭제 처리
-//        productService.deleteProductImages(id, imageUrlsToDelete, descImageUrlsToDelete);
-//
-//        return ResponseEntity.ok("이미지가 성공적으로 삭제되었습니다.");
-//    }
 
     // 상품 이미지 삭제 (특정 이미지 삭제)
     @DeleteMapping("/{id}/images")
