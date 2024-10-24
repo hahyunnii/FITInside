@@ -1,7 +1,6 @@
 package com.team2.fitinside.order.entity;
 
 import com.team2.fitinside.member.entity.Member;
-import com.team2.fitinside.order.common.OrderStatus;
 import com.team2.fitinside.order.dto.OrderRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
