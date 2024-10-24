@@ -38,6 +38,9 @@ public class AuthService {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
+        if (memberRepository.findByUserName(requestDto.getUserName()).isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        }
 
         Member member = memberMapper.requestToMember(requestDto);
         member.setAuthority(Authority.ROLE_USER);

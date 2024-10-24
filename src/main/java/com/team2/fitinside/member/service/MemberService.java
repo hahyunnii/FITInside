@@ -40,7 +40,12 @@ public class MemberService {
     public MemberResponseDto changeMemberUserName(String userName) {
         Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        member.setUserName(userName);
+        if (memberRepository.findByUserName(userName).isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        }
+        else {
+            member.setUserName(userName);
+        }
         return memberMapper.memberToResponse(memberRepository.save(member));
     }
 
