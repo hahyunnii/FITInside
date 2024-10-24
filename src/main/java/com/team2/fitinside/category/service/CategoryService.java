@@ -155,88 +155,6 @@ public class CategoryService {
         return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
     }
 
-    // 카테고리 수정
-//    // 카테고리 수정
-//    public CategoryUpdateRequestDTO updateCategory(Long id, String name, Long displayOrder,
-//                                                   Long mainDisplayOrder, Boolean isDeleted,
-//                                                   Long parentId, MultipartFile imageFile) {
-//        Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
-//                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-//
-//        // 부모 카테고리의 최대 displayOrder 값 계산
-//        Long maxDisplayOrder = category.getParent() == null ?
-//                (long) categoryRepository.findAllByIsDeletedFalseAndParentIsNullOrderByDisplayOrder().size() :
-//                (long) categoryRepository.findAllByIsDeletedFalseAndParentIdOrderByDisplayOrder(category.getParent().getId()).size();
-//
-//        Long oldDisplayOrder = category.getDisplayOrder();
-//        Long newDisplayOrder = displayOrder;
-//
-//        // 새로운 displayOrder가 최대치를 넘으면 자동 조정
-//        if (newDisplayOrder > maxDisplayOrder) {
-//            newDisplayOrder = maxDisplayOrder;
-//        }
-//
-//        // 기존 mainDisplayOrder가 null인 경우 별도 처리
-//        if (category.getMainDisplayOrder() == null) {
-//            // mainDisplayOrder가 null인 카테고리의 최대 mainDisplayOrder 계산
-//            Long maxMainDisplayOrderForNullCategory =
-//                    (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size() + 1;
-//
-//            // 만약 수정하려는 mainDisplayOrder가 null이 아니면 최대 값을 넘지 않게 조정
-//            if (mainDisplayOrder != null && mainDisplayOrder > maxMainDisplayOrderForNullCategory) {
-//                mainDisplayOrder = maxMainDisplayOrderForNullCategory;
-//            }
-//
-//            // mainDisplayOrder를 새로 설정하고 정렬 조정
-//            adjustMainDisplayOrder(null, mainDisplayOrder);
-//        } else {
-//            // mainDisplayOrder가 null이 아닌 경우 처리
-////             mainDisplayOrder 최대 값 계산
-//            Long maxMainDisplayOrder = (long) categoryRepository.findAllByIsDeletedFalseAndMainDisplayOrderNotNullOrderByMainDisplayOrder().size();
-//            Long oldMainDisplayOrder = category.getMainDisplayOrder();
-//            Long newMainDisplayOrder = mainDisplayOrder;
-//
-//            if (newMainDisplayOrder != null && newMainDisplayOrder > maxMainDisplayOrder) {
-//                newMainDisplayOrder = maxMainDisplayOrder;
-//            }
-//
-//            // displayOrder와 mainDisplayOrder 값 조정
-//            if (!oldDisplayOrder.equals(newDisplayOrder)) {
-//                if (category.getParent() == null) {
-//                    adjustDisplayOrderForParentCategories(oldDisplayOrder, newDisplayOrder);
-//                } else {
-//                    adjustDisplayOrderForChildCategories(oldDisplayOrder, newDisplayOrder, category.getParent().getId());
-//                }
-//            }
-//
-//            if (!Objects.equals(oldMainDisplayOrder, newMainDisplayOrder)) {
-//                adjustMainDisplayOrder(oldMainDisplayOrder, newMainDisplayOrder);
-//            }
-//        }
-//
-//        // displayOrder 값 조정
-//        if (!oldDisplayOrder.equals(newDisplayOrder)) {
-//            if (category.getParent() == null) {
-//                adjustDisplayOrderForParentCategories(oldDisplayOrder, newDisplayOrder);
-//            } else {
-//                adjustDisplayOrderForChildCategories(oldDisplayOrder, newDisplayOrder, category.getParent().getId());
-//            }
-//        }
-//
-//        String imageUrl = updateCategoryImage(category, imageFile);
-//
-//        // Category의 update 메서드를 통해 값 업데이트
-//        category.updateCategory(name, newDisplayOrder, getParentCategory(parentId), imageUrl, mainDisplayOrder);
-//
-//        return CategoryMapper.toUpdateDTO(categoryRepository.save(category));
-//    }
-//
-
-
-
-
-
-
     //=================================================================
     // 카테고리 삭제
     public void deleteCategory(Long id) {
@@ -287,8 +205,6 @@ public class CategoryService {
             }
         }
     }
-
-
 
     private Category getParentCategory(Long parentId) {
         return (parentId != null) ? categoryRepository.findByIdAndIsDeletedFalse(parentId)
