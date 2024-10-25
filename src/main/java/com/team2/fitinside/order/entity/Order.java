@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE order_id = ?")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -75,7 +77,7 @@ public class Order {
     private boolean isDeleted = false;
 
     // 하나의 주문에 여러 상품이 있을 수 있음
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default // 빌더 패턴에서 기본값 유지
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
@@ -87,15 +89,6 @@ public class Order {
     // 주문 취소
     public void cancelOrder() {
         this.orderStatus = OrderStatus.CANCELLED;
-    }
-
-    // 주문 삭제
-    public void deleteOrder() {
-        this.isDeleted = true;
-        // 연관된 주문 상품들도 같이 삭제
-        for (OrderProduct product : orderProducts) {
-            product.deleteOrderProduct();
-        }
     }
 
     // 주문 상품 추가 및 총 가격, 할인 가격 업데이트
