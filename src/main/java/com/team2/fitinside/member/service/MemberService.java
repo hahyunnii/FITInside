@@ -74,7 +74,14 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto deleteMember(){
-        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
+        Long memberId = securityUtil.getCurrentMemberId();
+
+        List<Order> orders = orderRepository.findByMemberId(memberId);
+        if(!orders.isEmpty()){
+            orderRepository.deleteAll(orders);
+        }
+
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         memberRepository.delete(member);
         return memberMapper.memberToResponse(member);
