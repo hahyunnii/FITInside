@@ -7,9 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "order_product")
+@SQLDelete(sql = "UPDATE order_product SET is_deleted = true WHERE order_product_id = ?")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -47,11 +49,6 @@ public class OrderProduct {
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
-
-    // 주문 상품 삭제
-    public void deleteOrderProduct(){
-        this.isDeleted = true;
-    }
 
     public void setOrder(Order order) {
         this.order = order;

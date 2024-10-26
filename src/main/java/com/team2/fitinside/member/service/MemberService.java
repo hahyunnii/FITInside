@@ -8,6 +8,8 @@ import com.team2.fitinside.member.dto.MemberResponseDto;
 import com.team2.fitinside.member.entity.Member;
 import com.team2.fitinside.member.mapper.MemberMapper;
 import com.team2.fitinside.member.repository.MemberRepository;
+import com.team2.fitinside.order.entity.Order;
+import com.team2.fitinside.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
     private final SecurityUtil securityUtil;
@@ -71,7 +74,14 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto deleteMember(){
-        Member member = memberRepository.findById(securityUtil.getCurrentMemberId())
+        Long memberId = securityUtil.getCurrentMemberId();
+
+        List<Order> orders = orderRepository.findByMemberId(memberId);
+        if(!orders.isEmpty()){
+            orderRepository.deleteAll(orders);
+        }
+
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         memberRepository.delete(member);
         return memberMapper.memberToResponse(member);
@@ -106,6 +116,11 @@ public class MemberService {
 
     @Transactional
     public void deleteMemberByMemberId(Long memberId) {
+        List<Order> orders = orderRepository.findByMemberId(memberId);
+        if(!orders.isEmpty()){
+            orderRepository.deleteAll(orders);
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         memberRepository.delete(member);

@@ -82,7 +82,7 @@ public class OrderAdminService {
     @Transactional
     public void deleteOrder(Long orderId) {
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
-        findOrder.deleteOrder();
+        orderRepository.delete(findOrder);
     }
 
 }
