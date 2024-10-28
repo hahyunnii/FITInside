@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/products")
@@ -36,14 +37,14 @@ public class ProductAdminController {
     public ResponseEntity<ProductResponseDto> createProduct(
             @ModelAttribute("productData") ProductInsertDto productInsertDto) {
 
-        // 상품 등록 처리 (이미지 포함)
+        // 상품 등록 처리 (이미지 포함, 상품 설명 이미지 추가))
         ProductResponseDto createdProduct = productService.createProduct(
                 ProductMapper.INSTANCE.toProductCreateDto(productInsertDto),
-                productInsertDto.getProductImgUrls()
+                productInsertDto.getProductImgUrls(),
+                productInsertDto.getProductDescImgUrls()
         );
         return ResponseEntity.status(201).body(createdProduct);
     }
-
 
 
     // 상품 수정 (관리자 전용)
@@ -56,15 +57,49 @@ public class ProductAdminController {
             @PathVariable Long id,
             @ModelAttribute ProductInsertDto productInsertDto) {
 
-        // 상품 수정 처리 (이미지 포함)
+        // 상품 수정 처리 (이미지 포함, 상품 설명 이미지 추가)
         ProductResponseDto updatedProduct = productService.updateProduct(
                 id,
                 ProductMapper.INSTANCE.toProductUpdateDto(productInsertDto),
-                productInsertDto.getProductImgUrls()
+                productInsertDto.getProductImgUrls(),  // 상품 이미지
+                productInsertDto.getProductDescImgUrls()  // 상품 설명 이미지
         );
+
         return ResponseEntity.ok(updatedProduct);
     }
 
+
+    // 상품 이미지 삭제 (특정 이미지 삭제)
+    @DeleteMapping("/{id}/images")
+    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "상품 이미지 삭제", description = "특정 상품의 이미지를 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<?> deleteProductImages(
+            @PathVariable Long id,
+            @RequestParam List<String> imageUrlsToDelete  // 삭제할 상품 이미지 URL 리스트
+    ) {
+        // 상품 이미지 삭제 처리
+        productService.deleteProductImages(id, imageUrlsToDelete);
+
+        return ResponseEntity.ok("상품 이미지가 성공적으로 삭제되었습니다.");
+    }
+
+    // 상품 설명 이미지 삭제 (특정 설명 이미지 삭제)
+    @DeleteMapping("/{id}/description-images")
+    @CrossOrigin(origins = "http://localhost:3000")
+    @Operation(summary = "상품 설명 이미지 삭제", description = "특정 상품의 설명 이미지를 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "설명 이미지 삭제 성공", content = @Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음", content = @Content(mediaType = "application/json"))
+    public ResponseEntity<?> deleteProductDescriptionImages(
+            @PathVariable Long id,
+            @RequestParam List<String> descImageUrlsToDelete  // 삭제할 설명 이미지 URL 리스트
+    ) {
+        // 상품 설명 이미지 삭제 처리
+        productService.deleteProductDescriptionImages(id, descImageUrlsToDelete);
+
+        return ResponseEntity.ok("상품 설명 이미지가 성공적으로 삭제되었습니다.");
+    }
 
 
 

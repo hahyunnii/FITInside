@@ -45,6 +45,13 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/default")
+    public ResponseEntity<AddressResponseDto> findDefaultAddress(){
+        AddressResponseDto response = addressService.findDefaultAddress();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    // 새 배송지 정보를 입력하면 무조건 추가
     @PostMapping
     @Operation(summary = "배송지 추가", description = "배송지 추가")
     @ApiResponse(responseCode = "201", description = "배송지 추가 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AddressResponseDto.class)))
@@ -72,6 +79,15 @@ public class AddressController {
     public ResponseEntity<String> deleteAddress(@PathVariable("address_id") Long addressId) {
         addressService.deleteAddress(addressId);
         return ResponseEntity.status(HttpStatus.OK).body("배송지 삭제 완료. addressId: " + addressId);
+    }
+
+    // 기본 배송지 설정/해제
+    @PatchMapping("/{address_id}/default")
+    public ResponseEntity<String> checkDefault(
+            @PathVariable("address_id") Long addressId,
+            @RequestParam("isDefault") String isDefault){
+        addressService.checkDefault(addressId, isDefault);
+        return ResponseEntity.status(HttpStatus.OK).body("기본 배송지로 등록 완료. addressId: " + addressId);
     }
 
 }

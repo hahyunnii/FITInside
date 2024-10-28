@@ -1,7 +1,7 @@
 package com.team2.fitinside.order.service;
 
 import com.team2.fitinside.global.exception.CustomException;
-import com.team2.fitinside.order.common.OrderStatus;
+import com.team2.fitinside.order.entity.OrderStatus;
 import com.team2.fitinside.order.dto.*;
 import com.team2.fitinside.order.entity.Order;
 import com.team2.fitinside.order.mapper.OrderMapper;
@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +65,7 @@ public class OrderAdminService {
             return orderResponseDto;
         }).collect(Collectors.toList());
 
-        return new OrderResponseWrapperDto(orderResponseDtos, pageable.getPageNumber());
+        return new OrderResponseWrapperDto(orderResponseDtos, orders.getTotalPages());
     }
 
     // 주문 상태 수정
@@ -84,7 +82,7 @@ public class OrderAdminService {
     @Transactional
     public void deleteOrder(Long orderId) {
         Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
-        findOrder.deleteOrder();
+        orderRepository.delete(findOrder);
     }
 
 }

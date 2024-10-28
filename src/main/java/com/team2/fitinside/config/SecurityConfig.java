@@ -1,13 +1,12 @@
 package com.team2.fitinside.config;
 
-import com.team2.fitinside.member.jwt.JwtAccessDeniedHandler;
-import com.team2.fitinside.member.jwt.JwtAuthenticationEntryPoint;
-import com.team2.fitinside.member.jwt.JwtFilter;
-import com.team2.fitinside.member.jwt.TokenProvider;
-import com.team2.fitinside.member.oath.OAuth2SuccessHandler;
-import com.team2.fitinside.member.oath.service.CustomOAuth2UserService;
+import com.team2.fitinside.jwt.JwtAccessDeniedHandler;
+import com.team2.fitinside.jwt.JwtAuthenticationEntryPoint;
+import com.team2.fitinside.jwt.JwtFilter;
+import com.team2.fitinside.jwt.TokenProvider;
+import com.team2.fitinside.oath.OAuth2SuccessHandler;
+import com.team2.fitinside.oath.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -63,6 +62,8 @@ public class SecurityConfig{
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/oath2/**").permitAll()
+                        .requestMatchers("/api/categories/**", "/api/banners/**").permitAll()
+                        .requestMatchers("/api/products/**", "/api/categories/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
         );

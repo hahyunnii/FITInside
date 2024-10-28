@@ -1,7 +1,7 @@
 package com.team2.fitinside.member.service;
 
-import com.team2.fitinside.member.oath.entity.RefreshToken;
-import com.team2.fitinside.member.oath.repository.RefreshTokenRepository;
+import com.team2.fitinside.oath.entity.RefreshToken;
+import com.team2.fitinside.oath.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
