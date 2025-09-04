@@ -1,0 +1,65 @@
+.order-admin-container {
+    margin: 20px auto;
+    max-width: 1200px;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.order-admin-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid black;
+}
+
+.order-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.order-admin-table th,
+.order-admin-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+.order-admin-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.order-admin-container .action-button, .order-admin-container .delete-button {
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px 10px;
+    margin: 5px;
+    transition: background-color 0.3s ease; /* 부드러운 호버 효과 */
+}
+
+.order-admin-container .action-button:hover, .order-admin-container .delete-button:hover {
+    background-color: #333;
+}
+
+/* 주문이 없을 때 빨간색과 가운데 정렬 */
+.no-results {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* 한 줄로 필터링 배치 */
+.order-admin-container .form-group {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.order-admin-container .form-control {
+    width: auto;
+}

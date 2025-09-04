@@ -1,0 +1,53 @@
+.order-create-container {
+    padding-left: 48px;
+    padding-right: 48px;
+}
+
+.order-page-container {
+    margin: 20px 100px;
+}
+
+.both-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 70px 20px;
+}
+
+.left-container {
+    width: 60%;
+}
+
+.right-container {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.order-summary-box {
+    width: 100%;
+    border: 1px solid black;
+    padding: 15px;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+
+.place-order-button {
+    width: 100%;
+    padding: 15px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    margin-left: 0;
+}
+
+.right-container .place-order-button {
+    margin-left: 0 !important;
+}
+
+.place-order-button:hover {
+    background-color: #333;
+}

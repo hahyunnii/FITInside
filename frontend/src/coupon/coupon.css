@@ -1,0 +1,88 @@
+.couponWrap {
+    width: 27em;
+    margin: 3em auto;
+    font-family: sans-serif;
+}
+
+.coupon {
+    height: 13em;
+    float: left;
+    position: relative;
+    padding: 1em;
+    color: #424040;
+}
+
+.red {
+    background: linear-gradient(to bottom, #fa3e3e 0%, #fa3e3e 26%, #e3e3e3 26%, #e3e3e3 100%);
+}
+
+.blue {
+    background: linear-gradient(to bottom, #3e4efa 0%, #3e4efa 26%, #e3e3e3 26%, #e3e3e3 100%);
+}
+.black {
+    background: linear-gradient(to bottom, #1e1e1e 0%, #1e1e1e 26%, #e3e3e3 26%, #e3e3e3 100%);
+}
+.green {
+    background: linear-gradient(to bottom, #68bf2f 0%, #68bf2f 26%, #e3e3e3 26%, #e3e3e3 100%);
+}
+
+.couponLeft {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    width: 16em;
+}
+
+.couponRight {
+    width: 6.5em;
+    border-left: .18em dashed #fff;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    &:before,
+    &:after {
+        content: "";
+        position: absolute;
+        display: block;
+        width: .9em;
+        height: .9em;
+        background: #fff;
+        border-radius: 50%;
+        left: -.5em;
+    }
+    &:before {
+        top: -.4em;
+    }
+    &:after {
+        bottom: -.4em;
+    }
+}
+
+h1 {
+    font-size: 1.1em;
+    margin-top: 0;
+    span {
+        font-weight: normal;
+    }
+}
+
+.title, .name {
+    font-weight: normal;
+    h2 {
+        font-size: .9em;
+        color: #525252;
+        margin: 0;
+    }
+    span {
+        font-size: .7em;
+        color: #a2aeae;
+    }
+}
+
+.qrcode {
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    margin-top: 20px; /* 위쪽 마진 */
+}
+.qrcode img{
+    width: 100px;
+}

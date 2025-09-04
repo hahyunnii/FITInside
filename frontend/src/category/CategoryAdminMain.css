@@ -1,0 +1,33 @@
+.category-admin-container {
+    padding: 20px;
+}
+
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.category-table th,
+.category-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.category-table th {
+    background-color: #f4f4f4;
+}
+
+.category-image {
+    width: 50px;
+    height: auto;
+}
+
+.create-button {
+    margin-bottom: 10px;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
