@@ -4,7 +4,13 @@
 
 <img src="https://github.com/user-attachments/assets/098762e0-b166-4a4a-8e7c-687eda22015a" alt="image" width="300px"/>
 
+---
+## GitHub 레포지토리
 
+| 파트 | 링크 |
+|------|------|
+| 프론트엔드 | [https://github.com/hahyunnii/FITInside_frontend.git](https://github.com/hahyunnii/FITInside_frontend.git) |
+| 백엔드 | [https://github.com/hahyunnii/FITinside-backend.git](https://github.com/hahyunnii/FITinside-backend.git) |
 
 FITinside는 LF몰, 무신사와 같은 온라인 쇼핑몰을 모티브로 한 웹사이트입니다.
 
@@ -25,43 +31,43 @@ FITinside는 LF몰, 무신사와 같은 온라인 쇼핑몰을 모티브로 한 
 ### Back-end
 
 
-- Java 17 <img src="https://github.com/user-attachments/assets/161d65aa-8263-46bf-971f-48d959c67647" alt="image" width="30"/>
+- Java 17 
   - 최신 LTS(Long-Term Support) 버전으로 안정성과 성능 제공
  
-- Spring Boot 3.3.4 <img src="https://github.com/user-attachments/assets/a91d4ce4-9b8d-48c3-9b35-bd0e1a2791f1" alt="image" width="30"/>
+- Spring Boot 3.3.4 
   - 경량화된 자바 프레임워크, RESTful API 구축 및 서버 사이드 로직 처리하는 역할을 수행하고 이번 프로젝트 표준 기술로 채택
     
-- Spring Security 3.3.4 <img src="https://github.com/user-attachments/assets/53381f33-ffd7-4e04-a76e-c0ba256d9730" alt="image" width="30"/>
+- Spring Security 3.3.4 
   - Spring Boot를 사용하여 개발하는 과정에 높은 연동성을 제공하고 인증, 권한 부여와 엑세스 제어등의 여러 기능을 편리하게 이용하여 사용자 데이터를 안전하게 보호
     
-- JWT 0.12.1 <img src="https://github.com/user-attachments/assets/d7bbf167-a8b6-467b-8f19-afdce3680a26" alt="image" width="30"/>
+- JWT 0.12.1 
   - 무상태성(State-Less)를 지향하는 HTTP의 특성에 적합하고 로그인 정보가 필요한 부분의 확장을 용이하게하는 장점을 이용하고자 선택
     
-- JPA 3.3.4 <img src="https://github.com/user-attachments/assets/531ea7c3-6a16-4fbc-80b6-0d31beff4d7d" alt="image" width="30"/>
+- JPA 3.3.4 
   - 개발 과정에서 여러 데이터베이스 사용하고 연동하기 위한 ORM 기술을 사용해 객체지향 언어를 사용한 Spring Boot 프로젝트에 적합, 효율적인 데이터베이스 처리 구현, SQL Mapping 기술보다 단순한 DB조작을 많이 하는 서비스를 구현하는 이번 프로젝트에 적합
     
-- MySQL(AWS RDS) <img src="https://github.com/user-attachments/assets/84ddb6f6-501c-45d7-8b98-6352a754eab8" alt="image" width="30"/> <img src="https://github.com/user-attachments/assets/86c252e0-21b9-42c5-a092-3dc51c508f84" alt="image" width="30"/>
+- MySQL(AWS RDS) 
   - 관계형 데이터베이스, 쇼핑몰의 데이터를 저장 및 관리
 
-- JUnit 5.9.3 <img src="https://github.com/user-attachments/assets/0ceacd84-6a5e-40f0-9df6-386b56018370" alt="image" width="30"/>
+- JUnit 5.9.3 
   - Java 기반의 단위 테스트 프레임워크로, 테스트 작성 및 실행을 위한 다양한 기능을 제공. 테스트 케이스를 작성하고 관리하는 데 있어 유연성을 높이며, 새로운 기능들과 다양한 확장성을 통해 효율적인 테스트 환경을 구현할 수 있도록 지원
 
-- Jakarta Mail 2.0.3 <img src="https://github.com/user-attachments/assets/8c27da01-0445-4a85-9487-f1e80557e28f" alt="image" width="30"/>
+- Jakarta Mail 2.0.3 
   - 이메일 발송을 위한 라이브러리로, Spring Boot와 통합하여 비동기적으로 메일을 전송
 
-- AWS S3 2.2.6 <img src="https://github.com/user-attachments/assets/11222770-397f-4f3a-9585-b6937973484e" alt="image" width="30"/>
+- AWS S3 2.2.6 
     - Amazon의 객체 저장 서비스, 대용량 데이터 저장 및 관리에 최적화, 이미지 파일을 효율적으로 저장하고, 쉽게 접근할 수 있도록 지원
 
 ### Front-end
 
 
-- HTML, CSS <img src="https://github.com/user-attachments/assets/e41f8dc5-6635-4da4-aef3-d756a9c4d739" alt="image" width="30"/>
+- HTML, CSS 
   - 웹 표준을 준수한 마크업 및 스타일링
 
-- React <img src="https://github.com/user-attachments/assets/85d92f1a-14de-4f58-9c98-1b13cd9a19cd" alt="image" width="30"/>
+- React 
   - 컴포넌트 기반의 UI 라이브러리를 활용하여 효율적인 상태 관리 및 인터랙티브한 사용자 인터페이스 구현
 
-- Axios <img src="https://github.com/user-attachments/assets/7ee7973a-9f9d-4657-bb51-3df0e1473d43" alt="image" width="30"/>
+- Axios 
   - 백엔드와의 HTTP 통신을 위한 비동기 요청 처리 라이브러리
 
 ### 서비스 배포 환경
@@ -101,16 +107,13 @@ FITinside는 LF몰, 무신사와 같은 온라인 쇼핑몰을 모티브로 한 
 
 - 비동기 작업 통한 이메일 전송 성능 개선
 
-  - <a href="https://github.com/Engineering-Student-An/Elice_2nd_project_FITinside/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85-%E2%80%90-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%9E%91%EC%97%85-%ED%86%B5%ED%95%9C-%EC%9D%B4%EB%A9%94%EC%9D%BC-%EC%A0%84%EC%86%A1-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0" target="_blank">트러블 슈팅 ‐ 비동기 작업 통한 이메일 전송 성능 개선</a>
-
+  
 - 쿠폰 도메인에서 여러 메서드에서 n+1 문제가 발생하여 레파지토리에 fetch join을 포함한 jpql을 적용하여 해결
 
-  - <a href="https://github.com/Engineering-Student-An/Elice_2nd_project_FITinside/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85-%E2%80%90-%EC%BF%A0%ED%8F%B0-%EB%8F%84%EB%A9%94%EC%9D%B8%EC%97%90%EC%84%9C-%EC%97%AC%EB%9F%AC-%EB%A9%94%EC%84%9C%EB%93%9C%EC%97%90%EC%84%9C-n-1-%EB%AC%B8%EC%A0%9C%EA%B0%80-%EB%B0%9C%EC%83%9D%ED%95%98%EC%97%AC-%EB%A0%88%ED%8C%8C%EC%A7%80%ED%86%A0%EB%A6%AC%EC%97%90-fetch-join%EC%9D%84-%ED%8F%AC%ED%95%A8%ED%95%9C-jpql%EC%9D%84-%EC%A0%81%EC%9A%A9%ED%95%98%EC%97%AC-%ED%95%B4%EA%B2%B0" target="_blank">트러블 슈팅 - n+1 문제 해결</a>
-
+  
 - 토큰 인증 예외가 아닌 경우에도 401 에러가 반환되는 문제가 발생하여 CustomExceptionHandler에 유효성 검사 예외 처리 메서드를 추가하여 해결
 
-  - <a href="https://github.com/Engineering-Student-An/Elice_2nd_project_FITinside/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85-%E2%80%90-%ED%86%A0%ED%81%B0-%EC%9D%B8%EC%A6%9D-%EC%98%88%EC%99%B8%EA%B0%80-%EC%95%84%EB%8B%8C-%EA%B2%BD%EC%9A%B0%EC%97%90%EB%8F%84-401-%EC%97%90%EB%9F%AC%EA%B0%80-%EB%B0%98%ED%99%98%EB%90%98%EB%8A%94-%EB%AC%B8%EC%A0%9C%EA%B0%80-%EB%B0%9C%EC%83%9D%ED%95%98%EC%97%AC-CustomExceptionHandler%EC%97%90-%EC%9C%A0%ED%9A%A8%EC%84%B1-%EA%B2%80%EC%82%AC-%EC%98%88%EC%99%B8-%EC%B2%98%EB%A6%AC-%EB%A9%94%EC%84%9C%EB%93%9C%EB%A5%BC-%EC%B6%94%EA%B0%80%ED%95%98%EC%97%AC-%ED%95%B4%EA%B2%B0" target="_blank">트러블 슈팅 - 토큰 인증 예외가 아닌 경우에도 401에러 발생 문제 해결</a>
-
+  
 ---
 
 
@@ -277,7 +280,7 @@ FITinside는 LF몰, 무신사와 같은 온라인 쇼핑몰을 모티브로 한 
 ---
 
 ## 상세 기능
-- <a href="https://github.com/Engineering-Student-An/Elice_2nd_project_FITinside/wiki/%EA%B8%B0%EB%8A%A5-%EB%AA%85%EC%84%B8%EC%84%9C" target="_blank">기능 명세서</a>
+- <a href="https://github.com/hahyunnii/FITInside/wiki/api-%EB%AA%85%EC%84%B8%EC%84%9C" target="_blank">기능 명세서</a>
 
 ---
 
@@ -352,7 +355,7 @@ FITinside는 LF몰, 무신사와 같은 온라인 쇼핑몰을 모티브로 한 
 
 ## 상세 API 명세서
 - <a href="https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/swagger-ui/index.html" target="_blank">Swagger 페이지</a>
-- <a href="https://github.com/Engineering-Student-An/Elice_2nd_project_FITinside/wiki/api-%EB%AA%85%EC%84%B8%EC%84%9C" target="_blank">API 명세서</a>
+- <a href="https://github.com/hahyunnii/FITInside/wiki/api-%EB%AA%85%EC%84%B8%EC%84%9C" target="_blank">API 명세서</a>
 
 ---
 
